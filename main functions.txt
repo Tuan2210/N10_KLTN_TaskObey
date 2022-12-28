@@ -1,0 +1,4 @@
+- CRUD tasks and set time (today, tomorrow, future)
+- watch calendar & real time
+- set notifications & add reminder
+- sắp xếp thứ tự ưu tiên tùy ý - priority
