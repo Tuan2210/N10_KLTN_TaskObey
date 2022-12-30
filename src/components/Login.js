@@ -6,6 +6,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import * as Animatable from "react-native-animatable";
 
+//link doc expo av: https://docs.expo.dev/versions/latest/sdk/av
+import { Audio } from "expo-av";
+
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
 
@@ -13,6 +16,7 @@ export default function Login() {
   //splash-screen
   const splashscreen = useRef(new Animated.Value(0)).current;
   const [isVisible, setisVisible] = useState(true);
+
   useEffect(() => {
     Animated.sequence([
       Animated.timing(splashscreen, {
@@ -28,6 +32,25 @@ export default function Login() {
     }, 4000); //4s
     return () => clearTimeout(myTimeout);
   }, []);
+
+  //sound effect: https://docs.expo.dev/versions/latest/sdk/audio/#sound
+  // https://mixkit.co/free-sound-effects
+  useEffect(() => {
+    handlePlaySound();
+  })
+  const handlePlaySound = async () => {
+    if(isVisible==true) {
+      const audioObj = new Audio.Sound();
+
+      try{
+        // await audioObj.loadAsync(require("../../assets/sound_effects_splashscreen.mp3"));
+        await audioObj.loadAsync(require("../../assets/mixkit-tick-tock-clock-timer-1045.wav"));
+        // console.log(audioObj);
+        await audioObj.playAsync();
+      } catch(err) {console.log(err)}
+    }
+  }
+
   function showSplashScreen() {
     return (
       <Animated.View
