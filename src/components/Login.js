@@ -1,13 +1,18 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Dimensions, StyleSheet, Text, View } from "react-native";
+import { Animated, Dimensions, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
+//link all name animations: https://github.com/oblador/react-native-animatable
+//link how to code animation: https://blog.bitsrc.io/top-5-animation-libraries-in-react-native-d00ec8ddfc8d
 import * as Animatable from "react-native-animatable";
 
 //link doc expo av: https://docs.expo.dev/versions/latest/sdk/av
 import { Audio } from "expo-av";
+
+//link all icons react-native: https://oblador.github.io/react-native-vector-icons/
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
@@ -37,26 +42,31 @@ export default function Login() {
   // https://mixkit.co/free-sound-effects
   useEffect(() => {
     handlePlaySound();
-  })
+  });
   const handlePlaySound = async () => {
-    if(isVisible==true) {
+    if (isVisible == true) {
       const audioObj = new Audio.Sound();
 
-      try{
+      try {
         // await audioObj.loadAsync(require("../../assets/sound_effects_splashscreen.mp3"));
-        await audioObj.loadAsync(require("../../assets/mixkit-tick-tock-clock-timer-1045.wav"));
+        await audioObj.loadAsync(
+          require("../../assets/mixkit-tick-tock-clock-timer-1045.wav")
+        );
         // console.log(audioObj);
         await audioObj.playAsync();
-      } catch(err) {console.log(err)}
+      } catch (err) {
+        console.log(err);
+      }
     }
-  }
+  };
 
   function showSplashScreen() {
     return (
       <Animated.View
         style={[
           {
-            flex: 1,
+            width: widthScreen,
+            height: heightScreen,
             backgroundColor: "#09CBD0",
             alignItems: "center",
             justifyContent: "space-evenly",
@@ -65,32 +75,116 @@ export default function Login() {
         ]}
       >
         <Animated.Image
-            style={[{ width: widthScreen, height: "32%" }]}
+          style={[{ width: widthScreen, height: "32%", marginTop: '-5%' }]}
           source={require("../../assets/taskobey_line.png")}
           resizeMode="contain"
         />
         <Animated.Image
-            style={[{ height: "40%", marginTop: '-25%' }]}
+          style={[{ height: "40%", marginTop: "-28%" }]}
           source={require("../../assets/clock.gif")}
           resizeMode="contain"
         />
         <Animated.Image
+        style={[{ marginTop: "-10%" }]}
           source={require("../../assets/loading.gif")}
           resizeMode="contain"
         />
+        <View style={{flexDirection: "row", width: '100%', justifyContent: "center", marginTop: '-5%'}}>
+          <Text style={{fontSize: 16, color: '#fff', fontWeight: "bold", marginRight: 10}}>Ứng dụng thực hiện bởi:</Text>
+          <Text style={{fontSize: 16, color: '#fff', fontWeight: "bold"}}>
+            Đinh Quang Tuấn{'\n'}
+            Phùng Bùi Trọng Hiếu
+          </Text>
+        </View>
       </Animated.View>
     );
   }
 
+  //show-hide-pw
+  const [password, setPassword] = useState("");
+  const [isSecureTextEntry, setIsSecureTextEntry] = useState(true);
+  const togglePassword = () => {
+    if (isSecureTextEntry) {
+      setIsSecureTextEntry(false);
+      return;
+    }
+    setIsSecureTextEntry(true);
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
-        {isVisible ? (
-            showSplashScreen()
-        ) : (
-            <Animatable.View animation="fadeInDownBig">
-                <Text>Login</Text>
-            </Animatable.View>
-        )}
+    <SafeAreaView style={{flex: 1}}>
+      {isVisible ? (
+        showSplashScreen()
+      ) : (
+        // <FrmLogin />
+        <Animatable.View animation="fadeInUp" style={styles.container}>
+          <Image source={require("../../assets/img-header-login.png")} resizeMode="contain" style={{height: '30%'}}/>
+          <View style={{alignItems: "center"}}>
+            <View style={{ flexDirection: "row" }}>
+              <TextInput
+                style={styles.styleInput}
+                placeholder="Số điện thoại"
+                maxLength={10}
+                keyboardType="numeric"
+                numberOfLines={1}
+                // onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}
+                // value={phoneNumber}
+              />
+              <View style={{ justifyContent: "center", marginLeft: 10 }}>
+                <Icon name="phone-portrait-outline" size={40} color="#09CBD0" />
+              </View>
+            </View>
+            {/* <Text style={styles.errorMess}>{errorMessSDT}</Text> */}
+            <View style={{ flexDirection: "row", marginTop: '5%' }}>
+              <TextInput
+                style={styles.styleInput}
+                placeholder="Mật khẩu"
+                numberOfLines={1}
+                secureTextEntry={isSecureTextEntry}
+                // onChangeText={(password) => setPassword(password)}
+                // value={passwordInput}
+                // name="password"
+              />
+              <TouchableOpacity
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  alignSelf: "center",
+                  borderColor: "cyan",
+                  borderWidth: 1,
+                  borderStyle: "solid",
+                  height: 40,
+                  paddingLeft: 5,
+                  paddingRight: 5,
+                  marginLeft: 10,
+                }}
+                onPress={togglePassword}
+              >
+                {isSecureTextEntry ? (
+                  <Icon name="eye-sharp" size={30} color="#09CBD0" />
+                ) : (
+                  <Icon name="eye-off-sharp" size={30} color="#09CBD0" />
+                )}
+              </TouchableOpacity>
+            </View>
+            {/* <Text style={styles.errorMess}>{errorMessPW}</Text> */}
+          </View>
+          <View style={{ flexDirection: "row", width: '80%', justifyContent: "space-around" }}>
+            <TouchableOpacity style={styles.btns}>
+              <Text style={styles.labelBtns}>Đăng nhập</Text>
+            </TouchableOpacity>
+            <Text style={styles.labels}>Hoặc</Text>
+            <TouchableOpacity style={styles.btns}>
+              <Text style={styles.labelBtns}>Google</Text>
+              <Image source={require("../../assets/google-icon.png")} style={{marginLeft: 10}} />
+            </TouchableOpacity>
+          </View>
+          <View>
+            <Text style={styles.labels}>Bạn chưa có tài khoản?</Text>
+            <Text style={[styles.labels, {fontWeight: "bold", textDecorationLine: "underline"}]}>Đăng ký ngay</Text>
+          </View>
+        </Animatable.View>
+      )}
     </SafeAreaView>
   );
 }
@@ -100,6 +194,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
+    justifyContent: "space-evenly",
+    // paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  styleInput: {
+    backgroundColor: "rgba(211, 211, 211, 0.404)",
+    width: '65%',
+    height: 40,
+    fontSize: 17,
+    marginTop: 5,
+    marginRight: 0,
+    marginBottom: 5,
+    marginLeft: 0,
+    paddingLeft: 10,
+  },
+  btns: {
+    padding: 15,
+    backgroundColor: "#09CBD0",
+    borderRadius: 100,
+    width: "40%",
+    flexDirection: "row",
     justifyContent: "center",
+    alignItems: "center",
+  },
+  labelBtns: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  labels: {
+    fontSize: 15,
+    color: "#09CBD0",
+    alignSelf: "center",
   },
 });
