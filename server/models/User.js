@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const dbName = 'taskobeyDB';
 const userSchema = new mongoose.Schema({
     userName: {
         type: String,
@@ -17,4 +18,4 @@ const userSchema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model("Users", userSchema);
+module.exports = mongoose.model("users", userSchema);
