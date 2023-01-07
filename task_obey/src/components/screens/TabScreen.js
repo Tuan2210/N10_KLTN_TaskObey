@@ -11,14 +11,14 @@ import * as Animatable from "react-native-animatable";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesomeicons from 'react-native-vector-icons/FontAwesome';
 
-import HomeScreen from "./screens/HomeScreen";
-import CreateTaskScreen from "./screens/CreateTaskScreen";
-import CalendarScreen from "./screens/CalendarScreen";
-import ProfileScreen from './screens/ProfileScreen';
+import ListScreenn from './ListScreen';
+import CreateTaskScreen from './CreateTaskScreen';
+import CalendarScreen from './CalendarScreen';
+import ProfileScreen from './ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
-export default function TabBarBottom({ navigation }) {
+export default function TabScreen() {
     return (
       <Animatable.View animation="bounceIn" style={{flex: 1}}>
         <Tab.Navigator
@@ -35,8 +35,6 @@ export default function TabBarBottom({ navigation }) {
                 iconFA = focused ? "user-circle-o" : "user-circle";
               }
               size = focused ? 30 : 24;
-              // You can return any component that you like here!
-              // return <Ionicons name={iconIon} size={size} color={color} />
 
               return (
                 <View style={{ flexDirection: "row" }}>
@@ -61,43 +59,25 @@ export default function TabBarBottom({ navigation }) {
         >
           <Tab.Screen
             name="HomeScreen"
-            options={{ title: "Trang chủ" }}
-            component={HomeScreen}
+            options={{ title: "Trang chủ", headerShown: false }}
+            component={ListScreenn}
           />
           <Tab.Screen
             name="CreateTaskScreen"
-            options={{ title: "Ghi chú" }}
+            options={{ title: "Ghi chú", headerShown: false }}
             component={CreateTaskScreen}
           />
           <Tab.Screen
             name="CalendarScreen"
-            options={{ title: "Lịch" }}
+            options={{ title: "Lịch", headerShown: false }}
             component={CalendarScreen}
           />
           <Tab.Screen
             name="ProfileScreen"
-            options={{ title: "Thông tin" }}
+            options={{ title: "Thông tin", headerShown: false }}
             component={ProfileScreen}
           />
         </Tab.Navigator>
       </Animatable.View>
     );
 }
-
-const styles = StyleSheet.create({
-    bgButton: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgb(250, 139, 158)',
-        marginRight: 10,
-
-        width: 36,
-        height: 36,
-
-        borderRadius: 50,
-    },
-    titleButton: {
-        fontSize: 18,
-        color: '#ffffff',
-    },
-});

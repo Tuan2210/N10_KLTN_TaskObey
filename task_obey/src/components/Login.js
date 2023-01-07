@@ -1,6 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Link } from "react-router-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -17,7 +18,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
 
-export default function Login({ navigation }) {
+export default function Login() {
   //splash-screen
   const splashscreen = useRef(new Animated.Value(0)).current;
   const [isVisible, setisVisible] = useState(true);
@@ -170,9 +171,12 @@ export default function Login({ navigation }) {
             {/* <Text style={styles.errorMess}>{errorMessPW}</Text> */}
           </View>
           <View style={{ flexDirection: "row", width: '80%', justifyContent: "space-around" }}>
-            <TouchableOpacity style={styles.btns}>
+            {/* <TouchableOpacity style={styles.btns}>
               <Text style={styles.labelBtns} onPress={() => navigation.navigate('TabBarBottom')}>Đăng nhập</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <Link to='/home' style={styles.btns}>
+              <Text style={styles.labelBtns}>Đăng nhập</Text>
+            </Link>
             <Text style={styles.labels}>Hoặc</Text>
             <TouchableOpacity style={styles.btns}>
               <Text style={styles.labelBtns}>Google</Text>
@@ -181,7 +185,12 @@ export default function Login({ navigation }) {
           </View>
           <View>
             <Text style={styles.labels}>Bạn chưa có tài khoản?</Text>
-            <Text style={[styles.labels, {fontWeight: "bold", textDecorationLine: "underline"}]} onPress={() => navigation.navigate('Register')}>Đăng ký ngay</Text>
+            {/* <Text style={[styles.labels, {fontWeight: "bold", textDecorationLine: "underline"}]} onPress={() => navigation.navigate('Register')}>Đăng ký ngay</Text> */}
+            <Link to='/register'>
+              <Text style={[styles.labels, {fontWeight: "bold", textDecorationLine: "underline"}]}>
+                Đăng ký ngay
+              </Text>
+            </Link>
           </View>
         </Animatable.View>
       )}
