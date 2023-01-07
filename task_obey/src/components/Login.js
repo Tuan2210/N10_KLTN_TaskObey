@@ -17,7 +17,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
 
-export default function Login() {
+export default function Login({ navigation }) {
   //splash-screen
   const splashscreen = useRef(new Animated.Value(0)).current;
   const [isVisible, setisVisible] = useState(true);
@@ -171,7 +171,7 @@ export default function Login() {
           </View>
           <View style={{ flexDirection: "row", width: '80%', justifyContent: "space-around" }}>
             <TouchableOpacity style={styles.btns}>
-              <Text style={styles.labelBtns}>Đăng nhập</Text>
+              <Text style={styles.labelBtns} onPress={() => navigation.navigate('TabBarBottom')}>Đăng nhập</Text>
             </TouchableOpacity>
             <Text style={styles.labels}>Hoặc</Text>
             <TouchableOpacity style={styles.btns}>
@@ -181,7 +181,7 @@ export default function Login() {
           </View>
           <View>
             <Text style={styles.labels}>Bạn chưa có tài khoản?</Text>
-            <Text style={[styles.labels, {fontWeight: "bold", textDecorationLine: "underline"}]}>Đăng ký ngay</Text>
+            <Text style={[styles.labels, {fontWeight: "bold", textDecorationLine: "underline"}]} onPress={() => navigation.navigate('Register')}>Đăng ký ngay</Text>
           </View>
         </Animatable.View>
       )}

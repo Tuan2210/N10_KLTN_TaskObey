@@ -14,7 +14,10 @@ import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 import Login from './src/components/Login';
+import Register from './src/components/Register';
+import TabBarBottom from './src/components/TabBarBottom';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +33,17 @@ export default function App() {
           component={Login}
           options={{ headerShown: false }}
           // options={{ title: "Đăng nhập" }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={Register}
+          options={{ headerShown: false }}
+          // options={{ title: "Đăng ký" }}
+        />
+        <Stack.Screen
+          name="TabBarBottom"
+          component={TabBarBottom}
+          options={{ headerShown: false }}
         />
         
       </Stack.Navigator>
