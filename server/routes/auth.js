@@ -9,6 +9,9 @@ const middlewareController = require('../controllers/middlewareController')
 
 // router.get('/', (req, res) => res.send('user route'));
 
+//demo get users
+router.get('/users', userController.getAllUsers);
+
 //REGISTER
 router.post('/register', userController.addUser);
 
