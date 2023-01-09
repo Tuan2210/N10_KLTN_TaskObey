@@ -1,0 +1,20 @@
+{
+  "name": "time-task-management-mobile-app-taskobey",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "cd server && npm start",
+    "task_obey": "cd task_obey && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tuan2210/N10_KLTN_TaskObey.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tuan2210/N10_KLTN_TaskObey/issues"
+  },
+  "homepage": "https://github.com/Tuan2210/N10_KLTN_TaskObey#readme"
+}
