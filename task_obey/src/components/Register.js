@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Dimensions, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { Alert, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
 import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import { loginUser, registerUser } from "../redux/apiRequest/authApiRequest";
-import { getUserName } from "../redux/apiRequest/userApiRequest";
+// import { getUserName } from "../redux/apiRequest/userApiRequest";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 //link how to code animation: https://blog.bitsrc.io/top-5-animation-libraries-in-react-native-d00ec8ddfc8d
 import * as Animatable from "react-native-animatable";
 import axios from "axios";
+import { url } from "../redux/createInstance";
 
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
@@ -42,7 +43,12 @@ export default function Register() {
   //   }
   // });
 
-  function checkDataInputInfo() {
+  // const contextInfoName = useContext(infoName);
+  // useEffect(() => {
+  //   console.log('info name', getUserName.infoName);
+  // })
+
+  async function checkDataInputInfo() {
     //write check regex & validation here
 
     const newUser = {
@@ -50,12 +56,21 @@ export default function Register() {
       phoneNumber: phoneNumber.trim(),
       password: password.trim()
     }
-    getUserName(dispatch, newUser.userName);
-    registerUser(newUser, dispatch, navigate, setIsLoading);
-    window.setTimeout(function () {
-      navigate("/home");
-      console.log(newUser);
-    }, 1000);
+
+    const res = await axios.get(`${url}/api/user/userName/${newUser.userName}`);
+    {res.data.map((data, index) => {
+        const infoName = data.userName;
+        // console.log(infoName);
+        if(infoName.includes(newUser.userName))
+          Alert.alert('Thông báo', 'Tên tài khoản đã được đăng ký!');
+        else {
+          registerUser(newUser, dispatch, navigate, setIsLoading);
+          window.setTimeout(function () {
+            navigate("/home");
+            console.log(newUser);
+          }, 1000);
+        }
+    })}
   }
 
   return (
