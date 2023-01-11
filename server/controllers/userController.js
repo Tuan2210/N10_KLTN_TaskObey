@@ -50,20 +50,36 @@ const userController = {
     //GET USER NAME & PHONE
     getUserName: async (req, res) => {
         try {
-            const findUserName = await User.findOne({userName: req.body.userName});
-            if(findUserName) return res.status(200).json(findUserName.userName);
+            await User.find({
+              userName: req.params.name,
+            }).then((findUserName) => res.status(200).json(findUserName));
         } catch (error) {
             res.status(500).json(error);
         }
     },
     getUserPhone: async (req, res) => {
         try {
-            const findUserPhone = await User.findOne({phoneNumber: req.body.phoneNumber});
-            if(findUserPhone) return res.status(200).json(findUserPhone.phoneNumber);
+            await User.find({
+              phoneNumber: req.params.phone,
+            }).then((findUserPhone) => res.status(200).json(findUserPhone));
         } catch (error) {
             res.status(500).json(error);
         }
-    }
+    },
+    
+    // getAllNumber: async (_req, res) => {
+	// 	try {
+	// 		// const users = await User.aggregate([{ '$match': { _id: { $exists: true } } }, { $project: { phoneNumber: 1, _id: 0 } }])
+	// 		const users = await User.find({}, {_id: false, phoneNumber: true})
+    //         const result = users?.reduce((acc, user) => {
+	// 			return [...acc, `${user.phoneNumber}`];
+	// 		}, []
+	// 		)
+	// 		res.status(200).json(result);
+	// 	} catch (error) {
+	// 		res.status(500).json(error);
+	// 	}
+	// },
 }
 
 module.exports = userController;

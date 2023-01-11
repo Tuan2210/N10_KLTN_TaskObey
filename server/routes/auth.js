@@ -12,11 +12,8 @@ const middlewareController = require('../controllers/middlewareController')
 //demo get users
 router.get('/users', userController.getAllUsers);
 
-//GET USER NAME
-router.get('/username', userController.getUserName);
-
-//GET USER PHONE
-router.get('/userphone', userController.getUserPhone);
+//demo get all numbers
+// router.get('/phones', userController.getAllNumber);
 
 //REGISTER
 router.post('/register', userController.addUser);

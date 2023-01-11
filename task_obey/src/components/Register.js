@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import { loginUser, registerUser } from "../redux/apiRequest/authApiRequest";
+import { getUserName } from "../redux/apiRequest/userApiRequest";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -27,29 +28,19 @@ export default function Register() {
 
   const [isLoading, setIsLoading] = useState(false);
   
-  const handleLogin = (phoneNumber, password) => {
-    const registeredUser = {
-      phoneNumber: phoneNumber,
-      password: password,
-    };
-    loginUser(registeredUser, dispatch, navigate, setIsLoading);
-  };
+  // const handleLogin = (phoneNumber, password) => {
+  //   const registeredUser = {
+  //     phoneNumber: phoneNumber,
+  //     password: password,
+  //   };
+  //   loginUser(registeredUser, dispatch, navigate, setIsLoading);
+  // };
 
-  useEffect(() => {
-    if (user) {
-      navigate("/home");
-    }
-  });
-
-  //demo get all users
-  const [users, setUser] = useState([]);
-  const getUsers = async () => {
-    const response = await axios.get("http://localhost:8000/api/auth/users");
-    setUser(response.data);
-  };
-  useEffect(() => {
-    getUsers();
-  }, []);
+  // useEffect(() => {
+  //   if (user) {
+  //     navigate("/home");
+  //   }
+  // });
 
   function checkDataInputInfo() {
     //write check regex & validation here
@@ -59,10 +50,9 @@ export default function Register() {
       phoneNumber: phoneNumber.trim(),
       password: password.trim()
     }
+    getUserName(dispatch, newUser.userName);
     registerUser(newUser, dispatch, navigate, setIsLoading);
     window.setTimeout(function () {
-      //login after sign up one second
-      handleLogin(newUser.phoneNumber, newUser.password);
       navigate("/home");
       console.log(newUser);
     }, 1000);
@@ -95,9 +85,13 @@ export default function Register() {
         // value={passwordInput}
         // name="password"
       />
-      <TouchableOpacity style={styles.btns} onPress={checkDataInputInfo}>
-        <Text style={styles.labelBtns}>Đăng ký</Text>
-      </TouchableOpacity>
+      {isLoading ? (
+        <Text>Đang tạo tài khoản...</Text>
+      ) : (
+        <TouchableOpacity style={styles.btns} onPress={checkDataInputInfo}>
+          <Text style={styles.labelBtns}>Đăng ký</Text>
+        </TouchableOpacity>
+      )}
       <Link to="/">
         <Text style={[styles.labels, { fontWeight: "bold", textDecorationLine: "underline" }]}>
           Đăng nhập ngay
