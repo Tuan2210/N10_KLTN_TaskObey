@@ -43,34 +43,32 @@ export default function Register() {
   //   }
   // });
 
-  // const contextInfoName = useContext(infoName);
-  // useEffect(() => {
-  //   console.log('info name', getUserName.infoName);
-  // })
-
-  async function checkDataInputInfo() {
+  function checkDataInputInfo() {
     //write check regex & validation here
 
-    const newUser = {
-      userName: userName.trim(),
-      phoneNumber: phoneNumber.trim(),
-      password: password.trim()
-    }
+    handleRegister();
+  }
 
-    const res = await axios.get(`${url}/api/user/userName/${newUser.userName}`);
-    {res.data.map((data, index) => {
-        const infoName = data.userName;
-        // console.log(infoName);
-        if(infoName.includes(newUser.userName))
-          Alert.alert('Thông báo', 'Tên tài khoản đã được đăng ký!');
-        else {
+  async function handleRegister() {
+    await axios
+      .get(`${url}/api/user/userPhone/${phoneNumber.trim()}`)
+      .then((response) => {
+        if (response.data.length > 0)
+          Alert.alert("Thông báo", "SĐT đã được đăng ký!");
+
+        if (response.data.length === 0) {
+          const newUser = {
+            userName: userName.trim(),
+            phoneNumber: phoneNumber.trim(),
+            password: password.trim(),
+          };
           registerUser(newUser, dispatch, navigate, setIsLoading);
           window.setTimeout(function () {
             navigate("/home");
-            console.log(newUser);
-          }, 1000);
+            console.log("registered user:", newUser);
+          }, 2000);
         }
-    })}
+      });
   }
 
   return (

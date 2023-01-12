@@ -20,7 +20,7 @@ const registerUser = async (user, dispatch, navigate, setIsLoading) => {
     await axios.post(`${url}/api/auth/register`, user);
     dispatch(registerSuccess());
     setIsLoading(false);
-    navigate("/"); //navigate to function login() then navigate to home
+    navigate("/home");
   } catch (error) {
     console.log(error);
     dispatch(registerFailed());
