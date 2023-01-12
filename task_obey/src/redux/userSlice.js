@@ -26,7 +26,7 @@ const userSlice = createSlice({
             state.user.isFetching = false;
             state.user.error = true;
         },
-        getUserNPhoneStart: (state) => {
+        getUserPhoneStart: (state) => {
             state.user.isFetching = true;
         },
         getUserPhoneSuccess: (state, action) => {
@@ -44,7 +44,7 @@ export const {
   getUserNameStart,
   getUserNameSuccess,
   getUserNameFailed,
-  getUserNPhoneStart,
+  getUserPhoneStart,
   getUserPhoneSuccess,
   getUserPhoneFailed,
 } = userSlice.actions;
