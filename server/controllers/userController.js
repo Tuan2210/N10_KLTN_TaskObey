@@ -14,7 +14,7 @@ const userController = {
 		// 	res.status(500).json(error);
 		// }
 
-        const {userName, phoneNumber, password} = req.body
+        const {userName, phoneNumber, password, refreshToken} = req.body
 
         if(!userName || !phoneNumber || !password)
             return res.status(400).json({success: false, message: 'Missing this User'});
@@ -24,13 +24,18 @@ const userController = {
             // if(user) return res.status(400).json({success: false, message: 'User existed'});
 
             const hashedPW = await argon2.hash(password);
-            const newUser = new User({userName, phoneNumber, password: hashedPW});
+            const newUser = new User({
+              userName,
+              phoneNumber,
+              password: hashedPW,
+              refreshToken,
+            });
             await newUser.save()
 
             //return token
             // const accessToken = jwt.sign({userId: newUser._id}, process.env.JWT_ACCESS_KEY);
 
-            res.json({success: true, message: 'register successfully'});
+            res.json(newUser);
         } catch (error) {
             console.log(error);
             res.status(500).json({success: false, message: 'Error'});
