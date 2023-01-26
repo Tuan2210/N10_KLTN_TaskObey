@@ -32,12 +32,12 @@ const loginUser = async (user, dispatch, navigate, setIsLoading) => {
   dispatch(loginStart());
   try {
     setIsLoading(true);
-    const res = await axios.post(`${url}/api/login`, user, {
+    const res = await axios.post(`${url}/api/auth/login`, user, {
       withCredentials: true,
     });
     dispatch(loginSuccess(res.data));
     setIsLoading(false);
-    navigate("/");
+    navigate("/home");
   } catch (error) {
     dispatch(loginFailed());
     setIsLoading(false);

@@ -2,7 +2,8 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Provider } from "react-redux";
-import { store } from './src/redux/store';
+import { store, persistor } from './src/redux/store';
+import { PersistGate } from "redux-persist/integration/react";
 
 import AppWrapper from './src/AppWrapper';
 
@@ -19,7 +20,9 @@ import AppWrapper from './src/AppWrapper';
 export default function App() {
   return (
     <Provider store={store}>
-      <AppWrapper />
+      <PersistGate persistor={persistor}>
+        <AppWrapper />
+      </PersistGate>
     </Provider>
   );
 }

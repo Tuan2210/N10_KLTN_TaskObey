@@ -1,7 +1,9 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { Link } from "react-router-native";
+import { Link, useNavigate } from "react-router-native";
+
+import { loginUser } from "../redux/apiRequest/authApiRequest";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -14,6 +16,7 @@ import { Audio } from "expo-av";
 
 //link all icons react-native: https://oblador.github.io/react-native-vector-icons/
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useDispatch, useSelector } from "react-redux";
 
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
@@ -102,7 +105,6 @@ export default function Login() {
   }
 
   //show-hide-pw
-  const [password, setPassword] = useState("");
   const [isSecureTextEntry, setIsSecureTextEntry] = useState(true);
   const togglePassword = () => {
     if (isSecureTextEntry) {
@@ -111,6 +113,35 @@ export default function Login() {
     }
     setIsSecureTextEntry(true);
   };
+
+  //handle login
+  const user = useSelector((state) => state.auth.login?.currentUser);
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
+
+  function checkDataInputInfo() {
+    setIsLoading(true);
+
+    //write check regex & validation here
+
+
+    handleLogin();
+  }
+
+  function handleLogin() {
+    const user = {
+      phoneNumber: phoneNumber.trim(),
+      password: password.trim()
+    };
+    loginUser(user, dispatch, navigate, setIsLoading);
+    window.setTimeout(function () {
+      navigate("/home");
+      console.log("logined user:", user);
+    }, 2000);
+  }
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -128,7 +159,7 @@ export default function Login() {
                 maxLength={10}
                 keyboardType="numeric"
                 numberOfLines={1}
-                // onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}
+                onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}
                 // value={phoneNumber}
               />
               <View style={{ justifyContent: "center", marginLeft: 10 }}>
@@ -142,7 +173,7 @@ export default function Login() {
                 placeholder="Mật khẩu"
                 numberOfLines={1}
                 secureTextEntry={isSecureTextEntry}
-                // onChangeText={(password) => setPassword(password)}
+                onChangeText={(password) => setPassword(password)}
                 // value={passwordInput}
                 // name="password"
               />
@@ -170,19 +201,23 @@ export default function Login() {
             </View>
             {/* <Text style={styles.errorMess}>{errorMessPW}</Text> */}
           </View>
-          <View style={{ flexDirection: "row", width: '80%', justifyContent: "space-around" }}>
-            {/* <TouchableOpacity style={styles.btns}>
-              <Text style={styles.labelBtns} onPress={() => navigation.navigate('TabBarBottom')}>Đăng nhập</Text>
-            </TouchableOpacity> */}
-            <Link to='/home' style={styles.btns}>
-              <Text style={styles.labelBtns}>Đăng nhập</Text>
-            </Link>
-            <Text style={styles.labels}>Hoặc</Text>
-            <TouchableOpacity style={styles.btns}>
-              <Text style={styles.labelBtns}>Google</Text>
-              <Image source={require("../../assets/google-icon.png")} style={{marginLeft: 10}} />
-            </TouchableOpacity>
-          </View>
+          {isLoading ? (
+            <Text>Đang đăng nhập...</Text>
+          ) : (
+            <View style={{ flexDirection: "row", width: '80%', justifyContent: "space-around" }}>
+              {/* <TouchableOpacity style={styles.btns}>
+                <Text style={styles.labelBtns} onPress={() => navigation.navigate('TabBarBottom')}>Đăng nhập</Text>
+              </TouchableOpacity> */}
+              <Link to='/home' style={styles.btns} onPress={checkDataInputInfo}>
+                <Text style={styles.labelBtns}>Đăng nhập</Text>
+              </Link>
+              <Text style={styles.labels}>Hoặc</Text>
+              <TouchableOpacity style={styles.btns}>
+                <Text style={styles.labelBtns}>Google</Text>
+                <Image source={require("../../assets/google-icon.png")} style={{marginLeft: 10}} />
+              </TouchableOpacity>
+            </View>
+          )}
           <View>
             <Text style={styles.labels}>Bạn chưa có tài khoản?</Text>
             {/* <Text style={[styles.labels, {fontWeight: "bold", textDecorationLine: "underline"}]} onPress={() => navigation.navigate('Register')}>Đăng ký ngay</Text> */}
@@ -227,7 +262,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   labelBtns: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#fff",
   },

@@ -92,6 +92,15 @@ const authController = {
                 // create refresh token in database
                 const refreshToken = authController.generateRefreshToken(userPhone);
                 userPhone.updateOne({ refreshToken: refreshToken });
+
+                res.cookie("refreshToken", refreshToken, {
+                  // create cookie with refresh token expires in 7 days
+                  httpOnly: true,
+                  expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+                  secure: true,
+                  path: "/home",
+                  sameSite: "none",
+                });
                 
                 const { password, ...others } = userPhone._doc;
                 res.status(200).json({ ...others, accessToken, refreshToken });
@@ -126,7 +135,7 @@ const authController = {
                 httpOnly: true,
                 secure: true,
                 expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-                path: "/",
+                path: "/home",
                 sameSite: "none",
             });
             res.status(200).json({
