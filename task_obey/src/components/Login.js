@@ -1,7 +1,10 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Dimensions, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Animated, Dimensions, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Link, useNavigate } from "react-router-native";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { url } from "../redux/createInstance";
 
 import { loginUser } from "../redux/apiRequest/authApiRequest";
 
@@ -16,7 +19,6 @@ import { Audio } from "expo-av";
 
 //link all icons react-native: https://oblador.github.io/react-native-vector-icons/
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useDispatch, useSelector } from "react-redux";
 
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
@@ -122,25 +124,46 @@ export default function Login() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
 
+  async function handleLogin() {
+    await axios
+      .get(`${url}/api/user/userPhone/${phoneNumber.trim()}`)
+      .then((res) => {
+        if(res.data.length === 0) { //array null
+          setIsLoading(false);
+          Alert.alert('Thông báo', 'Hệ thống không tìm thấy SĐT đăng nhập, xin vui lòng thử lại!');
+        }
+        if(res.data.length > 0) { //array not null
+          {res.data.map(async (userData, index) => {
+            await axios
+              .get(`${url}/api/user/userPW/${userData.phoneNumber}/${password.trim()}`)
+              .then((res) => {
+                if(!res.data){
+                  setIsLoading(false);
+                  Alert.alert('Thông báo', 'Mật khẩu đăng nhập không đúng, xin vui lòng thử lại!');
+                }
+                else {
+                  const user = {
+                    phoneNumber: phoneNumber.trim(),
+                    password: password.trim(),
+                  };
+                  loginUser(user, dispatch, navigate, setIsLoading);
+                  window.setTimeout(function () {
+                    navigate("/home");
+                    console.log("logined user:", user);
+                  }, 1000);
+                }
+              });
+          })}
+        }
+      });
+  }
+
   function checkDataInputInfo() {
     setIsLoading(true);
 
     //write check regex & validation here
 
-
     handleLogin();
-  }
-
-  function handleLogin() {
-    const user = {
-      phoneNumber: phoneNumber.trim(),
-      password: password.trim()
-    };
-    loginUser(user, dispatch, navigate, setIsLoading);
-    window.setTimeout(function () {
-      navigate("/home");
-      console.log("logined user:", user);
-    }, 2000);
   }
 
   return (
@@ -208,9 +231,9 @@ export default function Login() {
               {/* <TouchableOpacity style={styles.btns}>
                 <Text style={styles.labelBtns} onPress={() => navigation.navigate('TabBarBottom')}>Đăng nhập</Text>
               </TouchableOpacity> */}
-              <Link to='/home' style={styles.btns} onPress={checkDataInputInfo}>
+              <TouchableOpacity style={styles.btns} onPress={checkDataInputInfo}>
                 <Text style={styles.labelBtns}>Đăng nhập</Text>
-              </Link>
+              </TouchableOpacity>
               <Text style={styles.labels}>Hoặc</Text>
               <TouchableOpacity style={styles.btns}>
                 <Text style={styles.labelBtns}>Google</Text>

@@ -47,12 +47,12 @@ export default function Register() {
     await axios
       .get(`${url}/api/user/userPhone/${phoneNumber.trim()}`)
       .then((response) => {
-        if (response.data.length > 0) {
+        if (response.data.length > 0) { //array not null
           setIsLoading(false);
           Alert.alert("Thông báo", "SĐT đã được đăng ký!");
         }
 
-        if (response.data.length === 0) {
+        if (response.data.length === 0) { //array null
           const newUser = {
             userName: userName.trim(),
             phoneNumber: phoneNumber.trim(),
