@@ -71,6 +71,16 @@ const userController = {
             res.status(500).json(error);
         }
     },
+
+    getUserPW: async (req, res) => {
+        try {
+            const userPhone = await User.findOne({phoneNumber: req.params.phone});
+            await argon2.verify(userPhone.password, req.params.password)
+                        .then((status) => res.status(200).json(status));
+        } catch (error) {
+            res.status(500).json(error);
+        }
+    }
     
     // getAllNumber: async (_req, res) => {
 	// 	try {
