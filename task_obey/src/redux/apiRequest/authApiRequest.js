@@ -44,4 +44,19 @@ const loginUser = async (user, dispatch, navigate, setIsLoading) => {
   }
 };
 
-export {registerUser, loginUser};
+const logOut = async (dispatch, navigate, id, accessToken, axiosJWT) => {
+  dispatch(logoutStart());
+  try {
+    await axiosJWT.post(`${url}/api/auth/logout`, id, {
+      headers: { token: `Bearer ${accessToken}` },
+    });
+    dispatch(logoutSuccess());
+    // dispatch(clearSender());
+    // dispatch(clearActor());
+    navigate("/"); //login
+  } catch (error) {
+    dispatch(logoutFailed());
+  }
+};
+
+export {registerUser, loginUser, logOut};

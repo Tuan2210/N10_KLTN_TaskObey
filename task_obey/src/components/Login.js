@@ -166,6 +166,16 @@ export default function Login() {
     handleLogin();
   }
 
+  useEffect(() => {
+    if(user) {
+      showSplashScreen();
+      window.setTimeout(function () {
+        navigate("/home");
+        console.log("logined user:", user);
+      }, 4000); //4s
+    };
+  }, []);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       {isVisible ? (
