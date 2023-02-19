@@ -31,47 +31,49 @@ const authController = {
     //HASHED PW
 
 
-    //LOGIN
-    loginUser: async(req, res) => {
-        // try {
-        //     const user = await User.findOne({ phoneNumber: req.body.phoneNumber });
-        //     if (!user) {
-        //         return res.status(404).json("Wrong user phone");
-        //     }
+    //LOGIN by email
+    loginUserEmail: async(req, res) => {
+        const {email, password} = req.body
 
-        //     // const validPassword = await bcrypt.compare(
-        //     //     req.body.password,
-        //     //     user.password
-        //     // );
-        //     // if (!validPassword) {
-        //     //     return res.status(404).json("Password incorrect");
-        //     // }
+        if(!email || !password)
+            return res.status(400).json({success: false, message: 'Missing this User'});
+        try {
+            const userEmail = await User.findOne({email});
 
-        //     const validPassword = await argon2.verify(req.body.password, user.password);
-        //     if(!validPassword) return res.status(400).json({success: false, message: 'Incorrect pw'});
+            if(!userEmail) return res.status(400).json({success: false, message: 'Incorrect phone number'});
 
-        //     if (user && validPassword) {
-        //         const accessToken = authController.generateAccessToken(user);
-        //         const refreshToken = authController.generateRefreshToken(user);
+            const passwordValid = await argon2.verify(userEmail.password, password);
+            if(!passwordValid) return res.status(400).json({success: false, message: 'Incorrect pw'});
 
-        //         // create refresh token in database
-        //         user.updateOne({ refreshToken: refreshToken });
+            //return token
+            if(userEmail && passwordValid){
+                // const accessToken = jwt.sign({userId: userPhone._id}, process.env.JWT_ACCESS_KEY);
+                const accessToken = authController.generateAccessToken(userEmail);
+                
+                // create refresh token in database
+                const refreshToken = authController.generateRefreshToken(userEmail);
+                await User.updateOne({phoneNumber: userEmail.phoneNumber}, {refreshToken: refreshToken}, {upsert: false}); //filter, update, option
 
-        //         res.cookie("refreshToken", refreshToken, {
-        //         // create cookie with refresh token that expires in 7 days
-        //         httpOnly: true,
-        //         expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-        //         secure: true,
-        //         path: "/",
-        //         sameSite: "none",
-        //         });
-        //         const { password, ...others } = user._doc;
-        //         res.status(200).json({ ...others, accessToken, refreshToken });
-        //     }
-        // } catch (error) {
-        // res.status(500).json(error);
-        // }
-
+                res.cookie("refreshToken", refreshToken, {
+                  // create cookie with refresh token expires in 7 days
+                  httpOnly: true,
+                  expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+                  secure: true,
+                  path: "/home",
+                  sameSite: "none",
+                });
+                
+                const { password, ...others } = userEmail._doc;
+                res.status(200).json({ ...others, accessToken, refreshToken });
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json(error);
+        }
+    },
+    
+    //LOGIN by phone
+    loginUserPhone: async(req, res) => {
         const {phoneNumber, password} = req.body
 
         if(!phoneNumber || !password)
