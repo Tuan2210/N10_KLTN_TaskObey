@@ -11,6 +11,7 @@ router.get("/userEmail/:email", userController.getUserEmail);
 router.get("/userPhone/:phone", userController.getUserPhone);
 
 //GET USER PW
-router.get("/userPW/:phone/:password", userController.getUserPW);
+router.get("/userPwByPhone/:phone/:password", userController.getUserPwByPhone);
+router.get("/userPwByEmail/:email/:password", userController.getUserPwByEmail);
 
 module.exports = router;

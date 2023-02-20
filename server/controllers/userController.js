@@ -82,11 +82,22 @@ const userController = {
     }
   },
 
-  getUserPW: async (req, res) => {
+  getUserPwByPhone: async (req, res) => {
     try {
       const userPhone = await User.findOne({ phoneNumber: req.params.phone });
       await argon2
         .verify(userPhone.password, req.params.password)
+        .then((status) => res.status(200).json(status));
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+
+  getUserPwByEmail: async (req, res) => {
+    try {
+      const userEmail = await User.findOne({ email: req.params.email });
+      await argon2
+        .verify(userEmail.password, req.params.password)
         .then((status) => res.status(200).json(status));
     } catch (error) {
       res.status(500).json(error);
