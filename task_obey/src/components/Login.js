@@ -1,12 +1,12 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, Animated, Dimensions, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Animated, Dimensions, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, LogBox, Switch } from "react-native";
 import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { url } from "../redux/createInstance";
 
-import { loginUser } from "../redux/apiRequest/authApiRequest";
+import { loginUserPhone, loginUserEmail } from "../redux/apiRequest/authApiRequest";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -23,8 +23,10 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
 
+LogBox.ignoreLogs(["Possible Unhandled Promise Rejection"]);
+
 export default function Login() {
-  //splash-screen
+  //////////splash-screen
   const splashscreen = useRef(new Animated.Value(0)).current;
   const [isVisible, setisVisible] = useState(true);
 
@@ -105,8 +107,9 @@ export default function Login() {
       </Animated.View>
     );
   }
+  //////////
 
-  //show-hide-pw
+  //////////show-hide-pw
   const [isSecureTextEntry, setIsSecureTextEntry] = useState(true);
   const togglePassword = () => {
     if (isSecureTextEntry) {
@@ -115,18 +118,67 @@ export default function Login() {
     }
     setIsSecureTextEntry(true);
   };
+  //////////
 
-  //handle login
+  //switch toggle
+  const [flag, setFlag] = useState(false); //default phone number
+
+  //////////handle login
   const user = useSelector((state) => state.auth.login?.currentUser);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [txtInputPhone, setTxtInputPhone] = useState("");
+  const [txtInputEmail, setTxtInputEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  async function handleLogin() {
+  useEffect(() => {
+    handleLoginEmail(email);
+  }, [email]);
+
+  async function handleLoginEmail(email) {
     await axios
-      .get(`${url}/api/user/userPhone/${phoneNumber.trim()}`)
+      .get(`${url}/api/user/userEmail/${email}`)
+      .then((res) => {
+        if(res.data.length === 0) { //array null
+          setIsLoading(false);
+          Alert.alert('Thông báo', 'Hệ thống không tìm thấy email đăng nhập, xin vui lòng thử lại!');
+        }
+        if(res.data.length > 0) { //array not null
+          {res.data.map(async (userData, index) => {
+            await axios
+              .get(`${url}/api/user/userPwByEmail/${userData.email}/${password}`)
+              .then((res) => {
+                if(!res.data){
+                  setIsLoading(false);
+                  Alert.alert('Thông báo', 'Mật khẩu đăng nhập không đúng, xin vui lòng thử lại!');
+                }
+                else {
+                  const user = {
+                    email: email,
+                    password: password.trim(),
+                  };
+                  loginUserEmail(user, dispatch, navigate, setIsLoading);
+                  window.setTimeout(function () {
+                    navigate("/home");
+                    console.log("logined user:", user);
+                  }, 2000);
+                }
+              });
+          })}
+        }
+      });
+  }
+
+  useEffect(() => {
+    handleLoginPhone(phoneNumber);
+  }, [phoneNumber]);
+
+  async function handleLoginPhone(phoneNumber) {
+    await axios
+      .get(`${url}/api/user/userPhone/${phoneNumber}`)
       .then((res) => {
         if(res.data.length === 0) { //array null
           setIsLoading(false);
@@ -135,7 +187,7 @@ export default function Login() {
         if(res.data.length > 0) { //array not null
           {res.data.map(async (userData, index) => {
             await axios
-              .get(`${url}/api/user/userPW/${userData.phoneNumber}/${password.trim()}`)
+              .get(`${url}/api/user/userPwByPhone/${userData.phoneNumber}/${password}`)
               .then((res) => {
                 if(!res.data){
                   setIsLoading(false);
@@ -143,14 +195,14 @@ export default function Login() {
                 }
                 else {
                   const user = {
-                    phoneNumber: phoneNumber.trim(),
+                    phoneNumber: phoneNumber,
                     password: password.trim(),
                   };
-                  loginUser(user, dispatch, navigate, setIsLoading);
+                  loginUserPhone(user, dispatch, navigate, setIsLoading);
                   window.setTimeout(function () {
                     navigate("/home");
                     console.log("logined user:", user);
-                  }, 1000);
+                  }, 2000);
                 }
               });
           })}
@@ -161,9 +213,10 @@ export default function Login() {
   function checkDataInputInfo() {
     setIsLoading(true);
 
-    //write check regex & validation here
-
-    handleLogin();
+    if(flag===false) //phone number
+      setPhoneNumber(txtInputPhone);
+    if(flag===true) //email
+      setEmail(txtInputEmail);
   }
 
   useEffect(() => {
@@ -175,6 +228,7 @@ export default function Login() {
       }, 4000); //4s
     };
   }, []);
+  //////////
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -185,18 +239,30 @@ export default function Login() {
         <Animatable.View animation="fadeInUp" style={styles.container}>
           <Image source={require("../../assets/img-header-login.png")} resizeMode="contain" style={{height: '30%'}}/>
           <View style={{alignItems: "center"}}>
-            <View style={{ flexDirection: "row" }}>
+            <View style={{ flexDirection: "row", display: !flag ? 'flex' : 'none' }}>
               <TextInput
                 style={styles.styleInput}
                 placeholder="Số điện thoại"
                 maxLength={10}
                 keyboardType="numeric"
                 numberOfLines={1}
-                onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}
+                onChangeText={(text) => setTxtInputPhone(text.trim())}
                 // value={phoneNumber}
               />
               <View style={{ justifyContent: "center", marginLeft: 10 }}>
                 <Icon name="phone-portrait-outline" size={40} color="#09CBD0" />
+              </View>
+            </View>
+            <View style={{ flexDirection: "row", display: flag ? 'flex' : 'none' }}>
+              <TextInput
+                style={styles.styleInput}
+                placeholder="Email"
+                keyboardType="email-address"
+                numberOfLines={1}
+                onChangeText={(text) => setTxtInputEmail(text.trim())}
+              />
+              <View style={{ justifyContent: "center", marginLeft: 10 }}>
+                <Icon name="mail-outline" size={40} color="#09CBD0" />
               </View>
             </View>
             {/* <Text style={styles.errorMess}>{errorMessSDT}</Text> */}
@@ -234,26 +300,28 @@ export default function Login() {
             </View>
             {/* <Text style={styles.errorMess}>{errorMessPW}</Text> */}
           </View>
+          <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: '-5%', width: '35%'}}>
+            <Text style={{fontSize: 16, color: '#09CBD0'}}>SĐT</Text>
+            <Switch
+              trackColor={{false: '#09CBD0', true: '#09CBD0'}}
+              thumbColor={'#fff9c4'}
+              style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }], marginLeft: '-4%' }}
+              value={flag}
+              onValueChange={(value) => setFlag(value)}
+            />
+            <Text style={{fontSize: 16, color: '#09CBD0'}}>Email</Text>
+          </View>
           {isLoading ? (
             <Text>Đang đăng nhập...</Text>
           ) : (
-            <View style={{ flexDirection: "row", width: '80%', justifyContent: "space-around" }}>
-              {/* <TouchableOpacity style={styles.btns}>
-                <Text style={styles.labelBtns} onPress={() => navigation.navigate('TabBarBottom')}>Đăng nhập</Text>
-              </TouchableOpacity> */}
+            <View style={{ flexDirection: "row"}}>
               <TouchableOpacity style={styles.btns} onPress={checkDataInputInfo}>
                 <Text style={styles.labelBtns}>Đăng nhập</Text>
-              </TouchableOpacity>
-              <Text style={styles.labels}>Hoặc</Text>
-              <TouchableOpacity style={styles.btns}>
-                <Text style={styles.labelBtns}>Google</Text>
-                <Image source={require("../../assets/google-icon.png")} style={{marginLeft: 10}} />
               </TouchableOpacity>
             </View>
           )}
           <View>
             <Text style={styles.labels}>Bạn chưa có tài khoản?</Text>
-            {/* <Text style={[styles.labels, {fontWeight: "bold", textDecorationLine: "underline"}]} onPress={() => navigation.navigate('Register')}>Đăng ký ngay</Text> */}
             <Link to='/register'>
               <Text style={[styles.labels, {fontWeight: "bold", textDecorationLine: "underline"}]}>
                 Đăng ký ngay
@@ -289,7 +357,7 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: "#09CBD0",
     borderRadius: 100,
-    width: "40%",
+    width: "50%",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",

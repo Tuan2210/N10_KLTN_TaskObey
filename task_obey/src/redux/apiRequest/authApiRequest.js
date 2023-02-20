@@ -28,11 +28,11 @@ const registerUser = async (user, dispatch, navigate, setIsLoading) => {
   }
 };
 
-const loginUser = async (user, dispatch, navigate, setIsLoading) => {
+const loginUserPhone = async (user, dispatch, navigate, setIsLoading) => {
   dispatch(loginStart());
   try {
     setIsLoading(true);
-    const res = await axios.post(`${url}/api/auth/login`, user, {
+    const res = await axios.post(`${url}/api/auth/loginPhone`, user, {
       withCredentials: true,
     });
     dispatch(loginSuccess(res.data));
@@ -43,6 +43,23 @@ const loginUser = async (user, dispatch, navigate, setIsLoading) => {
     setIsLoading(false);
   }
 };
+
+const loginUserEmail = async (user, dispatch, navigate, setIsLoading) => {
+  dispatch(loginStart());
+  try {
+    setIsLoading(true);
+    const res = await axios.post(`${url}/api/auth/loginEmail`, user, {
+      withCredentials: true,
+    });
+    dispatch(loginSuccess(res.data));
+    setIsLoading(false);
+    navigate("/home");
+  } catch (error) {
+    dispatch(loginFailed());
+    setIsLoading(false);
+  }
+};
+
 
 const logOut = async (dispatch, navigate, id, accessToken, axiosJWT) => {
   dispatch(logoutStart());
@@ -59,4 +76,4 @@ const logOut = async (dispatch, navigate, id, accessToken, axiosJWT) => {
   }
 };
 
-export {registerUser, loginUser, logOut};
+export {registerUser, loginUserPhone, loginUserEmail, logOut};
