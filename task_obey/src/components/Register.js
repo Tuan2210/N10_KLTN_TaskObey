@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { url } from "../redux/createInstance";
 
-import { loginUser, registerUser } from "../redux/apiRequest/authApiRequest";
+import { registerUser } from "../redux/apiRequest/authApiRequest";
 // import { getUserName } from "../redux/apiRequest/userApiRequest";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,6 +13,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 //link all name animations: https://github.com/oblador/react-native-animatable
 //link how to code animation: https://blog.bitsrc.io/top-5-animation-libraries-in-react-native-d00ec8ddfc8d
 import * as Animatable from "react-native-animatable";
+
+//link all icons react-native: https://oblador.github.io/react-native-vector-icons/
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
@@ -22,48 +25,64 @@ export default function Register() {
   
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  //////////show-hide-pw
+  const [isSecureTextEntry, setIsSecureTextEntry] = useState(true);
+  const togglePassword = () => {
+    if (isSecureTextEntry) {
+      setIsSecureTextEntry(false);
+      return;
+    }
+    setIsSecureTextEntry(true);
+  };
+  //////////
   
+  //////////handle register
   const [userName, setUserName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [txtInputPhone, setTxtInputPhone] = useState("");
+  const [txtInputEmail, setTxtInputEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [isLoading, setIsLoading] = useState(false);
-  
-  // const handleLogin = (phoneNumber, password) => {
-  //   const registeredUser = {
-  //     phoneNumber: phoneNumber,
-  //     password: password,
-  //   };
-  //   loginUser(registeredUser, dispatch, navigate, setIsLoading);
-  // };
+  const [isLoading, setIsLoading] = useState(false);  
 
-  // useEffect(() => {
-  //   if (user) {
-  //     navigate("/home");
-  //   }
-  // });
+  useEffect(() => {
+    handleRegister(phoneNumber, email);
+  }, [phoneNumber, email]);
 
-  async function handleRegister() {
-    await axios
-      .get(`${url}/api/user/userPhone/${phoneNumber.trim()}`)
-      .then((response) => {
+  async function handleRegister(phoneNumber, email) {
+    await axios //phone
+      .get(`${url}/api/user/userPhone/${phoneNumber}`)
+      .then(async (response) => {
         if (response.data.length > 0) { //array not null
           setIsLoading(false);
           Alert.alert("Thông báo", "SĐT đã được đăng ký!");
         }
 
         if (response.data.length === 0) { //array null
-          const newUser = {
-            userName: userName.trim(),
-            phoneNumber: phoneNumber.trim(),
-            password: password.trim(),
-            refreshToken: '',
-          };
-          registerUser(newUser, dispatch, navigate, setIsLoading);
-          window.setTimeout(function () {
-            navigate("/home");
-            console.log("registered user:", newUser);
-          }, 2000);
+          await axios //email
+            .get(`${url}/api/user/userEmail/${email}`)
+            .then((res) => {
+              if(res.data.length > 0) {
+                setIsLoading(false);
+                Alert.alert('Thông báo', 'Email đã được đăng ký!');
+              }
+              if(res.data.length === 0) {
+                const newUser = {
+                  userName: userName,
+                  email: email,
+                  phoneNumber: phoneNumber,
+                  password: password,
+                  refreshToken: '',
+                };
+                registerUser(newUser, dispatch, navigate, setIsLoading);
+                window.setTimeout(function () {
+                  navigate("/home");
+                  console.log("registered user:", newUser);
+                }, 2000);
+              }
+            });
         }
       });
   }
@@ -74,8 +93,10 @@ export default function Register() {
     //write check regex & validation here
     
 
-    handleRegister();
+    setPhoneNumber(txtInputPhone);
+    setEmail(txtInputEmail);
   }
+  //////////
 
   return (
     <SafeAreaView style={styles.container}>
@@ -84,26 +105,53 @@ export default function Register() {
           style={styles.styleInput}
           placeholder="Tên tài khoản"
           numberOfLines={1}
-          onChangeText={(userName) => setUserName(userName)}
+          onChangeText={(userName) => setUserName(userName.trim())}
         />
         <TextInput
-          style={styles.styleInput}
+          style={[styles.styleInput]}
           placeholder="Số điện thoại"
           maxLength={10}
           keyboardType="numeric"
           numberOfLines={1}
-          onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}
+          onChangeText={(phoneNumber) => setTxtInputPhone(phoneNumber.trim())}
           // value={phoneNumber}
         />
         <TextInput
-          style={styles.styleInput}
-          placeholder="Mật khẩu"
+          style={[styles.styleInput]}
+          placeholder="Email"
+          keyboardType="email-address"
           numberOfLines={1}
-          // secureTextEntry={isSecureTextEntry}
-          onChangeText={(password) => setPassword(password)}
-          // value={passwordInput}
-          // name="password"
+          onChangeText={(email) => setTxtInputEmail(email.trim())}
         />
+        <View style={{flexDirection: "row"}}>
+          <TextInput
+            style={styles.styleInput}
+            placeholder="Mật khẩu"
+            numberOfLines={1}
+            secureTextEntry={isSecureTextEntry}
+            onChangeText={(password) => setPassword(password.trim())}
+            // value={passwordInput}
+            // name="password"
+          />
+          <TouchableOpacity
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              alignSelf: "center",
+              height: 40,
+              paddingLeft: 5,
+              paddingRight: 5,
+              marginLeft: '-10%',
+            }}
+            onPress={togglePassword}
+          >
+            {isSecureTextEntry ? (
+              <Icon name="eye-sharp" size={30} color="#09CBD0" />
+            ) : (
+              <Icon name="eye-off-sharp" size={30} color="#09CBD0" />
+            )}
+          </TouchableOpacity>
+        </View>
         {isLoading ? (
           <Text>Đang tạo tài khoản...</Text>
         ) : (
