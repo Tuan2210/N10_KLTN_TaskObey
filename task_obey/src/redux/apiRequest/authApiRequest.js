@@ -61,11 +61,11 @@ const loginUserEmail = async (user, dispatch, navigate, setIsLoading) => {
 };
 
 
-const logOut = async (dispatch, navigate, id, accessToken, axiosJWT) => {
+const logOut = async (dispatch, navigate, id, token, axiosJWTLogout) => {
   dispatch(logoutStart());
   try {
-    await axiosJWT.post(`${url}/api/auth/logout`, id, {
-      headers: { token: `Bearer ${accessToken}` },
+    await axiosJWTLogout.post(`${url}/api/auth/logout`, id, {
+      headers: { token: `Bearer ${token}` },
     });
     dispatch(logoutSuccess());
     // dispatch(clearSender());

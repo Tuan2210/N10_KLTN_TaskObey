@@ -19,7 +19,7 @@ const heightScreen = Dimensions.get("window").height;
 export default function ProfileScreen() {
   const currentUser = useSelector((state) => state.auth.login?.currentUser);
   const userId = currentUser?._id;
-  const accessToken = currentUser?.accessToken;
+  const refreshToken = currentUser?.refreshToken;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -27,8 +27,11 @@ export default function ProfileScreen() {
   let axiosJWTLogout = createAxios(currentUser, dispatch, logoutSuccess);
 
   function handleLogout() {
-    logOut(dispatch, navigate, userId, accessToken, axiosJWTLogout);
+    if(!currentUser) navigate('/'); //handle logout when user want to logout after register
+    else logOut(dispatch, navigate, userId, refreshToken, axiosJWTLogout);
   }
+
+  // useEffect(() => console.log(currentUser))
 
   return (
     <SafeAreaView style={styles.container}>

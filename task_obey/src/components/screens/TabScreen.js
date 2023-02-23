@@ -20,7 +20,7 @@ const Tab = createBottomTabNavigator();
 
 export default function TabScreen() {
     return (
-      <Animatable.View animation="bounceIn" style={{flex: 1}}>
+      <Animatable.View animation="lightSpeedIn" style={{ flex: 1 }}>
         <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {

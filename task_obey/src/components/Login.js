@@ -299,24 +299,24 @@ export default function Login() {
               </TouchableOpacity>
             </View>
             {/* <Text style={styles.errorMess}>{errorMessPW}</Text> */}
-          </View>
-          <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-evenly", marginTop: '-10%', width: '108%'}}>
-            <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: '33%'}}>
-              <Text style={{fontSize: 16, color: '#09CBD0'}}>SĐT</Text>
-              <Switch
-                trackColor={{false: '#09CBD0', true: '#09CBD0'}}
-                thumbColor={'#fff9c4'}
-                style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }], marginLeft: '-4%' }}
-                value={flag}
-                onValueChange={(value) => setFlag(value)}
-              />
-              <Text style={{fontSize: 16, color: '#09CBD0'}}>Email</Text>
+            <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-evenly", marginTop: '2%', width: '108%'}}>
+              <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: '33%'}}>
+                <Text style={{fontSize: 16, color: '#09CBD0'}}>SĐT</Text>
+                <Switch
+                  trackColor={{false: '#09CBD0', true: '#09CBD0'}}
+                  thumbColor={'#fff9c4'}
+                  style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }], marginLeft: '-4%' }}
+                  value={flag}
+                  onValueChange={(value) => setFlag(value)}
+                />
+                <Text style={{fontSize: 16, color: '#09CBD0'}}>Email</Text>
+              </View>
+              <Link to=''>
+                <Text style={[styles.labels, {fontWeight: "bold", textDecorationLine: "underline"}]}>
+                  Quên mật khẩu?
+                </Text>
+              </Link>
             </View>
-            <Link to=''>
-              <Text style={[styles.labels, {fontWeight: "bold", textDecorationLine: "underline"}]}>
-                Quên mật khẩu?
-              </Text>
-            </Link>
           </View>
           {isLoading ? (
             <Text>Đang đăng nhập...</Text>
