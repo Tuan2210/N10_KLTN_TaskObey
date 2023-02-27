@@ -128,17 +128,18 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
   const [txtInputPhone, setTxtInputPhone] = useState("");
   const [txtInputEmail, setTxtInputEmail] = useState("");
+  const [txtInputPW, setTxtInputPW] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   useEffect(() => {
-    handleLoginEmail(email);
-  }, [email]);
+    handleLoginEmail(email, password);
+  }, [email, password]);
 
-  async function handleLoginEmail(email) {
+  async function handleLoginEmail(email, pw) {
     await axios
       .get(`${url}/api/user/userEmail/${email}`)
       .then((res) => {
@@ -149,7 +150,7 @@ export default function Login() {
         if(res.data.length > 0) { //array not null
           {res.data.map(async (userData, index) => {
             await axios
-              .get(`${url}/api/user/userPwByEmail/${userData.email}/${password}`)
+              .get(`${url}/api/user/userPwByEmail/${userData.email}/${pw}`)
               .then((res) => {
                 if(!res.data){
                   setIsLoading(false);
@@ -158,13 +159,13 @@ export default function Login() {
                 else {
                   const user = {
                     email: email,
-                    password: password.trim(),
+                    password: pw,
                   };
                   loginUserEmail(user, dispatch, navigate, setIsLoading);
                   window.setTimeout(function () {
                     navigate("/home");
                     console.log("logined user:", user);
-                  }, 2000);
+                  }, 1500);
                 }
               });
           })}
@@ -173,10 +174,10 @@ export default function Login() {
   }
 
   useEffect(() => {
-    handleLoginPhone(phoneNumber);
-  }, [phoneNumber]);
+    handleLoginPhone(phoneNumber, password);
+  }, [phoneNumber, password]);
 
-  async function handleLoginPhone(phoneNumber) {
+  async function handleLoginPhone(phoneNumber, pw) {
     await axios
       .get(`${url}/api/user/userPhone/${phoneNumber}`)
       .then((res) => {
@@ -187,7 +188,7 @@ export default function Login() {
         if(res.data.length > 0) { //array not null
           {res.data.map(async (userData, index) => {
             await axios
-              .get(`${url}/api/user/userPwByPhone/${userData.phoneNumber}/${password}`)
+              .get(`${url}/api/user/userPwByPhone/${userData.phoneNumber}/${pw}`)
               .then((res) => {
                 if(!res.data){
                   setIsLoading(false);
@@ -196,13 +197,13 @@ export default function Login() {
                 else {
                   const user = {
                     phoneNumber: phoneNumber,
-                    password: password.trim(),
+                    password: pw,
                   };
                   loginUserPhone(user, dispatch, navigate, setIsLoading);
                   window.setTimeout(function () {
                     navigate("/home");
                     console.log("logined user:", user);
-                  }, 2000);
+                  }, 1500);
                 }
               });
           })}
@@ -210,13 +211,56 @@ export default function Login() {
       });
   }
 
-  function checkDataInputInfo() {
-    setIsLoading(true);
+  //check regex sdt
+  const [errorMessSDT, setErrorMessSDT] = useState('');
+  let isNum = /^\d+$/.test(txtInputPhone);
+  let regexPhoneNumber = /\+?(0|84)\d{9}/.test(txtInputPhone);
+  function checkPhoneNumber() {
+    if(txtInputPhone === '')
+      setErrorMessSDT('Vui lòng nhập số điện thoại!');
+    else if(!isNum) setErrorMessSDT('Vui lòng nhập lại số điện thoại!');
+    else if(txtInputPhone.length !== 10) setErrorMessSDT('Vui lòng nhập đủ 10 ký tự số!');
+    else if(!regexPhoneNumber) setErrorMessSDT('SĐT không hợp lệ!');
+    // setErrorMessSDT(errorMessSDT => errorMessSDT = '✅');
+    else setErrorMessSDT('');
+  }
 
-    if(flag===false) //phone number
-      setPhoneNumber(txtInputPhone);
-    if(flag===true) //email
-      setEmail(txtInputEmail);
+  //check regex email
+  const [errorMessEmail, setErrorMessEmail] = useState('');
+  let regexEmail = /^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/.test(txtInputEmail);
+  function checkEmail() {
+    if(txtInputEmail === '')
+      setErrorMessEmail('Vui lòng nhập email!');
+    else if(!regexEmail) setErrorMessEmail('Email không hợp lệ!');
+    else setErrorMessEmail('');
+  }
+
+  //check input pw
+  const [errorMessPW, setErrorMessPW] = useState('');
+  function checkPW() {
+    if(txtInputPW === '') setErrorMessPW('Vui lòng nhập mật khẩu!');
+    else if(txtInputPW.length < 6) setErrorMessPW('Mật khẩu phải tối thiểu 6 ký tự!');
+    else {
+      setErrorMessPW('');
+      setIsLoading(true);
+      
+      if(flag===false) setPhoneNumber(txtInputPhone);
+      if(flag===true) setEmail(txtInputEmail);
+
+      setPassword(txtInputPW);
+    }
+  }
+
+  //check data inputs
+  function checkDataInputInfo() {
+    if(flag===false) { //phone number
+      checkPhoneNumber();
+      checkPW();
+    }
+    if(flag===true) { //email
+      checkEmail();
+      checkPW();
+    }
   }
 
   useEffect(() => {
@@ -238,8 +282,8 @@ export default function Login() {
         // <FrmLogin />
         <Animatable.View animation="fadeInUp" style={styles.container}>
           <Image source={require("../../assets/img-header-login.png")} resizeMode="contain" style={{height: '30%'}}/>
-          <View style={{alignItems: "center"}}>
-            <View style={{ flexDirection: "row", display: !flag ? 'flex' : 'none' }}>
+          <View style={{width: '70%'}}>
+            <View style={{ flexDirection: "row", alignSelf: "center", display: !flag ? 'flex' : 'none' }}>
               <TextInput
                 style={styles.styleInput}
                 placeholder="Số điện thoại"
@@ -253,7 +297,7 @@ export default function Login() {
                 <Icon name="phone-portrait-outline" size={40} color="#09CBD0" />
               </View>
             </View>
-            <View style={{ flexDirection: "row", display: flag ? 'flex' : 'none' }}>
+            <View style={{ flexDirection: "row", alignSelf: "center", display: flag ? 'flex' : 'none' }}>
               <TextInput
                 style={styles.styleInput}
                 placeholder="Email"
@@ -265,14 +309,15 @@ export default function Login() {
                 <Icon name="mail-outline" size={40} color="#09CBD0" />
               </View>
             </View>
-            {/* <Text style={styles.errorMess}>{errorMessSDT}</Text> */}
-            <View style={{ flexDirection: "row", marginTop: '5%' }}>
+            <Text style={[styles.errMess, {display: !flag ? 'flex' : 'none'}]}>{errorMessSDT}</Text>
+            <Text style={[styles.errMess, {display: flag ? 'flex' : 'none'}]}>{errorMessEmail}</Text>
+            <View style={{ flexDirection: "row", alignSelf: "center", marginTop: '5%' }}>
               <TextInput
                 style={styles.styleInput}
                 placeholder="Mật khẩu"
                 numberOfLines={1}
                 secureTextEntry={isSecureTextEntry}
-                onChangeText={(password) => setPassword(password)}
+                onChangeText={(text) => setTxtInputPW(text.trim())}
                 // value={passwordInput}
                 // name="password"
               />
@@ -298,16 +343,20 @@ export default function Login() {
                 )}
               </TouchableOpacity>
             </View>
-            {/* <Text style={styles.errorMess}>{errorMessPW}</Text> */}
-            <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-evenly", marginTop: '2%', width: '108%'}}>
-              <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: '33%'}}>
+            <Text style={styles.errMess}>{errorMessPW}</Text>
+            <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: '2%'}}>
+              <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: '48%'}}>
                 <Text style={{fontSize: 16, color: '#09CBD0'}}>SĐT</Text>
                 <Switch
                   trackColor={{false: '#09CBD0', true: '#09CBD0'}}
                   thumbColor={'#fff9c4'}
                   style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }], marginLeft: '-4%' }}
                   value={flag}
-                  onValueChange={(value) => setFlag(value)}
+                  onValueChange={(value) => {
+                    setFlag(value);
+                    setErrorMessSDT('');
+                    setErrorMessEmail('');
+                  }}
                 />
                 <Text style={{fontSize: 16, color: '#09CBD0'}}>Email</Text>
               </View>
@@ -351,10 +400,16 @@ const styles = StyleSheet.create({
   },
   styleInput: {
     backgroundColor: "rgba(211, 211, 211, 0.404)",
-    width: '65%',
+    width: '82%',
     height: 40,
     fontSize: 17,
     paddingLeft: 10,
+  },
+  errMess: {
+    color: 'red',
+    fontStyle: "italic",
+    fontSize: 15,
+    // marginLeft: '-70%'
   },
   btns: {
     padding: 15,

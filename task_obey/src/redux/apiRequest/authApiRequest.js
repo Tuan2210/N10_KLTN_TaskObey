@@ -65,7 +65,7 @@ const logOut = async (dispatch, navigate, id, token, axiosJWTLogout) => {
   dispatch(logoutStart());
   try {
     await axiosJWTLogout.post(`${url}/api/auth/logout`, id, {
-      headers: { token: `Bearer ${token}` },
+      headers: { ['authorization']: `Bearer ${token}` },
     });
     dispatch(logoutSuccess());
     // dispatch(clearSender());

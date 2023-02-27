@@ -31,8 +31,6 @@ export default function ProfileScreen() {
     else logOut(dispatch, navigate, userId, refreshToken, axiosJWTLogout);
   }
 
-  // useEffect(() => console.log(currentUser))
-
   return (
     <SafeAreaView style={styles.container}>
       <Text>profile</Text>

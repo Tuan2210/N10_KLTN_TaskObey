@@ -8,7 +8,7 @@ export const createAxios = (user, dispatch, stateSuccess) => {
     newInstance.interceptors.request.use(
         async (config) => {
             let date = new Date();
-            const decodedToken = jwtDecode(user?.accessToken);
+            const decodedToken = jwtDecode(user?.refreshToken);
             if (decodedToken.exp < date.getTime() / 1000) {
                 const data = await refreshToken({ refreshToken: user?.refreshToken });
                 const refreshUser = {
@@ -17,7 +17,7 @@ export const createAxios = (user, dispatch, stateSuccess) => {
                     refreshToken: data.refreshToken,
                 };
                 dispatch(stateSuccess(refreshUser));
-                config.headers['token'] = 'Bearer ' + data.accessToken;
+                config.headers['token'] = 'Bearer ' + data.refreshToken;
             }
             return config;
         },
