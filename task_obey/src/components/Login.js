@@ -360,7 +360,7 @@ export default function Login() {
                 />
                 <Text style={{fontSize: 16, color: '#09CBD0'}}>Email</Text>
               </View>
-              <Link to=''>
+              <Link to='/forgotPW'>
                 <Text style={[styles.labels, {fontWeight: "bold", textDecorationLine: "underline"}]}>
                   Quên mật khẩu?
                 </Text>
