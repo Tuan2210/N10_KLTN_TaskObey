@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Alert, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View, Image } from "react-native";
 import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -38,11 +38,13 @@ export default function Register() {
   //////////
   
   //////////handle register
+  const [txtInputUserName, setTxtInputUserName] = useState("");
+  const [txtInputPhone, setTxtInputPhone] = useState("");
+  const [txtInputEmail, setTxtInputEmail] = useState("");
+  const [txtInputPW, setTxtInputPW] = useState("");
   const [userName, setUserName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
-  const [txtInputPhone, setTxtInputPhone] = useState("");
-  const [txtInputEmail, setTxtInputEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);  
@@ -87,49 +89,112 @@ export default function Register() {
       });
   }
 
+  //check regex special characters
+  // let isSpecialChars = /^(?=[a-zA-Z0-9~@#$^*()_+=[\]{}|\\,.?: -]*$)(?!.*[<>'"/;`%])/;
+  let isSpecialChars = /[$&+,:;=?@#|"'<>.^*(){}/% !-/`~]/;
+
+  //check regex username
+  const [errMessUserName, setErrorMessUserName] = useState('*');
+  function checkUserName() {
+    if(txtInputUserName==='') setErrorMessUserName('Vui lòng nhập tên tài khoản!');
+    else if(isSpecialChars.test(txtInputUserName)) setErrorMessUserName('Tên tài khoản không chứa ký tự đặc biệt!');
+    else setErrorMessUserName('');
+  }
+
+  //check regex sdt
+  const [errorMessSDT, setErrorMessSDT] = useState('*');
+  let isNum = /^\d+$/.test(txtInputPhone);
+  let regexPhoneNumber = /\+?(0|84)\d{9}/.test(txtInputPhone);
+  function checkPhoneNumber() {
+    if(txtInputPhone === '')
+      setErrorMessSDT('Vui lòng nhập số điện thoại!');
+    else if(!isNum) setErrorMessSDT('Vui lòng nhập lại số điện thoại!');
+    else if(txtInputPhone.length !== 10) setErrorMessSDT('Vui lòng nhập đủ 10 ký tự số!');
+    else if(!regexPhoneNumber) setErrorMessSDT('SĐT không hợp lệ!');
+    // setErrorMessSDT(errorMessSDT => errorMessSDT = '✅');
+    else setErrorMessSDT('');
+  }
+
+  //check regex email
+  const [errorMessEmail, setErrorMessEmail] = useState('*');
+  let regexEmail = /^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/.test(txtInputEmail);
+  function checkEmail() {
+    if(txtInputEmail === '')
+      setErrorMessEmail('Vui lòng nhập email!');
+    else if(!regexEmail) setErrorMessEmail('Email không hợp lệ!');
+    else setErrorMessEmail('');
+  }
+
+  //check input pw
+  const [errorMessPW, setErrorMessPW] = useState('*');
+  function checkPW() {
+    if(txtInputPW === '') setErrorMessPW('Vui lòng nhập mật khẩu!');
+    else if(txtInputPW.length < 6) setErrorMessPW('Mật khẩu phải tối thiểu 6 ký tự!');
+    else if(isSpecialChars.test(txtInputPW)) setErrorMessPW('Mật khẩu không chứa ký tự đặc biệt!');
+    else {
+      setErrorMessPW('');
+      setIsLoading(true);
+      
+      setUserName(txtInputUserName);
+      setPhoneNumber(txtInputPhone);
+      setEmail(txtInputEmail);
+      setPassword(txtInputPW);
+    }
+  }
+
+  //check data inputs
   function checkDataInputInfo() {
-    setIsLoading(true);
-
-    //write check regex & validation here
-    
-
-    setPhoneNumber(txtInputPhone);
-    setEmail(txtInputEmail);
+    checkUserName();
+    checkPhoneNumber();
+    checkEmail();
+    checkPW();
   }
   //////////
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{alignItems: "center"}}>
+      {/* them hinh anh o day, size width height dung % */}
+
+      {/* form register */}
+      <View style={{
+        // backgroundColor: 'yellow', 
+        width: '70%', 
+        height: 470, 
+        alignSelf: "center", 
+        justifyContent: "space-around"
+      }}>
         <TextInput
           style={styles.styleInput}
           placeholder="Tên tài khoản"
           numberOfLines={1}
-          onChangeText={(userName) => setUserName(userName.trim())}
+          onChangeText={(txt) => setTxtInputUserName(txt.trim())}
         />
+        <Text style={styles.errMess}>{errMessUserName}</Text>
         <TextInput
-          style={[styles.styleInput]}
+          style={[styles.styleInput, {marginTop: '5%'}]}
           placeholder="Số điện thoại"
           maxLength={10}
           keyboardType="numeric"
           numberOfLines={1}
-          onChangeText={(phoneNumber) => setTxtInputPhone(phoneNumber.trim())}
+          onChangeText={(txt) => setTxtInputPhone(txt.trim())}
           // value={phoneNumber}
         />
+        <Text style={styles.errMess}>{errorMessSDT}</Text>
         <TextInput
-          style={[styles.styleInput]}
+          style={[styles.styleInput, {marginTop: '5%'}]}
           placeholder="Email"
           keyboardType="email-address"
           numberOfLines={1}
-          onChangeText={(email) => setTxtInputEmail(email.trim())}
+          onChangeText={(txt) => setTxtInputEmail(txt.trim())}
         />
-        <View style={{flexDirection: "row"}}>
+        <Text style={styles.errMess}>{errorMessEmail}</Text>
+        <View style={{flexDirection: "row", alignSelf: "center"}}>
           <TextInput
-            style={styles.styleInput}
+            style={[styles.styleInput, {marginTop: '5%'}]}
             placeholder="Mật khẩu"
             numberOfLines={1}
             secureTextEntry={isSecureTextEntry}
-            onChangeText={(password) => setPassword(password.trim())}
+            onChangeText={(txt) => setTxtInputPW(txt.trim())}
             // value={passwordInput}
             // name="password"
           />
@@ -141,7 +206,8 @@ export default function Register() {
               height: 40,
               paddingLeft: 5,
               paddingRight: 5,
-              marginLeft: '-10%',
+              marginLeft: '-14%',
+              marginTop: '3%'
             }}
             onPress={togglePassword}
           >
@@ -152,18 +218,28 @@ export default function Register() {
             )}
           </TouchableOpacity>
         </View>
+        <Text style={styles.errMess}>{errorMessPW}</Text>
         {isLoading ? (
-          <Text>Đang tạo tài khoản...</Text>
+          <View style={{flexDirection: "row", alignSelf: "center", justifyContent: "center"}}>
+            <Text style={{alignSelf: "center"}}>Đang tạo tài khoản</Text>
+            <Image 
+              source={require('../../assets/loading-dots.gif')}
+              style={{resizeMode: "contain", width: 50, height: 50, marginLeft: '3%'}}
+            />
+          </View>
         ) : (
           <TouchableOpacity style={styles.btns} onPress={checkDataInputInfo}>
             <Text style={styles.labelBtns}>Đăng ký</Text>
           </TouchableOpacity>
         )}
-        <Link to="/">
-          <Text style={[styles.labels, { fontWeight: "bold", textDecorationLine: "underline" }]}>
-            Đăng nhập ngay
-          </Text>
-        </Link>
+        <View style={{marginTop: '5%'}}>
+          <Text style={styles.labels}>Bạn đã có tài khoản?</Text>
+          <Link to="/">
+            <Text style={[styles.labels, { fontWeight: "bold", textDecorationLine: "underline" }]}>
+              Đăng nhập ngay
+            </Text>
+          </Link>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -176,7 +252,8 @@ const styles = StyleSheet.create({
   },
   styleInput: {
     backgroundColor: "rgba(211, 211, 211, 0.404)",
-    width: "65%",
+    alignSelf: "center",
+    width: "100%",
     height: 40,
     fontSize: 17,
     marginTop: 5,
@@ -185,14 +262,21 @@ const styles = StyleSheet.create({
     marginLeft: 0,
     paddingLeft: 10,
   },
+  errMess: {
+    color: 'red',
+    fontStyle: "italic",
+    fontSize: 15,
+  },
   btns: {
+    alignSelf: "center",
     padding: 15,
     backgroundColor: "#09CBD0",
     borderRadius: 100,
-    width: "40%",
+    width: "45%",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    marginTop: '10%',
   },
   labelBtns: {
     fontSize: 20,

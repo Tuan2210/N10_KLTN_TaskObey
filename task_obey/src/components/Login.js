@@ -368,7 +368,13 @@ export default function Login() {
             </View>
           </View>
           {isLoading ? (
-            <Text>Đang đăng nhập...</Text>
+            <View style={{flexDirection: "row", alignSelf: "center", justifyContent: "center"}}>
+              <Text style={{alignSelf: "center"}}>Đang đăng nhập</Text>
+              <Image 
+                source={require('../../assets/loading-dots.gif')}
+                style={{resizeMode: "contain", width: 50, height: 50, marginLeft: '3%'}}
+              />
+            </View>
           ) : (
             <View style={{ flexDirection: "row"}}>
               <TouchableOpacity style={styles.btns} onPress={checkDataInputInfo}>
