@@ -156,6 +156,7 @@ export default function Register() {
       {/* them hinh anh o day, size width height dung % */}
 
       {/* form register */}
+      <Image source={require("../../assets/img-header-register.jpg")} resizeMode="contain" style={{height: '30%'}}/>
       <View style={{
         // backgroundColor: 'yellow', 
         width: '70%', 
@@ -163,6 +164,7 @@ export default function Register() {
         alignSelf: "center", 
         justifyContent: "space-around"
       }}>
+        
         <TextInput
           style={styles.styleInput}
           placeholder="Tên tài khoản"
