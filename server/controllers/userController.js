@@ -104,6 +104,22 @@ const userController = {
     }
   },
 
+  changePasswordWithPhoneNumber: async (req, res) => {
+    const {phoneNumber, password} = req.body
+
+    try {
+      const user = await User.findOne({phoneNumber});
+      if(!user) return res.status(400).json({success: false, message: "This phone number isn't registered"});
+      
+      const hashedNewPW = await argon2.hash(password);
+      await User.updateOne({phoneNumber: user.phoneNumber}, {password: hashedNewPW}, {upsert: false}); //filter, update, option
+      
+      res.status(200).json(await User.findOne({phoneNumber}));
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+
   // getAllNumber: async (_req, res) => {
   // 	try {
   // 		// const users = await User.aggregate([{ '$match': { _id: { $exists: true } } }, { $project: { phoneNumber: 1, _id: 0 } }])
