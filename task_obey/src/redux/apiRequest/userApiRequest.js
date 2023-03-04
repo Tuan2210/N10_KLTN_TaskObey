@@ -1,6 +1,13 @@
 import axios from "axios";
 import { url } from "../createInstance";
-import {getUserNameStart, getUserNameSuccess, getUserNameFailed} from '../userSlice';
+import {
+    getUserNameStart,
+    getUserNameSuccess,
+    getUserNameFailed,
+    changePassStart,
+    changePassSuccess,
+    changePassFailed,
+} from "../userSlice";
 
 // export const getUserName = async (dispatch, name) => {
 //     dispatch(getUserNameStart);
@@ -17,3 +24,18 @@ import {getUserNameStart, getUserNameSuccess, getUserNameFailed} from '../userSl
 //         dispatch(getUserNameFailed());
 //     }
 // }
+
+export const changePassword = async (account, navigate, setSystemLine) => {
+    // dispatch(changePassStart());
+    try {
+        await axios.post(`${url}/api/user/changePassword`, account, {
+            withCredentials: true,
+        });
+        // dispatch(changePassSuccess());
+        setSystemLine('');
+        navigate('/home');
+    } catch (error) {
+        // dispatch(changePassFailed());
+        console.log(error);
+    }
+};

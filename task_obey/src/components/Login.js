@@ -362,7 +362,7 @@ export default function Login() {
               </View>
               <Link to='/forgotPW'>
                 <Text style={[styles.labels, {fontWeight: "bold", textDecorationLine: "underline"}]}>
-                  Quên mật khẩu?
+                  Bạn quên mật khẩu?
                 </Text>
               </Link>
             </View>

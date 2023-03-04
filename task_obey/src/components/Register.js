@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Alert, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View, Image } from "react-native";
+import { Alert, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, ScrollView } from "react-native";
 import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -91,7 +91,7 @@ export default function Register() {
 
   //check regex special characters
   // let isSpecialChars = /^(?=[a-zA-Z0-9~@#$^*()_+=[\]{}|\\,.?: -]*$)(?!.*[<>'"/;`%])/;
-  let isSpecialChars = /[$&+,:;=?@#|"'<>.^*(){}/% !-/`~]/;
+  let isSpecialChars = /[$&+,:;=?@#|"'<>.^*(){}/%!-/`~]/;
 
   //check regex username
   const [errMessUserName, setErrorMessUserName] = useState('*');
@@ -153,18 +153,12 @@ export default function Register() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* them hinh anh o day, size width height dung % */}
-
-      {/* form register */}
-      <Image source={require("../../assets/img-header-register.jpg")} resizeMode="contain" style={{height: '30%'}}/>
-      <View style={{
+      <Image source={require("../../assets/img-header-register.jpg")} resizeMode="contain" style={{height: '30%', alignSelf: "center"}}/>
+      <ScrollView style={{
         // backgroundColor: 'yellow', 
         width: '70%', 
-        height: 470, 
         alignSelf: "center", 
-        justifyContent: "space-around"
       }}>
-        
         <TextInput
           style={styles.styleInput}
           placeholder="Tên tài khoản"
@@ -242,7 +236,7 @@ export default function Register() {
             </Text>
           </Link>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
