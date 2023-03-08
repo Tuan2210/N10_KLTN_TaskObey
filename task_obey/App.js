@@ -15,7 +15,8 @@ import AppWrapper from './src/AppWrapper';
 ////npm i react-native-animatable
 
 ////npm i axios firebase react-native-safe-area-context
-////npm i @react-navigation/native @react-navigation/native-stack @react-navigation/material-top-tabs
+////npm i @react-navigation/native @react-navigation/native-stack @react-navigation/material-top-tabs @react-navigation/bottom-tabs
+////npm i @react-navigation/drawer react-native-gesture-handler react-native-reanimated
 
 export default function App() {
   return (

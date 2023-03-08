@@ -39,11 +39,11 @@ import firebase from 'firebase/compat/app';
 //npm i @react-navigation/native @react-navigation/bottom-tabs
 //link clip: https://www.youtube.com/watch?v=_031dsQNy88
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
 
 LogBox.ignoreLogs(["Possible Unhandled Promise Rejection"]);
 
@@ -415,18 +415,19 @@ export default function ForgotPassword() {
           <View style={styles.form}>
             <NavigationContainer>
               <Tab.Navigator
+                tabBarPosition="bottom"
                 initialRouteName="Xác thực SĐT"
                 screenOptions={({ route }) => ({
                   tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
                     if (route.name === "Xác thực SĐT") {
                       iconName = "sms";
-                      size = focused ? 24 : 18;
-                      color = focused ? "#fff" : "#555";
+                      size = focused ? 24 : 20;
+                      color = focused ? "#09CBD0" : "#555";
                     } else if (route.name === "Mật khẩu mới") {
                       iconName = focused ? "lock-open" : "lock";
-                      size = focused ? 22 : 18;
-                      color = focused ? "#fff" : "#555";
+                      size = focused ? 22 : 20;
+                      color = focused ? "#09CBD0" : "#555";
                     }
                     return <IconFA5 name={iconName} size={size} color={color} />;
                   },
@@ -435,17 +436,17 @@ export default function ForgotPassword() {
                     height: 60,
                   },
                   tabBarItemStyle: {
-                    margin: 2,
                     padding: 5,
+                    alignItems: "center"
                   },
-                  tabBarActiveTintColor: "#fff",
-                  tabBarActiveBackgroundColor: "#09CBD0",
+                  tabBarActiveTintColor: "#09CBD0",
+                  // tabBarActiveBackgroundColor: "#09CBD0",
                   tabBarInactiveTintColor: "#555",
-                  tabBarInactiveBackgroundColor: "#fff",
-                  headerTitleAlign: "center",
-                  headerTitleStyle: {
-                    color: "#09CBD0",
-                  },
+                  // tabBarInactiveBackgroundColor: "#09CBD0",
+                  // headerTitleAlign: "center",
+                  // headerTitleStyle: {
+                  //   color: "#09CBD0",
+                  // },
                 })}
               >
                 <Tab.Screen name="Xác thực SĐT" component={VerifiedScreen} />
