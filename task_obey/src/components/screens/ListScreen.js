@@ -10,12 +10,14 @@ import * as Animatable from "react-native-animatable";
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
 
-export default function ListScreenn() {
+export default function ListScreen() {
     return (
-        <SafeAreaView style={styles.container}>
-            <Text>list</Text>
-        </SafeAreaView>
-    )
+      <SafeAreaView style={styles.container}>
+        <View>
+          <Text>list</Text>
+        </View>
+      </SafeAreaView>
+    );
 };
 
 const styles = StyleSheet.create({
