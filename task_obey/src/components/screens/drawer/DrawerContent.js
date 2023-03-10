@@ -55,11 +55,11 @@ export default function DrawerContent(props) {
               </View>
               <View style={{flexDirection: "row"}}>
                   <Text style={styles.infoHeaderDrawer}>SĐT: {'\u00A0'}{'\u00A0'}</Text>
-                  <Text style={[styles.infoHeaderDrawer, {color: '#09CBD0'}]}>{currentPhone}!</Text>
+                  <Text style={[styles.infoHeaderDrawer, {color: '#09CBD0'}]}>{currentPhone}</Text>
               </View>
               <View style={{flexDirection: "row"}}>
                   <Text style={styles.infoHeaderDrawer}>Email: </Text>
-                  <Text style={[styles.infoHeaderDrawer, {color: '#09CBD0'}]}>{currentEmail}!</Text>
+                  <Text style={[styles.infoHeaderDrawer, {color: '#09CBD0'}]}>{currentEmail}</Text>
               </View>
             </View>
           </View>
