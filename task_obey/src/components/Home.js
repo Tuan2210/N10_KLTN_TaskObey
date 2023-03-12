@@ -106,6 +106,7 @@ export default function Home() {
             borderTopWidth: 1,
             borderStyle: "solid",
           },
+          tabBarHideOnKeyboard: true,
         })}
       >
         <Tab.Screen
