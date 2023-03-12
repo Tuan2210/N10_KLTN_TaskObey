@@ -94,18 +94,22 @@ export default function Register() {
   let isSpecialChars = /[$&+,:;=?@#|"'<>.^*(){}/%!-/`~]/;
 
   //check regex username
-  const [errMessUserName, setErrorMessUserName] = useState('*');
+  const [star1, setStar1] = useState('*');
+  const [errMessUserName, setErrorMessUserName] = useState('');
   function checkUserName() {
+    setStar1('');
     if(txtInputUserName==='') setErrorMessUserName('Vui lòng nhập tên tài khoản!');
     else if(isSpecialChars.test(txtInputUserName)) setErrorMessUserName('Tên tài khoản không chứa ký tự đặc biệt!');
     else setErrorMessUserName('');
   }
 
   //check regex sdt
-  const [errorMessSDT, setErrorMessSDT] = useState('*');
+  const [star2, setStar2] = useState("*");
+  const [errorMessSDT, setErrorMessSDT] = useState('');
   let isNum = /^\d+$/.test(txtInputPhone);
   let regexPhoneNumber = /\+?(0|84)\d{9}/.test(txtInputPhone);
   function checkPhoneNumber() {
+    setStar2('');
     if(txtInputPhone === '')
       setErrorMessSDT('Vui lòng nhập số điện thoại!');
     else if(!isNum) setErrorMessSDT('Vui lòng nhập lại số điện thoại!');
@@ -116,9 +120,11 @@ export default function Register() {
   }
 
   //check regex email
-  const [errorMessEmail, setErrorMessEmail] = useState('*');
+  const [star3, setStar3] = useState("*");
+  const [errorMessEmail, setErrorMessEmail] = useState('');
   let regexEmail = /^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/.test(txtInputEmail);
   function checkEmail() {
+    setStar3('');
     if(txtInputEmail === '')
       setErrorMessEmail('Vui lòng nhập email!');
     else if(!regexEmail) setErrorMessEmail('Email không hợp lệ!');
@@ -126,8 +132,10 @@ export default function Register() {
   }
 
   //check input pw
-  const [errorMessPW, setErrorMessPW] = useState('*');
+  const [star4, setStar4] = useState("*");
+  const [errorMessPW, setErrorMessPW] = useState('');
   function checkPW() {
+    setStar4('');
     if(txtInputPW === '') setErrorMessPW('Vui lòng nhập mật khẩu!');
     else if(txtInputPW.length < 6) setErrorMessPW('Mật khẩu phải tối thiểu 6 ký tự!');
     else if(isSpecialChars.test(txtInputPW)) setErrorMessPW('Mật khẩu không chứa ký tự đặc biệt!');
@@ -153,12 +161,19 @@ export default function Register() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image source={require("../../assets/img-header-register.jpg")} resizeMode="contain" style={{height: '30%', alignSelf: "center"}}/>
-      <ScrollView style={{
-        // backgroundColor: 'yellow', 
-        width: '70%', 
-        alignSelf: "center", 
-      }}>
+      <Image
+        source={require("../../assets/img-header-register.jpg")}
+        resizeMode="contain"
+        style={{ height: "30%", alignSelf: "center" }}
+      />
+      <ScrollView
+        style={{
+          // backgroundColor: 'yellow',
+          width: "70%",
+          alignSelf: "center",
+        }}
+      >
+        <Text style={{color: 'red'}}>{star1}</Text>
         <TextInput
           style={styles.styleInput}
           placeholder="Tên tài khoản"
@@ -166,8 +181,9 @@ export default function Register() {
           onChangeText={(txt) => setTxtInputUserName(txt.trim())}
         />
         <Text style={styles.errMess}>{errMessUserName}</Text>
+        <Text style={{color: 'red', marginBottom: '-3%'}}>{star2}</Text>
         <TextInput
-          style={[styles.styleInput, {marginTop: '5%'}]}
+          style={[styles.styleInput, { marginTop: "5%" }]}
           placeholder="Số điện thoại"
           maxLength={10}
           keyboardType="numeric"
@@ -176,17 +192,19 @@ export default function Register() {
           // value={phoneNumber}
         />
         <Text style={styles.errMess}>{errorMessSDT}</Text>
+        <Text style={{color: 'red', marginBottom: '-3%'}}>{star3}</Text>
         <TextInput
-          style={[styles.styleInput, {marginTop: '5%'}]}
+          style={[styles.styleInput, { marginTop: "5%" }]}
           placeholder="Email"
           keyboardType="email-address"
           numberOfLines={1}
           onChangeText={(txt) => setTxtInputEmail(txt.trim())}
         />
         <Text style={styles.errMess}>{errorMessEmail}</Text>
-        <View style={{flexDirection: "row", alignSelf: "center"}}>
+        <View style={{ flexDirection: "row", alignSelf: "center", marginLeft: '-2%' }}>
+          <Text style={{color: 'red'}}>{star4}</Text>
           <TextInput
-            style={[styles.styleInput, {marginTop: '5%'}]}
+            style={[styles.styleInput, { marginTop: "7%", marginLeft: "-2%" }]}
             placeholder="Mật khẩu"
             numberOfLines={1}
             secureTextEntry={isSecureTextEntry}
@@ -202,8 +220,8 @@ export default function Register() {
               height: 40,
               paddingLeft: 5,
               paddingRight: 5,
-              marginLeft: '-14%',
-              marginTop: '3%'
+              marginLeft: "-14%",
+              marginTop: "3%",
             }}
             onPress={togglePassword}
           >
@@ -216,11 +234,22 @@ export default function Register() {
         </View>
         <Text style={styles.errMess}>{errorMessPW}</Text>
         {isLoading ? (
-          <View style={{flexDirection: "row", alignSelf: "center", justifyContent: "center"}}>
-            <Text style={{alignSelf: "center"}}>Đang tạo tài khoản</Text>
-            <Image 
-              source={require('../../assets/loading-dots.gif')}
-              style={{resizeMode: "contain", width: 50, height: 50, marginLeft: '3%'}}
+          <View
+            style={{
+              flexDirection: "row",
+              alignSelf: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ alignSelf: "center" }}>Đang tạo tài khoản</Text>
+            <Image
+              source={require("../../assets/loading-dots.gif")}
+              style={{
+                resizeMode: "contain",
+                width: 50,
+                height: 50,
+                marginLeft: "3%",
+              }}
             />
           </View>
         ) : (
@@ -228,10 +257,15 @@ export default function Register() {
             <Text style={styles.labelBtns}>Đăng ký</Text>
           </TouchableOpacity>
         )}
-        <View style={{marginTop: '5%'}}>
+        <View style={{ marginTop: "5%" }}>
           <Text style={styles.labels}>Bạn đã có tài khoản?</Text>
           <Link to="/">
-            <Text style={[styles.labels, { fontWeight: "bold", textDecorationLine: "underline" }]}>
+            <Text
+              style={[
+                styles.labels,
+                { fontWeight: "bold", textDecorationLine: "underline" },
+              ]}
+            >
               Đăng nhập ngay
             </Text>
           </Link>
