@@ -37,6 +37,18 @@ const taskController = {
       res.status(500).json(error);
     }
   },
+
+  //GET ALL TASKS FINISH BY USERID
+  getFinishTasksByUserId: async (req, res) => {
+    try {
+      await Task.find({
+        userId: req.params.userId,
+        status: "Hoàn thành",
+      }).then((data) => res.status(200).json(data));
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
 };
 
 module.exports = taskController;
