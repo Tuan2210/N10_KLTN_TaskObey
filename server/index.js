@@ -8,6 +8,7 @@ const app = express();
 
 const authRoute = require('./routes/auth');
 const userRoute = require("./routes/user");
+const taskRoute = require("./routes/task");
 
 // app.get('/', (req, res) => res.send('Hellu !'));
 
@@ -30,6 +31,7 @@ app.use(
 
 app.use('/api/auth', authRoute);
 app.use('/api/user', userRoute);
+app.use('/api/task', taskRoute);
 
 const server = http.createServer(app);
 server.listen(port, () => console.log(`Server started on port ${port}`));
