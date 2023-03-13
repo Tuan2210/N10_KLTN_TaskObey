@@ -8,8 +8,19 @@ import { url } from "../../redux/createInstance";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function FinishTaskScreen() {
-  const currentUser = useSelector((state) => state.auth.login?.currentUser);
-  const userId = currentUser?._id;
+  const currentLoginUser = useSelector((state) => state.auth.login?.currentUser);
+  const loginUserId = currentLoginUser?._id;
+
+  const currentRegisterUser = useSelector((state) => state.auth.register?.currentUserRegister);
+  const registerUserId = currentRegisterUser?._id;
+  
+  const [userId, setUserId] = useState();
+  useEffect(() => {
+    if(currentRegisterUser && !currentLoginUser)
+      setUserId(registerUserId);
+    if(!currentRegisterUser && currentLoginUser)
+      setUserId(loginUserId)
+  }, [currentRegisterUser, currentLoginUser]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();

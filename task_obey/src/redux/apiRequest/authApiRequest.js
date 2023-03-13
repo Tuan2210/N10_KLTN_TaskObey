@@ -7,6 +7,9 @@ import {
   logoutFailed,
   logoutStart,
   logoutSuccess,
+  logoutRegisterStart,
+  logoutRegisterSuccess,
+  logoutRegisterFailed,
   registerFailed,
   registerStart,
   registerSuccess,
@@ -17,8 +20,8 @@ const registerUser = async (user, dispatch, navigate, setIsLoading) => {
   dispatch(registerStart());
   try {
     setIsLoading(true);
-    await axios.post(`${url}/api/auth/register`, user);
-    dispatch(registerSuccess());
+    const res = await axios.post(`${url}/api/auth/register`, user);
+    dispatch(registerSuccess(res.data));
     setIsLoading(false);
     navigate("/home");
   } catch (error) {
@@ -60,6 +63,18 @@ const loginUserEmail = async (user, dispatch, navigate, setIsLoading) => {
   }
 };
 
+const logOutRegsiter= async (dispatch, navigate, id, token, axiosJWTLogout) => {
+  dispatch(logoutRegisterStart());
+  try {
+    await axiosJWTLogout.post(`${url}/api/auth/logoutRegister`, id, {
+      headers: { ['authorization']: `Bearer ${token}` },
+    });
+    dispatch(logoutRegisterSuccess());
+    navigate("/"); //login
+  } catch (error) {
+    dispatch(logoutRegisterFailed());
+  }
+};
 
 const logOut = async (dispatch, navigate, id, token, axiosJWTLogout) => {
   dispatch(logoutStart());
@@ -76,4 +91,4 @@ const logOut = async (dispatch, navigate, id, token, axiosJWTLogout) => {
   }
 };
 
-export {registerUser, loginUserPhone, loginUserEmail, logOut};
+export {registerUser, loginUserPhone, loginUserEmail, logOutRegsiter, logOut};

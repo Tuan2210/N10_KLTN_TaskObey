@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { createAxios } from "../../redux/createInstance";
 import { logoutSuccess } from "../../redux/authSlice";
-import { logOut } from "../../redux/apiRequest/authApiRequest";
+import { logOut, logOutRegsiter } from "../../redux/apiRequest/authApiRequest";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -17,18 +17,25 @@ const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
 
 export default function ProfileScreen() {
-  const currentUser = useSelector((state) => state.auth.login?.currentUser);
-  const userId = currentUser?._id;
-  const refreshToken = currentUser?.refreshToken;
+  const currentLoginUser = useSelector((state) => state.auth.login?.currentUser);
+  const loginUserId = currentLoginUser?._id;
+  const refreshToken = currentLoginUser?.refreshToken;
+
+  const currentRegisterUser = useSelector((state) => state.auth.register?.currentUserRegister);
+  const registerUserId = currentRegisterUser?._id;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  let axiosJWTLogout = createAxios(currentUser, dispatch, logoutSuccess);
+  let axiosJWTLogout = createAxios(currentLoginUser, dispatch, logoutSuccess);
+  let axiosJWTLogoutRegistered = createAxios(currentRegisterUser, dispatch, logoutSuccess);
 
+  //handle logout
   function handleLogout() {
-    if(!currentUser) navigate('/'); //handle logout when user want to logout after register
-    else logOut(dispatch, navigate, userId, refreshToken, axiosJWTLogout);
+    if(currentRegisterUser)
+      logOutRegsiter(dispatch, navigate, registerUserId, accessToken, axiosJWTLogoutRegistered);
+    if(currentLoginUser)
+      logOut(dispatch, navigate, loginUserId, refreshToken, axiosJWTLogout);
   }
 
   return (

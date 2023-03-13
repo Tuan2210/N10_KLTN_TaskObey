@@ -26,8 +26,19 @@ const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
 
 export default function CreateTaskScreen() {
-  const currentUser = useSelector((state) => state.auth.login?.currentUser);
-  const userId = currentUser?._id;
+  const currentLoginUser = useSelector((state) => state.auth.login?.currentUser);
+  const loginUserId = currentLoginUser?._id;
+
+  const currentRegisterUser = useSelector((state) => state.auth.register?.currentUserRegister);
+  const registerUserId = currentRegisterUser?._id;
+  
+  const [userId, setUserId] = useState();
+  useEffect(() => {
+    if(currentRegisterUser && !currentLoginUser)
+      setUserId(registerUserId);
+    if(!currentRegisterUser && currentLoginUser)
+      setUserId(loginUserId)
+  }, [currentRegisterUser, currentLoginUser]);
 
   const [txtInputTask, setTxtInputTask] = useState('');
   // const [task, setTask] = useState('');

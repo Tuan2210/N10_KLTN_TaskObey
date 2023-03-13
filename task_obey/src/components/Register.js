@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { url } from "../redux/createInstance";
 
-import { registerUser } from "../redux/apiRequest/authApiRequest";
+import { loginUserPhone, registerUser } from "../redux/apiRequest/authApiRequest";
 // import { getUserName } from "../redux/apiRequest/userApiRequest";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -21,8 +21,6 @@ const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
 
 export default function Register() {
-  const user = useSelector((state) => state.auth.login?.currentUser);
-  
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -76,7 +74,6 @@ export default function Register() {
                   email: email,
                   phoneNumber: phoneNumber,
                   password: password,
-                  refreshToken: '',
                 };
                 registerUser(newUser, dispatch, navigate, setIsLoading);
                 window.setTimeout(function () {
@@ -164,7 +161,7 @@ export default function Register() {
       <Image
         source={require("../../assets/img-header-register.jpg")}
         resizeMode="contain"
-        style={{ height: "30%", alignSelf: "center" }}
+        style={{ height: "25%", alignSelf: "center" }}
       />
       <ScrollView
         style={{
@@ -201,8 +198,8 @@ export default function Register() {
           onChangeText={(txt) => setTxtInputEmail(txt.trim())}
         />
         <Text style={styles.errMess}>{errorMessEmail}</Text>
+        <Text style={{color: 'red', marginBottom: '-3%'}}>{star4}</Text>
         <View style={{ flexDirection: "row", alignSelf: "center", marginLeft: '-2%' }}>
-          <Text style={{color: 'red'}}>{star4}</Text>
           <TextInput
             style={[styles.styleInput, { marginTop: "7%", marginLeft: "-2%" }]}
             placeholder="Mật khẩu"
@@ -221,7 +218,7 @@ export default function Register() {
               paddingLeft: 5,
               paddingRight: 5,
               marginLeft: "-14%",
-              marginTop: "3%",
+              marginTop: "5%",
             }}
             onPress={togglePassword}
           >

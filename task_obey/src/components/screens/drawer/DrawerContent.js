@@ -1,11 +1,11 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import { createAxios } from "../../../redux/createInstance";
 import { logoutSuccess } from "../../../redux/authSlice";
-import { logOut } from "../../../redux/apiRequest/authApiRequest";
+import { logOut, logOutRegsiter } from "../../../redux/apiRequest/authApiRequest";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -23,20 +23,42 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesomeicons from "react-native-vector-icons/FontAwesome";
 
 export default function DrawerContent(props) {
-  const currentUser = useSelector((state) => state.auth.login?.currentUser);
-  const userId = currentUser?._id;
-  const refreshToken = currentUser?.refreshToken;
-  const userNameAcc = currentUser?.userName;
+  const currentLoginUser = useSelector((state) => state.auth.login?.currentUser);
+  const loginUserId = currentLoginUser?._id;
+  const refreshToken = currentLoginUser?.refreshToken;
+  const loginUserNameAcc = currentLoginUser?.userName;
+
+  const currentRegisterUser = useSelector((state) => state.auth.register?.currentUserRegister);
+  const registerUserId = currentRegisterUser?._id;
+  const accessToken = currentRegisterUser?.token;
+  const registerUserNameAcc = currentRegisterUser?.userName;
+
+  const [userNameAcc, setUserNameAcc] = useState();
+  useEffect(() => {
+    if(currentRegisterUser && !currentLoginUser)
+      setUserNameAcc(registerUserNameAcc);
+    if(!currentRegisterUser && currentLoginUser)
+      setUserNameAcc(loginUserNameAcc);
+  }, [currentRegisterUser, currentLoginUser]);
+
+  // useEffect(() => {
+  //   console.log('accessToken:', accessToken);
+  //   console.log('refreshToken:', refreshToken);
+  //   console.log(currentLoginUser);
+  // })
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  let axiosJWTLogout = createAxios(currentUser, dispatch, logoutSuccess);
+  let axiosJWTLogout = createAxios(currentLoginUser, dispatch, logoutSuccess);
+  let axiosJWTLogoutRegistered = createAxios(currentRegisterUser, dispatch, logoutSuccess);
 
   //handle logout
   function handleLogout() {
-    if(!currentUser) navigate('/'); //handle logout when user want to logout after register
-    else logOut(dispatch, navigate, userId, refreshToken, axiosJWTLogout);
+    if(currentRegisterUser)
+      logOutRegsiter(dispatch, navigate, registerUserId, accessToken, axiosJWTLogoutRegistered);
+    if(currentLoginUser)
+      logOut(dispatch, navigate, loginUserId, refreshToken, axiosJWTLogout);
   }
 
   //handle active tab drawer

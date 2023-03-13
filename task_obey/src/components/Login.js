@@ -125,6 +125,7 @@ export default function Login() {
 
   //////////handle login
   const user = useSelector((state) => state.auth.login?.currentUser);
+  const registeredUser = useSelector((state) => state.auth.register?.currentUserRegister);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -269,6 +270,13 @@ export default function Login() {
       window.setTimeout(function () {
         navigate("/home");
         console.log("logined user:", user);
+      }, 4000); //4s
+    }
+    if(registeredUser) {
+      showSplashScreen();
+      window.setTimeout(function () {
+        navigate("/home");
+        console.log("registered user:", registeredUser);
       }, 4000); //4s
     };
   }, []);
