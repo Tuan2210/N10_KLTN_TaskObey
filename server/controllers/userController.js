@@ -36,7 +36,17 @@ const userController = {
       const registeredUser = await User.findOne({phoneNumber});
       const accessToken = userController.generateAccessToken(registeredUser);
       await User.updateOne({_id: registeredUser._id}, {token: accessToken}, {upsert: false}); //filter, update, option
-      res.json(await User.findOne({ accessToken }));
+      
+      res.cookie("accessToken", accessToken, {
+        // create cookie with refresh token expires in 7 days
+        httpOnly: true,
+        expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+        secure: true,
+        path: "/home",
+        sameSite: "none",
+      });
+
+      res.json(await User.findOne({ phoneNumber }));
 
     } catch (error) {
       console.log(error);

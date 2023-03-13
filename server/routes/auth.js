@@ -23,6 +23,7 @@ router.post("/loginEmail", authController.loginUserEmail);
 router.post('/loginPhone', authController.loginUserPhone);
 
 //LOGOUT
-router.post('/logout', middlewareController.verifyToken, authController.userLogout);
+router.post('/logoutRegister', middlewareController.verifyAccessToken, authController.userLogout);
+router.post('/logout', middlewareController.verifyRefreshToken, authController.userLogout);
 
 module.exports = router;
