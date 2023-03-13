@@ -10,6 +10,10 @@ import { loginUserPhone, registerUser } from "../redux/apiRequest/authApiRequest
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import {FirebaseRecaptchaVerifierModal} from 'expo-firebase-recaptcha';
+import { firebaseConfig } from "../config/firebase-config";
+import firebase from 'firebase/compat/app';
+
 //link all name animations: https://github.com/oblador/react-native-animatable
 //link how to code animation: https://blog.bitsrc.io/top-5-animation-libraries-in-react-native-d00ec8ddfc8d
 import * as Animatable from "react-native-animatable";
@@ -34,7 +38,36 @@ export default function Register() {
     setIsSecureTextEntry(true);
   };
   //////////
-  
+  function VerifiedScreen() {
+    //OTP firebase
+    const [number, setNumber] = useState("");
+    const [otp, setOtp] = useState("");
+    const [verificationId, setVerificationId] = useState(null);
+    const recaptchaVerifier = useRef(null);
+    const phoneInput = useRef(PhoneInput);
+    const [flag, setFlag] = useState(false);
+  }
+  const verifyOtp = () => {
+    if (otp === "" || otp === undefined) Alert.alert("Thông báo", "Vui lòng nhập mã xác thực!");
+    else if (otp.length !== 6) Alert.alert("Thông báo", "Vui lòng nhập 6 ký tự!");
+    else {
+      const credential = firebase.auth.PhoneAuthProvider.credential(verificationId, otp);
+      firebase
+        .auth()
+        .signInWithCredential(credential)
+        .then(() => {
+          setOtp("");
+          setFlagTabNewPW(true);
+          setGetPhoneNumber(phoneNumber);
+          Alert.alert("Thông báo", "Xác thực thành công. Vui lòng chuyển tab 'Mật khẩu mới'");
+        })
+        .catch((error) => {
+          console.log(error);
+          Alert.alert("Thông báo", "Xác thực không thành công!");
+        });
+      console.log(otp);
+    }
+  };
   //////////handle register
   const [txtInputUserName, setTxtInputUserName] = useState("");
   const [txtInputPhone, setTxtInputPhone] = useState("");
