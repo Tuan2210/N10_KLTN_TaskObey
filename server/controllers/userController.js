@@ -4,39 +4,40 @@ const jwt = require("jsonwebtoken");
 const { User } = require("../models");
 
 const userController = {
+  //GENERATE ACCESS TOKEN
+  generateAccessToken: (userPhone) => {
+    return jwt.sign(
+      {
+        id: userPhone.id
+      },
+      process.env.JWT_ACCESS_KEY,
+      { expiresIn: "1h" }
+    );
+  },
+
   //REGISTER acc is add user
   addUser: async (req, res) => {
-    // try {
-    // 	const newUser = new User(req.body);
-    // 	const saveUser = await newUser.save();
-    // 	res.status(200).json(saveUser);
-    // } catch (error) {
-    // 	res.status(500).json(error);
-    // }
 
-    const { userName, email, phoneNumber, password, refreshToken } = req.body;
+    const { userName, email, phoneNumber, password } = req.body;
 
     if (!userName || !email || !phoneNumber || !password)
       return res.status(400).json({ success: false, message: "Missing this User" });
     try {
-      // const user = await User.findOne({userName});
-
-      // if(user) return res.status(400).json({success: false, message: 'User existed'});
-
       const hashedPW = await argon2.hash(password);
       const newUser = new User({
         userName,
         email,
         phoneNumber,
         password: hashedPW,
-        refreshToken,
+        token: '',
       });
       await newUser.save();
 
-      //return token
-      // const accessToken = jwt.sign({userId: newUser._id}, process.env.JWT_ACCESS_KEY);
+      const registeredUser = await User.findOne({phoneNumber});
+      const accessToken = userController.generateAccessToken(registeredUser);
+      await User.updateOne({_id: registeredUser._id}, {token: accessToken}, {upsert: false}); //filter, update, option
+      res.json(await User.findOne({ accessToken }));
 
-      res.json(newUser);
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: "Error" });

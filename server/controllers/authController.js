@@ -52,7 +52,7 @@ const authController = {
                 
                 // create refresh token in database
                 const refreshToken = authController.generateRefreshToken(userEmail);
-                await User.updateOne({email: userEmail.email}, {refreshToken: refreshToken}, {upsert: false}); //filter, update, option
+                await User.updateOne({email: userEmail.email}, {token: refreshToken}, {upsert: false}); //filter, update, option
 
                 res.cookie("refreshToken", refreshToken, {
                   // create cookie with refresh token expires in 7 days
@@ -93,7 +93,7 @@ const authController = {
                 
                 // create refresh token in database
                 const refreshToken = authController.generateRefreshToken(userPhone);
-                await User.updateOne({phoneNumber: userPhone.phoneNumber}, {refreshToken: refreshToken}, {upsert: false}); //filter, update, option
+                await User.updateOne({phoneNumber: userPhone.phoneNumber}, {token: refreshToken}, {upsert: false}); //filter, update, option
 
                 res.cookie("refreshToken", refreshToken, {
                   // create cookie with refresh token expires in 7 days
