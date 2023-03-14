@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { url } from "../redux/createInstance";
 
-import { loginUserPhone, loginUserEmail } from "../redux/apiRequest/authApiRequest";
+import { loginUserPhone } from "../redux/apiRequest/authApiRequest";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -130,49 +130,49 @@ export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [txtInputPhone, setTxtInputPhone] = useState("");
-  const [txtInputEmail, setTxtInputEmail] = useState("");
+  // const [txtInputEmail, setTxtInputEmail] = useState("");
   const [txtInputPW, setTxtInputPW] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [email, setEmail] = useState("");
+  // const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    handleLoginEmail(email, password);
-  }, [email, password]);
-
-  async function handleLoginEmail(email, pw) {
-    await axios
-      .get(`${url}/api/user/userEmail/${email}`)
-      .then((res) => {
-        if(res.data.length === 0) { //array null
-          setIsLoading(false);
-          Alert.alert('Thông báo', 'Hệ thống không tìm thấy email đăng nhập, xin vui lòng thử lại!');
-        }
-        if(res.data.length > 0) { //array not null
-          {res.data.map(async (userData, index) => {
-            await axios
-              .get(`${url}/api/user/userPwByEmail/${userData.email}/${pw}`)
-              .then((res) => {
-                if(!res.data){
-                  setIsLoading(false);
-                  Alert.alert('Thông báo', 'Mật khẩu đăng nhập không đúng, xin vui lòng thử lại!');
-                }
-                else {
-                  const user = {
-                    email: email,
-                    password: pw,
-                  };
-                  loginUserEmail(user, dispatch, navigate, setIsLoading);
-                  window.setTimeout(function () {
-                    navigate("/home");
-                    console.log("logined user:", user);
-                  }, 1500);
-                }
-              });
-          })}
-        }
-      });
-  }
+  // useEffect(() => {
+  //   handleLoginEmail(email, password);
+  // }, [email, password]);
+  
+  // async function handleLoginEmail(email, pw) {
+  //   await axios
+  //     .get(`${url}/api/user/userEmail/${email}`)
+  //     .then((res) => {
+  //       if(res.data.length === 0) { //array null
+  //         setIsLoading(false);
+  //         Alert.alert('Thông báo', 'Hệ thống không tìm thấy email đăng nhập, xin vui lòng thử lại!');
+  //       }
+  //       if(res.data.length > 0) { //array not null
+  //         {res.data.map(async (userData, index) => {
+  //           await axios
+  //             .get(`${url}/api/user/userPwByEmail/${userData.email}/${pw}`)
+  //             .then((res) => {
+  //               if(!res.data){
+  //                 setIsLoading(false);
+  //                 Alert.alert('Thông báo', 'Mật khẩu đăng nhập không đúng, xin vui lòng thử lại!');
+  //               }
+  //               else {
+  //                 const user = {
+  //                   email: email,
+  //                   password: pw,
+  //                 };
+  //                 loginUserEmail(user, dispatch, navigate, setIsLoading);
+  //                 window.setTimeout(function () {
+  //                   navigate("/home");
+  //                   console.log("logined user:", user);
+  //                 }, 1500);
+  //               }
+  //             });
+  //         })}
+  //       }
+  //     });
+  // }
 
   useEffect(() => {
     handleLoginPhone(phoneNumber, password);
@@ -227,14 +227,14 @@ export default function Login() {
   }
 
   //check regex email
-  const [errorMessEmail, setErrorMessEmail] = useState('');
-  let regexEmail = /^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/.test(txtInputEmail);
-  function checkEmail() {
-    if(txtInputEmail === '')
-      setErrorMessEmail('Vui lòng nhập email!');
-    else if(!regexEmail) setErrorMessEmail('Email không hợp lệ!');
-    else setErrorMessEmail('');
-  }
+  // const [errorMessEmail, setErrorMessEmail] = useState('');
+  // let regexEmail = /^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/.test(txtInputEmail);
+  // function checkEmail() {
+  //   if(txtInputEmail === '')
+  //     setErrorMessEmail('Vui lòng nhập email!');
+  //   else if(!regexEmail) setErrorMessEmail('Email không hợp lệ!');
+  //   else setErrorMessEmail('');
+  // }
 
   //check input pw
   const [errorMessPW, setErrorMessPW] = useState('');
@@ -245,8 +245,8 @@ export default function Login() {
       setErrorMessPW('');
       setIsLoading(true);
       
-      if(flag===false) setPhoneNumber(txtInputPhone);
-      if(flag===true) setEmail(txtInputEmail);
+      // if(flag===false) setPhoneNumber(txtInputPhone);
+      // if(flag===true) setEmail(txtInputEmail);
 
       setPassword(txtInputPW);
     }
@@ -254,14 +254,14 @@ export default function Login() {
 
   //check data inputs
   function checkDataInputInfo() {
-    if(flag===false) { //phone number
+    // if(flag===false) { //phone number
       checkPhoneNumber();
       checkPW();
-    }
-    if(flag===true) { //email
-      checkEmail();
-      checkPW();
-    }
+    // }
+    // if(flag===true) { //email
+    //   checkEmail();
+    //   checkPW();
+    // }
   }
 
   useEffect(() => {
@@ -305,7 +305,7 @@ export default function Login() {
                 <Icon name="phone-portrait-outline" size={40} color="#09CBD0" />
               </View>
             </View>
-            <View style={{ flexDirection: "row", alignSelf: "center", display: flag ? 'flex' : 'none' }}>
+            {/* <View style={{ flexDirection: "row", alignSelf: "center", display: flag ? 'flex' : 'none' }}>
               <TextInput
                 style={styles.styleInput}
                 placeholder="Email"
@@ -316,9 +316,9 @@ export default function Login() {
               <View style={{ justifyContent: "center", marginLeft: 10 }}>
                 <Icon name="mail-outline" size={40} color="#09CBD0" />
               </View>
-            </View>
+            </View> */}
             <Text style={[styles.errMess, {display: !flag ? 'flex' : 'none'}]}>{errorMessSDT}</Text>
-            <Text style={[styles.errMess, {display: flag ? 'flex' : 'none'}]}>{errorMessEmail}</Text>
+            {/* <Text style={[styles.errMess, {display: flag ? 'flex' : 'none'}]}>{errorMessEmail}</Text> */}
             <View style={{ flexDirection: "row", alignSelf: "center", marginTop: '5%' }}>
               <TextInput
                 style={styles.styleInput}
@@ -352,7 +352,7 @@ export default function Login() {
               </TouchableOpacity>
             </View>
             <Text style={styles.errMess}>{errorMessPW}</Text>
-            <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: '2%'}}>
+            {/* <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: '2%'}}>
               <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: '48%'}}>
                 <Text style={{fontSize: 16, color: '#09CBD0'}}>SĐT</Text>
                 <Switch
@@ -373,7 +373,7 @@ export default function Login() {
                   Bạn quên mật khẩu?
                 </Text>
               </Link>
-            </View>
+            </View> */}
           </View>
           {isLoading ? (
             <View style={{flexDirection: "row", alignSelf: "center", justifyContent: "center"}}>

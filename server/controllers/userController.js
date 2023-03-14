@@ -18,15 +18,14 @@ const userController = {
   //REGISTER acc is add user
   addUser: async (req, res) => {
 
-    const { userName, email, phoneNumber, password } = req.body;
+    const { userName, phoneNumber, password } = req.body;
 
-    if (!userName || !email || !phoneNumber || !password)
+    if (!userName || !phoneNumber || !password)
       return res.status(400).json({ success: false, message: "Missing this User" });
     try {
       const hashedPW = await argon2.hash(password);
       const newUser = new User({
         userName,
-        email,
         phoneNumber,
         password: hashedPW,
         token: '',
@@ -64,7 +63,7 @@ const userController = {
     }
   },
 
-  //GET USER NAME, PHONE, EMAIL
+  //GET USER NAME, PHONE
   getUserName: async (req, res) => {
     try {
       await User.find({
@@ -83,15 +82,15 @@ const userController = {
       res.status(500).json(error);
     }
   },
-  getUserEmail: async (req, res) => {
-    try {
-      await User.find({
-        email: req.params.email,
-      }).then((findUserEmail) => res.status(200).json(findUserEmail));
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  },
+  // getUserEmail: async (req, res) => {
+  //   try {
+  //     await User.find({
+  //       email: req.params.email,
+  //     }).then((findUserEmail) => res.status(200).json(findUserEmail));
+  //   } catch (error) {
+  //     res.status(500).json(error);
+  //   }
+  // },
 
   getUserPwByPhone: async (req, res) => {
     try {
@@ -104,16 +103,16 @@ const userController = {
     }
   },
 
-  getUserPwByEmail: async (req, res) => {
-    try {
-      const userEmail = await User.findOne({ email: req.params.email });
-      await argon2
-        .verify(userEmail.password, req.params.password)
-        .then((status) => res.status(200).json(status));
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  },
+  // getUserPwByEmail: async (req, res) => {
+  //   try {
+  //     const userEmail = await User.findOne({ email: req.params.email });
+  //     await argon2
+  //       .verify(userEmail.password, req.params.password)
+  //       .then((status) => res.status(200).json(status));
+  //   } catch (error) {
+  //     res.status(500).json(error);
+  //   }
+  // },
 
   changePasswordWithPhoneNumber: async (req, res) => {
     const {phoneNumber, password} = req.body

@@ -32,45 +32,45 @@ const authController = {
 
 
     //LOGIN by email
-    loginUserEmail: async(req, res) => {
-        const {email, password} = req.body
+    // loginUserEmail: async(req, res) => {
+    //     const {email, password} = req.body
 
-        if(!email || !password)
-            return res.status(400).json({success: false, message: 'Missing this User'});
-        try {
-            const userEmail = await User.findOne({email});
+    //     if(!email || !password)
+    //         return res.status(400).json({success: false, message: 'Missing this User'});
+    //     try {
+    //         const userEmail = await User.findOne({email});
 
-            if(!userEmail) return res.status(400).json({success: false, message: 'Incorrect phone number'});
+    //         if(!userEmail) return res.status(400).json({success: false, message: 'Incorrect phone number'});
 
-            const passwordValid = await argon2.verify(userEmail.password, password);
-            if(!passwordValid) return res.status(400).json({success: false, message: 'Incorrect pw'});
+    //         const passwordValid = await argon2.verify(userEmail.password, password);
+    //         if(!passwordValid) return res.status(400).json({success: false, message: 'Incorrect pw'});
 
-            //return token
-            if(userEmail && passwordValid){
-                // const accessToken = jwt.sign({userId: userPhone._id}, process.env.JWT_ACCESS_KEY);
-                const accessToken = authController.generateAccessToken(userEmail);
+    //         //return token
+    //         if(userEmail && passwordValid){
+    //             // const accessToken = jwt.sign({userId: userPhone._id}, process.env.JWT_ACCESS_KEY);
+    //             const accessToken = authController.generateAccessToken(userEmail);
                 
-                // create refresh token in database
-                const refreshToken = authController.generateRefreshToken(userEmail);
-                await User.updateOne({email: userEmail.email}, {token: refreshToken}, {upsert: false}); //filter, update, option
+    //             // create refresh token in database
+    //             const refreshToken = authController.generateRefreshToken(userEmail);
+    //             await User.updateOne({email: userEmail.email}, {token: refreshToken}, {upsert: false}); //filter, update, option
 
-                res.cookie("refreshToken", refreshToken, {
-                  // create cookie with refresh token expires in 7 days
-                  httpOnly: true,
-                  expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-                  secure: true,
-                  path: "/home",
-                  sameSite: "none",
-                });
+    //             res.cookie("refreshToken", refreshToken, {
+    //               // create cookie with refresh token expires in 7 days
+    //               httpOnly: true,
+    //               expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    //               secure: true,
+    //               path: "/home",
+    //               sameSite: "none",
+    //             });
                 
-                const { password, ...others } = userEmail._doc;
-                res.status(200).json({ ...others, accessToken, refreshToken });
-            }
-        } catch (error) {
-            console.log(error);
-            res.status(500).json(error);
-        }
-    },
+    //             const { password, ...others } = userEmail._doc;
+    //             res.status(200).json({ ...others, accessToken, refreshToken });
+    //         }
+    //     } catch (error) {
+    //         console.log(error);
+    //         res.status(500).json(error);
+    //     }
+    // },
     
     //LOGIN by phone
     loginUserPhone: async(req, res) => {

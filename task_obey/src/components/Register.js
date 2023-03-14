@@ -217,53 +217,53 @@ export default function Register() {
     //////////handle register
     const [txtInputUserName, setTxtInputUserName] = useState("");
     const [txtInputPhone, setTxtInputPhone] = useState("");
-    const [txtInputEmail, setTxtInputEmail] = useState("");
+    // const [txtInputEmail, setTxtInputEmail] = useState("");
     const [txtInputPW, setTxtInputPW] = useState("");
     const [userName, setUserName] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
-    const [email, setEmail] = useState("");
+    // const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const [isLoading, setIsLoading] = useState(false);  
 
-    useEffect(() => {
-      handleRegister(phoneNumber, email);
-    }, [phoneNumber, email]);
+    // useEffect(() => {
+    //   handleRegister(phoneNumber, email);
+    // }, [phoneNumber, email]);
 
-    async function handleRegister(phoneNumber, email) {
-      await axios //phone
-        .get(`${url}/api/user/userPhone/${phoneNumber}`)
-        .then(async (response) => {
-          if (response.data.length > 0) { //array not null
-            setIsLoading(false);
-            Alert.alert("Thông báo", "SĐT đã được đăng ký!");
-          }
+    // async function handleRegister(phoneNumber, email) {
+    //   await axios //phone
+    //     .get(`${url}/api/user/userPhone/${phoneNumber}`)
+    //     .then(async (response) => {
+    //       if (response.data.length > 0) { //array not null
+    //         setIsLoading(false);
+    //         Alert.alert("Thông báo", "SĐT đã được đăng ký!");
+    //       }
 
-          if (response.data.length === 0) { //array null
-            await axios //email
-              .get(`${url}/api/user/userEmail/${email}`)
-              .then((res) => {
-                if(res.data.length > 0) {
-                  setIsLoading(false);
-                  Alert.alert('Thông báo', 'Email đã được đăng ký!');
-                }
-                if(res.data.length === 0) {
-                  const newUser = {
-                    userName: userName,
-                    email: email,
-                    phoneNumber: phoneNumber,
-                    password: password,
-                  };
-                  registerUser(newUser, dispatch, navigate, setIsLoading);
-                  window.setTimeout(function () {
-                    navigate("/home");
-                    console.log("registered user:", newUser);
-                  }, 2000);
-                }
-              });
-          }
-        });
-    }
+    //       if (response.data.length === 0) { //array null
+    //         await axios //email
+    //           .get(`${url}/api/user/userEmail/${email}`)
+    //           .then((res) => {
+    //             if(res.data.length > 0) {
+    //               setIsLoading(false);
+    //               Alert.alert('Thông báo', 'Email đã được đăng ký!');
+    //             }
+    //             if(res.data.length === 0) {
+    //               const newUser = {
+    //                 userName: userName,
+    //                 email: email,
+    //                 phoneNumber: phoneNumber,
+    //                 password: password,
+    //               };
+    //               registerUser(newUser, dispatch, navigate, setIsLoading);
+    //               window.setTimeout(function () {
+    //                 navigate("/home");
+    //                 console.log("registered user:", newUser);
+    //               }, 2000);
+    //             }
+    //           });
+    //       }
+    //     });
+    // }
 
     //check regex special characters
     // let isSpecialChars = /^(?=[a-zA-Z0-9~@#$^*()_+=[\]{}|\\,.?: -]*$)(?!.*[<>'"/;`%])/;
@@ -296,16 +296,16 @@ export default function Register() {
     }
 
     //check regex email
-    const [star3, setStar3] = useState("*");
-    const [errorMessEmail, setErrorMessEmail] = useState('');
-    let regexEmail = /^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/.test(txtInputEmail);
-    function checkEmail() {
-      setStar3('');
-      if(txtInputEmail === '')
-        setErrorMessEmail('Vui lòng nhập email!');
-      else if(!regexEmail) setErrorMessEmail('Email không hợp lệ!');
-      else setErrorMessEmail('');
-    }
+    // const [star3, setStar3] = useState("*");
+    // const [errorMessEmail, setErrorMessEmail] = useState('');
+    // let regexEmail = /^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/.test(txtInputEmail);
+    // function checkEmail() {
+    //   setStar3('');
+    //   if(txtInputEmail === '')
+    //     setErrorMessEmail('Vui lòng nhập email!');
+    //   else if(!regexEmail) setErrorMessEmail('Email không hợp lệ!');
+    //   else setErrorMessEmail('');
+    // }
 
     //check input pw
     const [star4, setStar4] = useState("*");
@@ -321,7 +321,7 @@ export default function Register() {
         
         setUserName(txtInputUserName);
         setPhoneNumber(txtInputPhone);
-        setEmail(txtInputEmail);
+        // setEmail(txtInputEmail);
         setPassword(txtInputPW);
       }
     }
@@ -330,7 +330,7 @@ export default function Register() {
     function checkDataInputInfo() {
       checkUserName();
       checkPhoneNumber();
-      checkEmail();
+      // checkEmail();
       checkPW();
     }
     //////////
@@ -361,7 +361,14 @@ export default function Register() {
             Vui lòng xác thực số điện thoại trước!
           </Text>
         </View>
-        <View style={{ display: flagTabRegister ? "flex" : "none", width: "80%", padding: "5%" }}>
+        <View 
+          style={{ 
+            display: flagTabRegister ? "flex" : "none", 
+            width: "100%",
+            height: '100%',
+            padding: "5%", 
+            backgroundColor: '#fff' 
+          }}>
           <Image
             source={require("../../assets/img-header-register.jpg")}
             resizeMode="contain"
@@ -393,7 +400,7 @@ export default function Register() {
               // value={phoneNumber}
             />
             <Text style={styles.errMess}>{errorMessSDT}</Text>
-            <Text style={{color: 'red', marginBottom: '-3%'}}>{star3}</Text>
+            {/* <Text style={{color: 'red', marginBottom: '-3%'}}>{star3}</Text>
             <TextInput
               style={[styles.styleInput, { marginTop: "5%" }]}
               placeholder="Email"
@@ -401,7 +408,7 @@ export default function Register() {
               numberOfLines={1}
               onChangeText={(txt) => setTxtInputEmail(txt.trim())}
             />
-            <Text style={styles.errMess}>{errorMessEmail}</Text>
+            <Text style={styles.errMess}>{errorMessEmail}</Text> */}
             <Text style={{color: 'red', marginBottom: '-3%'}}>{star4}</Text>
             <View style={{ flexDirection: "row", alignSelf: "center", marginLeft: '-2%' }}>
               <TextInput

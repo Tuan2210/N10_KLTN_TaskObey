@@ -19,7 +19,7 @@ router.get('/users', userController.getAllUsers);
 router.post('/register', userController.addUser);
 
 //LOGIN
-router.post("/loginEmail", authController.loginUserEmail);
+// router.post("/loginEmail", authController.loginUserEmail);
 router.post('/loginPhone', authController.loginUserPhone);
 
 //LOGOUT
