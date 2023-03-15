@@ -150,6 +150,8 @@ const authController = {
 
     //LOGOUT
     userLogout: async (req, res) => {
+        const {token} = req.body;
+        if(token==='') res.clearCookie("accessToken");
         res.clearCookie("accessToken");
         res.clearCookie("refreshToken");
         res.status(200).json("LOGOUT!!");
