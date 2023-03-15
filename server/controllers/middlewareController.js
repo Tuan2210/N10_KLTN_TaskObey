@@ -1,16 +1,22 @@
 const jswt = require('jsonwebtoken');
 
+const { User } = require("../models");
+
 const middlewareController = {
 	//verifyToken
 	verifyAccessToken: (req, res, next) => {
+		const {phoneNumber} = req.body
 		const token = req.headers['authorization'];
 		if (token) {
 			const splitToken = token.split(' ')[1];
 
             //verify accessToken
-            jswt.verify(splitToken, process.env.JWT_ACCESS_KEY, (err, user) => {
+            jswt.verify(splitToken, process.env.JWT_ACCESS_KEY, async (err, user) => {
 				if (err) {
-					return res.status(403).json('AccessToken is not valid');
+					// return res.status(403).json('AccessToken is not valid');
+					const userPhone = await User.findOne({phoneNumber});
+					await User.updateOne({phoneNumber: userPhone.phoneNumber}, {token: ''}, {upsert: false}); //filter, update, option
+					return await User.findOne({phoneNumber});
 				}
 				req.user = user;
 				next();
