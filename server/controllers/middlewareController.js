@@ -16,7 +16,9 @@ const middlewareController = {
 					// return res.status(403).json('AccessToken is not valid');
 					const userPhone = await User.findOne({phoneNumber});
 					await User.updateOne({phoneNumber: userPhone.phoneNumber}, {token: ''}, {upsert: false}); //filter, update, option
-					return res.status(200).json(await User.findOne({phoneNumber}));
+					// return res.status(200).json(await User.findOne({phoneNumber}));
+					req.user = user;
+					next();
 				}
 				req.user = user;
 				next();
