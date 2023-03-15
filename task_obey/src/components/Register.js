@@ -105,11 +105,11 @@ export default function Register() {
             setOtp("");
             setFlagTabRegister(true);
             setGetPhoneNumber(phoneNumber);
-            Alert.alert("Thông báo", "Xác thực thành công. Vui lòng chuyển tab 'Đăng ký'");
+            Alert.alert("Thông báo", "Xác thực thành công! Vui lòng trượt qua tab 'Đăng ký'");
           })
           .catch((error) => {
             console.log(error);
-            Alert.alert("Thông báo", "Xác thực không thành công!");
+            Alert.alert("Thông báo", "Xác thực không thành công do không đúng mã OTP!");
           });
         console.log(otp);
       }
@@ -392,6 +392,9 @@ export default function Register() {
             <Text style={{color: 'red', marginBottom: '-3%'}}>{star2}</Text>
             <TextInput
               style={[styles.styleInput, { marginTop: "5%" }]}
+              editable={false}
+              selectTextOnFocus={false}
+              value={'0' + getPhoneNumber.slice(3, 12)}
               placeholder="Số điện thoại"
               maxLength={10}
               keyboardType="numeric"
@@ -412,7 +415,7 @@ export default function Register() {
             <Text style={{color: 'red', marginBottom: '-3%'}}>{star4}</Text>
             <View style={{ flexDirection: "row", alignSelf: "center", marginLeft: '-2%' }}>
               <TextInput
-                style={[styles.styleInput, { marginTop: "7%", marginLeft: "-2%" }]}
+                style={[styles.styleInput, { marginTop: "7%", marginLeft: "3%", width:'97.23%' }]}
                 placeholder="Mật khẩu"
                 numberOfLines={1}
                 secureTextEntry={isSecureTextEntry}
@@ -426,9 +429,10 @@ export default function Register() {
                   alignItems: "center",
                   alignSelf: "center",
                   height: 40,
-                  paddingLeft: 5,
+                  paddingLeft: 15,
                   paddingRight: 5,
-                  marginLeft: "-14%",
+                  position:'relative',
+                  marginLeft: "-30%",
                   marginTop: "5%",
                 }}
                 onPress={togglePassword}
@@ -474,7 +478,7 @@ export default function Register() {
                     { fontWeight: "bold", textDecorationLine: "underline" },
                   ]}
                 >
-                  Đăng nhập ngay
+                  Đăng nhập ngay!
                 </Text>
               </Link>
             </View>
@@ -554,6 +558,9 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginLeft: 0,
     paddingLeft: 10,
+    borderRadius: 20,
+    borderColor: 'black',
+    borderWidth:1
   },
   errMess: {
     color: 'red',
@@ -565,16 +572,18 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: "#09CBD0",
     borderRadius: 100,
-    width: "45%",
+    width: "50%",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     marginTop: '10%',
   },
   labelBtns: {
-    fontSize: 20,
+    fontSize: 15,
+    flexDirection:'row',
     fontWeight: "bold",
     color: "#fff",
+    textAlign:'center'
   },
   labels: {
     fontSize: 15,
