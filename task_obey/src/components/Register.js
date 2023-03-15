@@ -76,7 +76,7 @@ export default function Register() {
             const allNumber = res.data.length
             console.log(allNumber)
             if(allNumber != 0) 
-              Alert.alert('Thông báo', 'SĐT này đã được đăng ký! Vui lòng dùng số khác.');
+              Alert.alert('Thông báo', 'SĐT này đã được đăng ký, vui lòng dùng số khác!');
             if(res.data.length==0) {
               try {
                 const phoneProvider = new firebase.auth.PhoneAuthProvider();
@@ -216,7 +216,7 @@ export default function Register() {
     };
     //////////handle register
     const [txtInputUserName, setTxtInputUserName] = useState("");
-    const [txtInputPhone, setTxtInputPhone] = useState("");
+    // const [txtInputPhone, setTxtInputPhone] = useState("");
     // const [txtInputEmail, setTxtInputEmail] = useState("");
     const [txtInputPW, setTxtInputPW] = useState("");
     const [userName, setUserName] = useState("");
@@ -226,44 +226,32 @@ export default function Register() {
 
     const [isLoading, setIsLoading] = useState(false);  
 
-    // useEffect(() => {
-    //   handleRegister(phoneNumber, email);
-    // }, [phoneNumber, email]);
+    useEffect(() => {
+      handleRegister(phoneNumber);
+    }, [phoneNumber]);
 
-    // async function handleRegister(phoneNumber, email) {
-    //   await axios //phone
-    //     .get(`${url}/api/user/userPhone/${phoneNumber}`)
-    //     .then(async (response) => {
-    //       if (response.data.length > 0) { //array not null
-    //         setIsLoading(false);
-    //         Alert.alert("Thông báo", "SĐT đã được đăng ký!");
-    //       }
-
-    //       if (response.data.length === 0) { //array null
-    //         await axios //email
-    //           .get(`${url}/api/user/userEmail/${email}`)
-    //           .then((res) => {
-    //             if(res.data.length > 0) {
-    //               setIsLoading(false);
-    //               Alert.alert('Thông báo', 'Email đã được đăng ký!');
-    //             }
-    //             if(res.data.length === 0) {
-    //               const newUser = {
-    //                 userName: userName,
-    //                 email: email,
-    //                 phoneNumber: phoneNumber,
-    //                 password: password,
-    //               };
-    //               registerUser(newUser, dispatch, navigate, setIsLoading);
-    //               window.setTimeout(function () {
-    //                 navigate("/home");
-    //                 console.log("registered user:", newUser);
-    //               }, 2000);
-    //             }
-    //           });
-    //       }
-    //     });
-    // }
+    async function handleRegister(phoneNumber) {
+      await axios //phone
+        .get(`${url}/api/user/userPhone/${phoneNumber}`)
+        .then(async (response) => {
+          if (response.data.length > 0) { //array not null
+            setIsLoading(false);
+            Alert.alert("Thông báo", "SĐT đã được đăng ký!");
+          }
+          if (response.data.length === 0) { //array null
+            const newUser = {
+              userName: userName,
+              phoneNumber: phoneNumber,
+              password: password,
+            };
+            registerUser(newUser, dispatch, navigate, setIsLoading);
+            window.setTimeout(function () {
+              navigate("/home");
+              console.log("registered user:", newUser);
+            }, 2000);
+          }
+        });
+    }
 
     //check regex special characters
     // let isSpecialChars = /^(?=[a-zA-Z0-9~@#$^*()_+=[\]{}|\\,.?: -]*$)(?!.*[<>'"/;`%])/;
@@ -280,20 +268,20 @@ export default function Register() {
     }
 
     //check regex sdt
-    const [star2, setStar2] = useState("*");
-    const [errorMessSDT, setErrorMessSDT] = useState('');
-    let isNum = /^\d+$/.test(txtInputPhone);
-    let regexPhoneNumber = /\+?(0|84)\d{9}/.test(txtInputPhone);
-    function checkPhoneNumber() {
-      setStar2('');
-      if(txtInputPhone === '')
-        setErrorMessSDT('Vui lòng nhập số điện thoại!');
-      else if(!isNum) setErrorMessSDT('Vui lòng nhập lại số điện thoại!');
-      else if(txtInputPhone.length !== 10) setErrorMessSDT('Vui lòng nhập đủ 10 ký tự số!');
-      else if(!regexPhoneNumber) setErrorMessSDT('SĐT không hợp lệ!');
-      // setErrorMessSDT(errorMessSDT => errorMessSDT = '✅');
-      else setErrorMessSDT('');
-    }
+    // const [star2, setStar2] = useState("*");
+    // const [errorMessSDT, setErrorMessSDT] = useState('');
+    // let isNum = /^\d+$/.test(txtInputPhone);
+    // let regexPhoneNumber = /\+?(0|84)\d{9}/.test(txtInputPhone);
+    // function checkPhoneNumber() {
+    //   setStar2('');
+    //   if(txtInputPhone === '')
+    //     setErrorMessSDT('Vui lòng nhập số điện thoại!');
+    //   else if(!isNum) setErrorMessSDT('Vui lòng nhập lại số điện thoại!');
+    //   else if(txtInputPhone.length !== 10) setErrorMessSDT('Vui lòng nhập đủ 10 ký tự số!');
+    //   else if(!regexPhoneNumber) setErrorMessSDT('SĐT không hợp lệ!');
+    //   // setErrorMessSDT(errorMessSDT => errorMessSDT = '✅');
+    //   else setErrorMessSDT('');
+    // }
 
     //check regex email
     // const [star3, setStar3] = useState("*");
@@ -320,7 +308,7 @@ export default function Register() {
         setIsLoading(true);
         
         setUserName(txtInputUserName);
-        setPhoneNumber(txtInputPhone);
+        setPhoneNumber('0' + getPhoneNumber.slice(3, 12));
         // setEmail(txtInputEmail);
         setPassword(txtInputPW);
       }
@@ -329,7 +317,7 @@ export default function Register() {
     //check data inputs
     function checkDataInputInfo() {
       checkUserName();
-      checkPhoneNumber();
+      // checkPhoneNumber();
       // checkEmail();
       checkPW();
     }
@@ -366,85 +354,84 @@ export default function Register() {
             display: flagTabRegister ? "flex" : "none", 
             width: "100%",
             height: '100%',
-            padding: "5%", 
             backgroundColor: '#fff' 
           }}>
           <Image
             source={require("../../assets/img-header-register.jpg")}
             resizeMode="contain"
-            style={{ height: "25%", alignSelf: "center" }}
+            style={{ height: "30%", alignSelf: "center", marginTop: '-10%', marginBottom: '5%' }}
           />
           <ScrollView
             style={{
               // backgroundColor: 'yellow',
-              width: "70%",
+              width: "80%",
               alignSelf: "center",
+              padding: '5%'
             }}
           >
-            <Text style={{color: 'red'}}>{star1}</Text>
-            <TextInput
-              style={styles.styleInput}
-              placeholder="Tên tài khoản"
-              numberOfLines={1}
-              onChangeText={(txt) => setTxtInputUserName(txt.trim())}
-            />
-            <Text style={styles.errMess}>{errMessUserName}</Text>
-            <Text style={{color: 'red', marginBottom: '-3%'}}>{star2}</Text>
-            <TextInput
-              style={[styles.styleInput, { marginTop: "5%" }]}
-              editable={false}
-              selectTextOnFocus={false}
-              value={'0' + getPhoneNumber.slice(3, 12)}
-              placeholder="Số điện thoại"
-              maxLength={10}
-              keyboardType="numeric"
-              numberOfLines={1}
-              onChangeText={(txt) => setTxtInputPhone(txt.trim())}
-              // value={phoneNumber}
-            />
-            <Text style={styles.errMess}>{errorMessSDT}</Text>
-            {/* <Text style={{color: 'red', marginBottom: '-3%'}}>{star3}</Text>
-            <TextInput
-              style={[styles.styleInput, { marginTop: "5%" }]}
-              placeholder="Email"
-              keyboardType="email-address"
-              numberOfLines={1}
-              onChangeText={(txt) => setTxtInputEmail(txt.trim())}
-            />
-            <Text style={styles.errMess}>{errorMessEmail}</Text> */}
-            <Text style={{color: 'red', marginBottom: '-3%'}}>{star4}</Text>
-            <View style={{ flexDirection: "row", alignSelf: "center", marginLeft: '-2%' }}>
+            <View style={{height: '60%', justifyContent: "space-around"}}>
+              <Text style={{color: 'red'}}>{star1}</Text>
               <TextInput
-                style={[styles.styleInput, { marginTop: "7%", marginLeft: "3%", width:'97.23%' }]}
-                placeholder="Mật khẩu"
+                style={styles.styleInput}
+                placeholder="Tên tài khoản"
                 numberOfLines={1}
-                secureTextEntry={isSecureTextEntry}
-                onChangeText={(txt) => setTxtInputPW(txt.trim())}
-                // value={passwordInput}
-                // name="password"
+                onChangeText={(txt) => setTxtInputUserName(txt.trim())}
               />
-              <TouchableOpacity
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  alignSelf: "center",
-                  height: 40,
-                  paddingLeft: 15,
-                  paddingRight: 5,
-                  position:'relative',
-                  marginLeft: "-30%",
-                  marginTop: "5%",
-                }}
-                onPress={togglePassword}
-              >
-                {isSecureTextEntry ? (
-                  <Icon name="eye-sharp" size={30} color="#09CBD0" />
-                ) : (
-                  <Icon name="eye-off-sharp" size={30} color="#09CBD0" />
-                )}
-              </TouchableOpacity>
+              <Text style={styles.errMess}>{errMessUserName}</Text>
+              <TextInput
+                style={[styles.styleInput, { marginTop: "10%", marginBottom: '10%', backgroundColor: "rgba(211, 211, 211, 0.404)" }]}
+                editable={false}
+                selectTextOnFocus={false}
+                value={'0' + getPhoneNumber.slice(3, 12)}
+                placeholder="Số điện thoại"
+                maxLength={10}
+                keyboardType="numeric"
+                numberOfLines={1}
+                // onChangeText={(txt) => setTxtInputPhone(txt.trim())}
+              />
+              {/* <Text style={styles.errMess}>{errorMessSDT}</Text> */}
+              {/* <Text style={{color: 'red', marginBottom: '-3%'}}>{star3}</Text>
+              <TextInput
+                style={[styles.styleInput, { marginTop: "5%" }]}
+                placeholder="Email"
+                keyboardType="email-address"
+                numberOfLines={1}
+                onChangeText={(txt) => setTxtInputEmail(txt.trim())}
+              />
+              <Text style={styles.errMess}>{errorMessEmail}</Text> */}
+              <Text style={{color: 'red', marginBottom: '-3%'}}>{star4}</Text>
+              <View style={{ flexDirection: "row", width: '100%' }}>
+                <TextInput
+                  style={[styles.styleInput, { marginTop: "7%" }]}
+                  placeholder="Mật khẩu"
+                  numberOfLines={1}
+                  secureTextEntry={isSecureTextEntry}
+                  onChangeText={(txt) => setTxtInputPW(txt.trim())}
+                  // value={passwordInput}
+                  // name="password"
+                />
+                <TouchableOpacity
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    alignSelf: "center",
+                    height: 40,
+                    paddingLeft: 15,
+                    paddingRight: 5,
+                    marginLeft: "-25%",
+                    marginTop: "5%",
+                  }}
+                  onPress={togglePassword}
+                >
+                  {isSecureTextEntry ? (
+                    <Icon name="eye-sharp" size={30} color="#09CBD0" />
+                  ) : (
+                    <Icon name="eye-off-sharp" size={30} color="#09CBD0" />
+                  )}
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.errMess}>{errorMessPW}</Text>
             </View>
-            <Text style={styles.errMess}>{errorMessPW}</Text>
             {isLoading ? (
               <View
                 style={{
@@ -548,7 +535,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#09CBD0",
   },
   styleInput: {
-    backgroundColor: "rgba(211, 211, 211, 0.404)",
     alignSelf: "center",
     width: "100%",
     height: 40,
