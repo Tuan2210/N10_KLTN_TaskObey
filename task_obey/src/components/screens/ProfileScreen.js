@@ -19,11 +19,13 @@ const heightScreen = Dimensions.get("window").height;
 export default function ProfileScreen() {
   const currentLoginUser = useSelector((state) => state.auth.login?.currentUser);
   const loginUserId = currentLoginUser?._id;
+  const phoneLoginrUser = currentLoginUser?.phoneNumber;
   const refreshToken = currentLoginUser?.refreshToken;
   const loginUserNameAcc = currentLoginUser?.userName;
 
   const currentRegisterUser = useSelector((state) => state.auth.register?.currentUserRegister);
   const registerUserId = currentRegisterUser?._id;
+  const phoneRegisterUser = currentRegisterUser?.phoneNumber;
   const accessToken = currentRegisterUser?.token;
   const registerUserNameAcc = currentRegisterUser?.userName;
 
