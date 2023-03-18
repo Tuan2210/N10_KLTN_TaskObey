@@ -42,9 +42,10 @@ export default function DrawerContent(props) {
   }, [currentRegisterUser, currentLoginUser]);
 
   // useEffect(() => {
-  //   console.log('accessToken:', accessToken);
-  //   console.log('refreshToken:', refreshToken);
-  //   console.log(currentLoginUser);
+    // console.log('accessToken:', accessToken);
+    // console.log('refreshToken:', refreshToken);
+    // console.log(currentLoginUser);
+    // console.log(currentRegisterUser);
   // })
 
   const navigate = useNavigate();

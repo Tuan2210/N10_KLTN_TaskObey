@@ -248,6 +248,7 @@ export default function Login() {
       // if(flag===false) setPhoneNumber(txtInputPhone);
       // if(flag===true) setEmail(txtInputEmail);
 
+      setPhoneNumber(txtInputPhone);
       setPassword(txtInputPW);
     }
   }

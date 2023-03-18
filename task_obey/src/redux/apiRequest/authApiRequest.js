@@ -66,7 +66,7 @@ const loginUserPhone = async (user, dispatch, navigate, setIsLoading) => {
 const logOutRegsiter= async (dispatch, navigate, id, token, axiosJWTLogout) => {
   dispatch(logoutRegisterStart());
   try {
-    await axiosJWTLogout.post(`${url}/api/auth/logoutRegister`, id, {
+    await axiosJWTLogout.post(`${url}/api/auth/logoutRegister`, id, token, {
       headers: { ['authorization']: `Bearer ${token}` },
     });
     dispatch(logoutRegisterSuccess());

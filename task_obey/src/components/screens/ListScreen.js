@@ -11,6 +11,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 //link how to code animation: https://blog.bitsrc.io/top-5-animation-libraries-in-react-native-d00ec8ddfc8d
 import * as Animatable from "react-native-animatable";
 
+import { TimelineCalendar } from '@howljs/calendar-kit';
+
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
 
@@ -108,12 +110,25 @@ export default function ListScreen() {
     </TouchableOpacity>
   );
 
+  // useEffect(() => {
+  //   // const day = Date.now();
+  //   // console.log(new Date(day).toLocaleDateString());
+  //   // console.log(day.toString());
+
+  //   const date = new Date();
+  //   const stringDate = date.toLocaleDateString();
+  //   // console.log(stringDate)
+  //   console.log(new Date().toISOString().split("T")[0]);
+  //   // console.log(day.toLocaleDateString());
+  // })
+
   return (
     <SafeAreaView style={styles.container}>
-      <View>
+      <View style={{ width: "100%", height: "100%" }}>
         {/* <Text>{dataTaskName}</Text>
         <Text>{dataDayTime}</Text> */}
-        <FlatList
+
+        {/* <FlatList
           key={"#"}
           // numColumns={2}
           data={dataList}
@@ -136,6 +151,23 @@ export default function ListScreen() {
             height: '100%',
             padding: '5%'
           }}
+        /> */}
+
+        <TimelineCalendar
+          viewMode="week"
+          allowPinchToZoom
+          allowDragToCreate
+          // firstDay={1}
+          initialDate={new Date().toISOString().split("T")[0]}
+          // maxDate="2023-12-31"
+          // initialDate="2023-11-30"
+          // holidays={["2022-11-05", "2022-11-02"]}
+          onDragCreateEnd={(date) => {
+            console.log(date);
+          }}
+          // calendarWidth={widthScreen}
+          // isShowHalfLine={false}
+          // isLoading={true}
         />
       </View>
     </SafeAreaView>
