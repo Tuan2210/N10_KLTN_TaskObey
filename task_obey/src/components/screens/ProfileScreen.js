@@ -20,9 +20,20 @@ export default function ProfileScreen() {
   const currentLoginUser = useSelector((state) => state.auth.login?.currentUser);
   const loginUserId = currentLoginUser?._id;
   const refreshToken = currentLoginUser?.refreshToken;
+  const loginUserNameAcc = currentLoginUser?.userName;
 
   const currentRegisterUser = useSelector((state) => state.auth.register?.currentUserRegister);
   const registerUserId = currentRegisterUser?._id;
+  const accessToken = currentRegisterUser?.token;
+  const registerUserNameAcc = currentRegisterUser?.userName;
+
+  const [userNameAcc, setUserNameAcc] = useState();
+  useEffect(() => {
+    if(currentRegisterUser && !currentLoginUser)
+      setUserNameAcc(registerUserNameAcc);
+    if(!currentRegisterUser && currentLoginUser)
+      setUserNameAcc(loginUserNameAcc);
+  }, [currentRegisterUser, currentLoginUser]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();

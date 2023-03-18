@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -30,6 +30,22 @@ const DrawerStack = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 
 export default function Home() {
+  //current date,time
+  // const [currentDate, setCurrentDate] = useState(Date);
+  // useEffect(() => {
+  //   // const curDate = new Date().toLocaleString(); 
+  //   setInterval(() => {
+  //     const curDate = new Date().toLocaleString();
+  //     setCurrentDate(curDate)
+  //     // console.log(curDate);
+  //   }, 1000)
+  // })
+  const currentDate = new Date().toISOString().split("T")[0];
+  const currentDay = currentDate.slice(5,7),
+        currentMonth = currentDate.slice(8,10),
+        currentYear = currentDate.slice(0,4),
+        formatCurrentDate = currentDay +'/' +currentMonth +'/'  +currentYear;
+
   //Drawer
   function AppDrawerStack() {
     return (
@@ -41,7 +57,7 @@ export default function Home() {
           name="Trang chủ"
           component={HomeBottomTabs}
           options={{
-            headerTitle: "Hôm nay",
+            headerTitle: "Hôm nay, " +formatCurrentDate,
             headerTitleStyle: {
               color: "#fff",
             },
@@ -111,7 +127,7 @@ export default function Home() {
       >
         <Tab.Screen
           name="HomeScreen"
-          options={{ title: "Nhiệm vụ", headerShown: false }}
+          options={{ title: "Công việc", headerShown: false }}
           component={ListScreen}
         />
         <Tab.Screen

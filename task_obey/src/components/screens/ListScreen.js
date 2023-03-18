@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 //link how to code animation: https://blog.bitsrc.io/top-5-animation-libraries-in-react-native-d00ec8ddfc8d
 import * as Animatable from "react-native-animatable";
 
+//link doc timelinecalendar: https://howljs.github.io/react-native-calendar-kit/docs/intro
 import { TimelineCalendar } from '@howljs/calendar-kit';
 
 const widthScreen = Dimensions.get("window").width;
@@ -164,6 +165,27 @@ export default function ListScreen() {
           // holidays={["2022-11-05", "2022-11-02"]}
           onDragCreateEnd={(date) => {
             console.log(date);
+          }}
+          theme={{
+            //normal
+            dayName: { color: "black", fontSize: 16 },
+            dayNumber: { color: "black" },
+            dayNumberContainer: { backgroundColor: "white" },
+
+            //today
+            todayName: { color: "#09CBD0", fontSize: 16 },
+            todayNumber: { color: "white" },
+            todayNumberContainer: { backgroundColor: "#09CBD0" },
+
+            //Saturday style
+            saturdayName: { color: "blue", fontSize: 16 },
+            saturdayNumber: { color: "blue" },
+            saturdayNumberContainer: { backgroundColor: "white" },
+
+            //Sunday style
+            sundayName: { color: "red", fontSize: 16 },
+            sundayNumber: { color: "red" },
+            sundayNumberContainer: { backgroundColor: "white" },
           }}
           // calendarWidth={widthScreen}
           // isShowHalfLine={false}
