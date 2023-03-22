@@ -14,7 +14,7 @@ const heightScreen = Dimensions.get("window").height;
 export default function CalendarScreen() {
     return (
         <SafeAreaView style={styles.container}>
-            <Calendar style={{height:300}}/>
+            <Calendar style={{height:'100%', width: '100%',alignContent:'center'}}/>
         </SafeAreaView>
     )
 };

@@ -55,9 +55,9 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* <Text>profile</Text> */}
-      <View style={{width: "100%", height:"20%"}}>
+      <View style={{width: "100%", height:"20%", justifyContent:'flex-start',}}>
           <Avatar.Image source={require("../../../assets/avaUser.gif")} 
-            size={200} 
+            size={210} 
             style={styles.avatar}/>
       </View>
       <View style={styles.form}>
