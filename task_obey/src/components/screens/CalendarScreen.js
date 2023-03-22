@@ -33,13 +33,13 @@ LocaleConfig.locales['vn'] = {
         "Chủ nhật"
     ],
     dayNamesShort: [
+        "CN",
         "Hai",
         "Ba",
         "Tư",
         "Năm",
         "Sáu",
         "Bảy",
-        "CN"
     ],
 }
 
