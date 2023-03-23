@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Dimensions, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { Calendar,CalendarList, LocaleConfig } from 'react-native-calendars';
 // link calendar: https://github.com/wix/react-native-calendars
 //link all name animations: https://github.com/oblador/react-native-animatable
 //link how to code animation: https://blog.bitsrc.io/top-5-animation-libraries-in-react-native-d00ec8ddfc8d
@@ -48,10 +48,26 @@ LocaleConfig.defaultLocale = 'vn'
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
 
-export default function CalendarScreen() {
+export default function CalendarScreen(props) {
+    const initDate = '2022-12-01';
+    const [selected, setSelected] = useState(initDate);
+    const marked = useMemo(() => ({
+        [selected]: {
+        customStyles: {
+            container: {
+            borderColor: "#09CBD0",
+            borderWidth: 1.5,
+            borderRadius: 100,
+            },
+            text: {
+            color: 'black',
+            }
+        }
+        }
+    }), [selected]);
     return (
         <SafeAreaView style={styles.container}>
-            <Calendar style={{height:'100%', width: '100%',alignContent:'center'}}
+            <CalendarList style={{height:'100%', width: '100%',alignContent:'center'}}
                 theme={{
                     backgroundColor: "#fff",
                     textSectionTitleColor: "#09CBD0",
@@ -65,7 +81,14 @@ export default function CalendarScreen() {
                     agendaTodayColor:"#09CBD0",
                     agendaDayNumColor:"#09CBD0",
                     agendaDayTextColor:"#fff",
-                }}/>
+                }}
+                markingType="custom"
+                markedDates={marked}
+                onDayPress={(day) => {
+                    setSelected(day.dateString);
+                    props.onDaySelect && props.onDaySelect(day);
+                }}
+                {...props}/>
         </SafeAreaView>
     )
 };
