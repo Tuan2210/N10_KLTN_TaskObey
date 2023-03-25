@@ -18,9 +18,7 @@ const taskController = {
     } = req.body;
 
     if (!taskName || !userId)
-      return res
-        .status(400)
-        .json({ success: false, message: "Missing this task" });
+      return res.status(400).json({ success: false, message: "Missing this task" });
 
     try {
       //task
@@ -36,9 +34,7 @@ const taskController = {
 
       //details task
       if (!newTask._id)
-        return res
-          .status(400)
-          .json({ success: false, message: "Missing taskId in taskDetail" });
+        return res.status(400).json({ success: false, message: "Missing taskId in taskDetail" });
       const newTaskDetail = new TaskDetail({
         taskId: newTask._id,
         userId: newTask.userId,
@@ -62,11 +58,14 @@ const taskController = {
   //GET ALL TASKS NOT FINISH BY USERID
   getNotFinishTasksByUserId: async (req, res) => {
     try {
-      await Task.find({
+      await TaskDetail.find({
         userId: req.params.userId,
         dayTime: req.params.dayTime,
         status: "Chưa hoàn thành",
-      }).then((resData1) => res.json(resData1));
+      }).populate('taskId').then((resData1) => res.json(resData1));
+
+      // const taskDetail = await TaskDetail.findOne({dayTime: "2023-03-25"}).populate('taskId');
+      // res.json(taskDetail);
 
       // const pineline = [
       //   { $match: {"_id": req.params.taskId} },
@@ -82,20 +81,41 @@ const taskController = {
       //   res.json(queryTask)
       // }).catch(err => next(err));
 
-      // Task.find().populate('taskDetailsId').exec(function(err, tasks) {
-      //   if(err) throw err;
-
-      //   var specificTask = [];
-      //   tasks.forEach(function(task) {
-      //     task.taskDetailsId.forEach(function(taskDetail) {
-      //       specificTask.push(taskDetail._id);
-      //     });
+      // TaskDetail.find().populate({
+      //     "path": "task",
+      //     "match": { "status": "task" }
+      // }).exec(function(err,entries) {
+      //   // Now client side filter un-matched results
+      //   entries = entries.filter(function(entry) {
+      //     res.json(entry.task)
+      //       // return entry.task != null;
       //   });
-      //   res.json(specificTask);
+      //   // Anything not populated by the query condition is now removed
       // });
+
+      // TaskDetail.find().populate('tasks').exec(function(err, taskDetails) {
+      //   if(err) res.status(500).json(err);
+      //   res.status(200).json(taskDetails.taskId)
+      // })
+
     } catch (error) {
       res.status(500).json(error);
     }
+
+
+    // TaskDetail.find().populate('taskId').exec(function(err, tasks) {
+    //   if(err) throw err;
+
+    //   var specificTask = [];
+    //   tasks.forEach(function(task) {
+    //     task.taskDetailsId.forEach(function(taskDetail) {
+    //       specificTask.push(taskDetail._id);
+    //     });
+    //   });
+    //   res.json(specificTask);
+    // });
+
+
   },
 
   //GET ALL TASKS NOT FINISH BY USERID
