@@ -5,7 +5,9 @@ const taskController = require("../controllers/taskController");
 router.post("/addTask", taskController.addTask);
 
 //GET ALL TASKS NOT FINISH BY USERID
-router.get("/notFinishTasks/:userId", taskController.getNotFinishTasksByUserId);
+router.get("/notFinishTasks/:userId/:dayTime", taskController.getNotFinishTasksByUserId);
+//GET ALL TASK DETAILS NOT FINISH BY TASKID
+router.get("/notFinishTaskDetails/:taskId", taskController.getNotFinishTaskDetailsByTaskId);
 
 //GET ALL TASKS FINISH BY USERID
 router.get("/finishTasks/:userId", taskController.getFinishTasksByUserId);

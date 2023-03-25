@@ -5,9 +5,9 @@ const taskSchema = new mongoose.Schema({
     type: String,
   },
   dayTime: {
-    type: Date,
+    type: String,
     require: true,
-    default: Date.now,
+    default: new Date().toISOString().split("T")[0],
   },
   status: {
     type: String,
@@ -15,6 +15,10 @@ const taskSchema = new mongoose.Schema({
   userId: {
     type: String,
   },
+  // taskDetailsId: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "taskDetails",
+  // },
 });
 
 module.exports = mongoose.model("tasks", taskSchema);

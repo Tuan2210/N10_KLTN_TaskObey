@@ -1,13 +1,15 @@
 const mongoose = require("mongoose");
 const dbName = "taskobeyDB";
 const taskDetailSchema = new mongoose.Schema({
-  idTask: {
+  taskId: {
+    // type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "tasks",
+  },
+  userId: {
     type: String,
   },
-  idUser: {
-    type: String,
-  },
-  idSchedule: {
+  scheduleId: {
     type: String,
   },
   taskType: {
@@ -20,13 +22,13 @@ const taskDetailSchema = new mongoose.Schema({
     type: String,
   },
   startTime: {
-    type: Date,
+    type: String,
   },
   endTime: {
-    type: Date,
+    type: String,
   },
   reminderTime: {
-    type: Date,
+    type: String,
   },
 });
 

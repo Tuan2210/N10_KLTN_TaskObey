@@ -41,8 +41,8 @@ export default function Home() {
   //   }, 1000)
   // })
   const currentDate = new Date().toISOString().split("T")[0];
-  const currentDay = currentDate.slice(5,7),
-        currentMonth = currentDate.slice(8,10),
+  const currentDay = currentDate.slice(8,10),
+        currentMonth = currentDate.slice(5,7),
         currentYear = currentDate.slice(0,4),
         formatCurrentDate = currentDay +'/' +currentMonth +'/'  +currentYear;
 
@@ -71,7 +71,7 @@ export default function Home() {
           name="Thông tin cá nhân"
           component={ProfileScreen}
           options={{
-            headerTitle: "Hôm nay",
+            headerTitle: "Hôm nay, " +formatCurrentDate,
             headerTitleStyle: {
               color: "#fff",
             },

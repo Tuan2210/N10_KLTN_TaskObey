@@ -1,9 +1,21 @@
-const { Task } = require("../models");
+const { Task, TaskDetail } = require("../models");
 
 const taskController = {
   //ADD TASK
   addTask: async (req, res) => {
-    const { taskName, dayTime, status, userId } = req.body;
+    const {
+      taskName,
+      dayTime,
+      userId,
+      // taskDetailsId,
+      scheduleId,
+      taskType,
+      description,
+      priority,
+      startTime,
+      endTime,
+      reminderTime,
+    } = req.body;
 
     if (!taskName || !userId)
       return res
@@ -11,15 +23,36 @@ const taskController = {
         .json({ success: false, message: "Missing this task" });
 
     try {
+      //task
       const newTask = new Task({
         taskName,
         dayTime,
         status: "Chưa hoàn thành",
         userId,
+        // taskDetailsId,
       });
       await newTask.save();
+      // res.json(newTask);
 
-      res.json(newTask);
+      //details task
+      if (!newTask._id)
+        return res
+          .status(400)
+          .json({ success: false, message: "Missing taskId in taskDetail" });
+      const newTaskDetail = new TaskDetail({
+        taskId: newTask._id,
+        userId: newTask.userId,
+        scheduleId,
+        taskType,
+        description,
+        priority,
+        startTime,
+        endTime,
+        reminderTime,
+      });
+      await newTaskDetail.save();
+
+      res.json([newTask, newTaskDetail]);
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: "Error" });
@@ -31,8 +64,49 @@ const taskController = {
     try {
       await Task.find({
         userId: req.params.userId,
+        dayTime: req.params.dayTime,
         status: "Chưa hoàn thành",
-      }).then((data) => res.status(200).json(data));
+      }).then((resData1) => res.json(resData1));
+
+      // const pineline = [
+      //   { $match: {"_id": req.params.taskId} },
+      //   { $lookup: {
+      //       from: "taskdetails",
+      //       localField: "_id",
+      //       foreignField: "taskId",
+      //       as: "details"
+      //     }
+      //   }
+      // ];
+      // Task.aggregate(pineline).exec().then((queryTask) => {
+      //   res.json(queryTask)
+      // }).catch(err => next(err));
+
+      // Task.find().populate('taskDetailsId').exec(function(err, tasks) {
+      //   if(err) throw err;
+
+      //   var specificTask = [];
+      //   tasks.forEach(function(task) {
+      //     task.taskDetailsId.forEach(function(taskDetail) {
+      //       specificTask.push(taskDetail._id);
+      //     });
+      //   });
+      //   res.json(specificTask);
+      // });
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+
+  //GET ALL TASKS NOT FINISH BY USERID
+  getNotFinishTaskDetailsByTaskId: async (req, res) => {
+    try {
+      await TaskDetail.find({
+        taskId: req.params.taskId,
+        // userId: req.params.userId,
+      }).then((resData2) => {
+        res.json(resData2);
+      });
     } catch (error) {
       res.status(500).json(error);
     }
