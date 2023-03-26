@@ -13,7 +13,9 @@ const taskSchema = new mongoose.Schema({
     type: String,
   },
   userId: {
-    type: String,
+    // type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
   },
   // taskDetailsId: {
   //   type: mongoose.Schema.Types.ObjectId,
