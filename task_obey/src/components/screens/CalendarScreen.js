@@ -13,7 +13,7 @@ LocaleConfig.locales['vn'] = {
         "Tháng một",
         "Tháng hai",
         "Tháng ba",
-        "Tháng bốn",
+        "Tháng tư",
         "Tháng năm",
         "Tháng sáu",
         "Tháng bảy",
@@ -24,7 +24,7 @@ LocaleConfig.locales['vn'] = {
         "Tháng mười hai"
     ],
     monthNamesShort:["T1","T2","T3","T4","T5","T7","T8","T9","T10","T11","T12", ],
-    dayNames: [ "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy", "Chủ nhật"],
+    dayNames: [ "Chủ nhật","Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy", ],
     dayNamesShort: [ "CN", "T2", "T3", "T4", "T5", "T6", "T7",]
 }
 
