@@ -60,7 +60,7 @@ export default function CalendarScreen(props) {
                     todayTextColor: "#fff",
                     todayBackgroundColor:"#09CBD0",
                 }}
-                initialDate={formatpresentDate}
+                // initialDate={formatpresentDate}
                 markingType="custom"
                 markedDates={marked}
                 onDayPress={(day) => {
