@@ -4,7 +4,7 @@ const taskSchema = new mongoose.Schema({
   taskName: {
     type: String,
   },
-  dayTime: {
+  initialDate: {
     type: String,
     require: true,
     default: new Date().toISOString().split("T")[0],

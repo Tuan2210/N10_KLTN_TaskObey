@@ -5,7 +5,7 @@ const taskController = {
   addTask: async (req, res) => {
     const {
       taskName,
-      dayTime,
+      initialDate,
       userId,
       // taskDetailsId,
       scheduleId,
@@ -24,7 +24,7 @@ const taskController = {
       //task
       const newTask = new Task({
         taskName,
-        dayTime,
+        initialDate,
         status: "Chưa hoàn thành",
         userId,
         // taskDetailsId,
@@ -60,7 +60,7 @@ const taskController = {
     try {
       await TaskDetail.find({
         userId: req.params.userId,
-        dayTime: req.params.dayTime,
+        initialDate: req.params.initialDate,
         status: "Chưa hoàn thành",
       }).populate('taskId').then((resData1) => res.json(resData1));
 
