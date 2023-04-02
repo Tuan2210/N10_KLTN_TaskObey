@@ -1,4 +1,4 @@
-const { Task, TaskDetail } = require("../models");
+const { Task, TaskDetail, Schedule } = require("../models");
 
 const taskController = {
   //ADD TASK
@@ -8,13 +8,16 @@ const taskController = {
       initialDate,
       userId,
       // taskDetailsId,
-      scheduleId,
+      // scheduleId,
       taskType,
       description,
       priority,
       startTime,
       endTime,
       reminderTime,
+      duration,
+      deadline,
+      repeat,
     } = req.body;
 
     if (!taskName || !userId)
@@ -38,7 +41,7 @@ const taskController = {
       const newTaskDetail = new TaskDetail({
         taskId: newTask._id,
         userId: newTask.userId,
-        scheduleId,
+        // scheduleId,
         taskType,
         description,
         priority,
@@ -48,7 +51,20 @@ const taskController = {
       });
       await newTaskDetail.save();
 
-      res.json([newTask, newTaskDetail]);
+      //schedule
+      if (!newTask._id || !newTaskDetail._id)
+        return res.status(400).json({ success: false, message: "Missing taskId or taskDetailId" });
+      const newSchedule = new Schedule({
+        taskId: newTask._id,
+        taskDetailId: newTaskDetail._id,
+        userId: newTask.userId,
+        duration,
+        deadline,
+        repeat,
+      });
+      await newSchedule.save();
+
+      res.json([newTask, newTaskDetail, newSchedule]);
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: "Error" });
