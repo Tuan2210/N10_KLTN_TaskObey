@@ -30,117 +30,219 @@ export default function ListScreen({navigation}) {
   const currentRegisterUser = useSelector((state) => state.auth.register?.currentUserRegister);
   const registerUserId = currentRegisterUser?._id;
   
-  const [userId, setUserId] = useState();
-  useEffect(() => {
-    if(currentRegisterUser && !currentLoginUser)
-      setUserId(registerUserId);
-    if(!currentRegisterUser && currentLoginUser)
-      setUserId(loginUserId)
-  }, [currentRegisterUser, currentLoginUser]);
+  // const [userId, setUserId] = useState();
+  // useEffect(() => {
+  //   if(currentRegisterUser && !currentLoginUser)
+  //     setUserId(registerUserId);
+  //   if(!currentRegisterUser && currentLoginUser)
+  //     setUserId(loginUserId)
+  // }, [currentRegisterUser, currentLoginUser]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [dataList, setDataList] = useState([]);
-  const [dataTaskName, setDataTaskName] = useState();
+  const currentDate = new Date().toISOString().split("T")[0];
+  const currentDay = currentDate.slice(8,10),
+        currentMonth = currentDate.slice(5,7),
+        currentYear = currentDate.slice(0,4),
+        formatCurrentDate = currentDay +'/' +currentMonth +'/'  +currentYear;
+  useEffect(()=> {
+    console.log(new Date("2023-03-26 10:30:59"));
+  })
+
+  ////////load list tasks by userId & current date
+  // const [dataTasksList, setDataTasksList] = useState([]);
+  let dataTasksList = [];
+  const [events, setEvents] = useState();
+  const [obj, setObj] = useState({});
+  const [taskId, setTaskId] = useState();
+  const [taskName, setTaskName] = useState();
   const [dataDayTime, setDataDayTime] = useState();
-  useEffect(() => {
-    loadListNotFinishTasks(userId);
-  }, [userId]);
+  const [endTime, setEndTime] = useState();
+  const [description, setDescription] = useState();
+  const [status, setStatus] = useState();
+  const [taskType, setTaskType] = useState();
+  const [priority, setPriority] = useState();
+  const [reminderTime, setReminderTime] = useState();
 
-  async function loadListNotFinishTasks(userId) {
-    await axios
-      .get(`${url}/api/task/notFinishTasks/${userId}`)
-      .then((res) => {
-        if(res.data.length > 0) {
-          // {res.data.map((taskData, index) => {
-          //   console.log(taskData);
-          //   setDataTaskName(taskData.taskName);
-          //   setDataDayTime(taskData.dayTime);
-          // })}
-          setDataList(res.data);
-        };
-      })
-  }
+  // console.log('registeruserid',registerUserId);
+  // console.log('loginuserid',loginUserId)
 
-  let sliceDay, sliceTime;
-  const [time, setTime] = useState();
-  const [selectedIdItemData, setSelectedIdItemData] = useState(null);
-  const ItemData = ({ item, onPress, activeItemBg, activeItemFont }) => (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[
-        activeItemBg,
-        {
-          width: "100%",
-          height: 200,
-          alignSelf: "center",
-          justifyContent: "space-around",
-          // marginLeft: "3%",
-          marginTop: "4%",
-          borderRadius: 20,
-          borderColor: "#09CBD0",
-          borderWidth: 1.2,
-          borderStyle: "solid",
-        },
-      ]}
-    >
-      <View style={{ padding: '5%' }}>
-        <Text 
-          style={[
-            activeItemFont, 
-            { 
-              fontSize: 20, 
-              // backgroundColor:"red", 
-              width: '100%',
-              height: '85%'
-            }]}
-        >
-          {item.taskName}
-        </Text>
-        <Text
-          style={{
-            color: "#D4A055",
-            fontSize: 16,
-            fontWeight: "bold",
-            alignSelf: "flex-end"
-          }}
-        >
-          {
-            [
-              sliceDay = (new Date(item.dayTime)).toLocaleDateString(),', ',
-              sliceTime = (new Date(item.dayTime)).toLocaleTimeString()
-            ]
-          }
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
+  // useEffect(() => {
+  //   if(registerUserId!==undefined && loginUserId===undefined) 
+  //     loadListNotFinishTasks(registerUserId, currentDate);
+  // }, [registerUserId, currentDate]);
   
+  // useEffect(() => {
+  //   // if(registerUserId===undefined && loginUserId!==undefined)
+  //   //   loadListNotFinishTasks(loginUserId, currentDate);
+  //   // if(registerUserId!==undefined && loginUserId===undefined)
+  //   //   loadListNotFinishTasks(loginUserId, currentDate);
+    
+  //   // loadListNotFinishTasks();
+  // }, []);
+
+  useEffect(() => {
+    loadListNotFinishTasks();
+  }, [])
+  const loadListNotFinishTasks = async () => {
+    if (registerUserId === undefined && loginUserId !== undefined) {
+      // console.log(registerUserId);
+      // console.log(loginUserId);
+      // try {
+      const res = await axios.get(`${url}/api/task/notFinishTasks/${loginUserId}/${currentDate}`);
+      // setEvents(res.data)
+      // console.log(events);
+      const newEvent: EventItem[] = res.data.map((item, index) => ({
+        id: item._id,
+        title: item.taskId.taskName,
+        start: item.dayTime,
+        end: "2023-03-26T14:00:05.313Z",
+        color: "#A3C7D6",
+        description: item.description,
+        imageUrl: '',
+        dayTime: item.dayTime,
+        status: item.status,
+        taskType: item.taskType,
+        priority: item.priority,
+        reminderTime: item.reminderTime
+      }));
+      setEvents(newEvent)
+      console.log(events);
+      // {res.data.map((item, index) => {
+      //     setTaskId(item._id);
+      //     setTaskName(item.taskName);
+      // })};
+      // console.log(taskId);
+      // console.log(taskName);
+      // } catch (error) {
+      //   console.log(error);
+      // }
+    }
+  };
+
+  // async function loadListNotFinishTasks(id, date) { //userId, currentDate
+  //   // const res = await axios.get(`${url}/api/task/notFinishTasks/${id}/${date}`);
+    
+  //   await axios
+  //     .get(`${url}/api/task/notFinishTasks/${id}/${date}`)
+  //     .then((res) => {
+  //       if(res.data.length===0) console.log('no data task in list');
+  //       if(res.data.length > 0) {
+  //         // console.log('res data');
+  //         // console.log(res.data)
+  //         {res.data.map((item, index) => {
+  //           const itemDetail = {
+  //             id: item._id,
+  //             title: item.taskId.taskName,
+  //             // start: event.start,
+  //             // end: event.end,
+  //             // color: "#A3C7D6",
+  //             // description: "abc",
+  //             // imageUrl: '',
+  //             // dayTime: '',
+  //             // status: '',
+  //             // taskType: '',
+  //             // priority: '',
+  //             // reminderTime: ''
+  //           }
+  //           setObj(itemDetail);
+  //           console.log(obj);
+  //         })}
+  //       };
+  //     })
+  // }
+
+  // {dataTasksList.map((item, index) => {
+  //   // setTaskId(item._id);
+  //   // setTaskName(item.taskId.taskName);
+  //   const newEvent = {
+  //     id: item._id,
+  //     title: item.taskId.taskName,
+  //     start: event.start,
+  //     end: event.end,
+  //     color: "#A3C7D6",
+  //     description: "abc",
+  //     imageUrl: '',
+  //     dayTime: '',
+  //     status: '',
+  //     taskType: '',
+  //     priority: '',
+  //     reminderTime: ''
+  //   };
+  //   setEvents(newEvent);
+  // })}
+  ////////
+
+  ////////load list taskDetails by taskId
+  // console.log(taskId)
+  // const dataTaskDetailsList = [];
+  // useEffect(() => {
+  //   loadListNotFinishTaskDetails(taskId);
+  // }, [taskId]);
+  // async function loadListNotFinishTaskDetails(id) { //taskId
+  //   await axios
+  //     .get(`${url}/api/task/notFinishTaskDetails/${id}`)
+  //     .then((res) => {
+  //       if(res.data.length===0) console.log('no data taskdetail in list');
+  //       if(res.data.length > 0) {
+  //         Object.keys(res.data).forEach(function (key) {
+  //           const keyIndex = res.data[key];
+  //           dataTaskDetailsList.push(keyIndex);
+  //           // console.log('dataTaskDetailsList');
+  //           // console.log(dataTaskDetailsList);
+  //         });
+  //       };
+  //     })
+  // }
+  ////////
+
+  const exampleEvents: EventItem[] = [
+    {
+      id: "1",
+      title: "Event 1",
+      start: "2023-03-25T09:00:05.313Z",
+      end: "2023-03-25T12:00:05.313Z",
+      color: "#A3C7D6",
+    },
+    {
+      id: "2",
+      title: "Event 2",
+      start: "2023-03-25T11:00:05.313Z",
+      end: "2023-03-25T14:00:05.313Z",
+      color: "#B1AFFF",
+    },
+  ];
+  // useEffect(()=>console.log(exampleEvents))
+
   MomentConfig.updateLocale("vi", {
     weekdaysShort: "Chủ nhật_Thứ 2_Thứ 3_Thứ 4_Thứ 5_Thứ 6_Thứ 7".split("_"),
   });
 
   //create task
-  const [events, setEvents] = useState([]);
-  const _onDragCreateEnd = (event: RangeTime) => {
-    const randomId = Math.random().toString(36).slice(2, 10);
-    const newEvent = {
-      id: randomId,
-      title: randomId,
-      start: event.start,
-      end: event.end,
-      color: "#A3C7D6",
-      description: "abc",
-      imageUrl: '',
-      dayTime: '',
-      status: '',
-      taskType: '',
-      priority: '',
-      reminderTime: ''
-    };
-    setEvents((prev) => [...prev, newEvent]);
-  };
+  // {dataTasksList.map((item, index) => {
+    
+  // })}
+  
+
+  // const _onDragCreateEnd = (event: RangeTime) => {
+  //   const randomId = Math.random().toString(36).slice(2, 10);
+  //   const newEvent = {
+  //     id: taskId,
+  //     title: taskName,
+  //     start: event.start,
+  //     end: event.end,
+  //     color: "#A3C7D6",
+  //     description: "abc",
+  //     imageUrl: '',
+  //     dayTime: '',
+  //     status: '',
+  //     taskType: '',
+  //     priority: '',
+  //     reminderTime: ''
+  //   };
+  //   setEvents((prev) => [...prev, newEvent]);
+  // };
 
   //edit task
   const [selectedEvent, setSelectedEvent] = useState();
@@ -184,47 +286,20 @@ export default function ListScreen({navigation}) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* <Text>{dataTaskName}</Text>
-        <Text>{dataDayTime}</Text> */}
-
-      {/* <FlatList
-          key={"#"}
-          // numColumns={2}
-          data={dataList}
-          renderItem={({ item }) => {
-            // const backgroundColor =
-            //   item.id === selectedIdItemData ? "#fff" : "black";
-            // const color = item.id === selectedIdItemData ? "black" : "#fff";
-            return (
-              <ItemData
-                item={item}
-                onPress={() => setSelectedIdItemData(item.id)}
-                activeItemBg={{  }}
-                activeItemFont={{  }}
-                // viewImgItem={{ width: "auto", height: 100 }}
-              />
-            );
-          }}
-          style={{
-            width: '100%', 
-            height: '100%',
-            padding: '5%'
-          }}
-        /> */}
-      
       <View style={{ width: "100%", height: "100%" }}>
         <TimelineCalendar
+          key={'#'}
           viewMode="week"
           locale="vi"
           initialDate={new Date().toISOString().split("T")[0]}
           allowPinchToZoom
           allowDragToCreate
-          onDragCreateEnd={_onDragCreateEnd}
+          // onDragCreateEnd={_onDragCreateEnd}
           dragCreateInterval={120}
           dragStep={20}
           events={events}
           onLongPressEvent={_onLongPressEvent}
-          onPressEvent={(data) => console.log(data)}
+          // onPressEvent={(data) => console.log(data)}
           selectedEvent={selectedEvent}
           onEndDragSelectedEvent={setSelectedEvent}
           // isShowHeader={false}
