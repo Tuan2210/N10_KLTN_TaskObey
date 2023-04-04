@@ -184,17 +184,18 @@ export default function CreateTaskScreen() {
         apiCreateTask('');
         setDeadline('');
       } else { //detail duration
-        const durationSeconds = (endDate.getTime() - startDate.getTime())/1000;
+        const durationSeconds = Math.abs((endDate.getTime() - startDate.getTime())/1000);
         let integerPartH, remainderPartM;
         let integerPartDay, remainderPartH;
         let integerPartW, remainderPartDay;
+
         if(durationSeconds>=60 && durationSeconds<3600) { //phút
           apiCreateTask(Math.round(durationSeconds/60).toString() +' phút');
         }
         else if(durationSeconds>=3600 && durationSeconds<86400) { //giờ: 60x60
           const durationHours = durationSeconds/3600;
           integerPartH = Math.round(durationHours);
-          remainderPartM = Math.round((durationHours - integerPartH)*60);
+          remainderPartM = Math.round(Math.abs((durationHours - integerPartH)*60));
           if(remainderPartM===0)
             apiCreateTask(integerPartH.toString() +' giờ');
           // else if(remainderPartM<0)
@@ -205,46 +206,47 @@ export default function CreateTaskScreen() {
         else if(durationSeconds>=86400 && durationSeconds<86400*7) { //ngày: 3600x24
           const durationDays = durationSeconds/86400;
           integerPartDay = Math.round(durationDays);
-          remainderPartH = (durationDays - integerPartDay)*24;
+          remainderPartH = Math.abs((durationDays - integerPartDay)*24);
 
-          if(remainderPartH<0) {
-            remainderPartH = ((durationDays - integerPartDay)*24)*(-1);
-            integerPartH = Math.round(remainderPartH);
-            remainderPartM = Math.round((remainderPartH - integerPartH)*60);
-            if(remainderPartH===0 && remainderPartM===0)
-              apiCreateTask(integerPartDay.toString() +' ngày');
+          // if(remainderPartH<0) {
+          //   remainderPartH = ((durationDays - integerPartDay)*24)*(-1);
+          //   integerPartH = Math.round(remainderPartH);
+          //   remainderPartM = Math.round((remainderPartH - integerPartH)*60);
+          //   if(remainderPartH===0 && remainderPartM===0)
+          //     apiCreateTask(integerPartDay.toString() +' ngày');
+          //   // if(integerPartH<0)
+          //   //   apiCreateTask(integerPartDay.toString() +' ngày, ' +(integerPartH*(-1)).toString() +' giờ, ' +remainderPartM.toString() +' phút');
+          //   // if(remainderPartM<0)
+          //   //   apiCreateTask(integerPartDay.toString() +' ngày, ' +integerPartH.toString() +' giờ, ' +(remainderPartM*(-1)).toString() +' phút');
+          //   // if(integerPartH>0 || remainderPartM>0)
+          //   apiCreateTask(integerPartDay.toString() +' ngày, ' +integerPartH.toString() +' giờ, ' +remainderPartM.toString() +' phút');
+          // } else {
+          integerPartH = Math.round(remainderPartH);
+          remainderPartM = Math.round(Math.abs((remainderPartH - integerPartH)*60));
+          if(remainderPartH===0 && remainderPartM===0)
+            apiCreateTask(integerPartDay.toString() +' ngày');
             // if(integerPartH<0)
             //   apiCreateTask(integerPartDay.toString() +' ngày, ' +(integerPartH*(-1)).toString() +' giờ, ' +remainderPartM.toString() +' phút');
             // if(remainderPartM<0)
             //   apiCreateTask(integerPartDay.toString() +' ngày, ' +integerPartH.toString() +' giờ, ' +(remainderPartM*(-1)).toString() +' phút');
             // if(integerPartH>0 || remainderPartM>0)
-            apiCreateTask(integerPartDay.toString() +' ngày, ' +integerPartH.toString() +' giờ, ' +remainderPartM.toString() +' phút');
-          } else {
-            integerPartH = Math.round(remainderPartH);
-            remainderPartM = Math.round((remainderPartH - integerPartH)*60);
-            if(remainderPartH===0 && remainderPartM===0)
-              apiCreateTask(integerPartDay.toString() +' ngày');
-            // if(integerPartH<0)
-            //   apiCreateTask(integerPartDay.toString() +' ngày, ' +(integerPartH*(-1)).toString() +' giờ, ' +remainderPartM.toString() +' phút');
-            // if(remainderPartM<0)
-            //   apiCreateTask(integerPartDay.toString() +' ngày, ' +integerPartH.toString() +' giờ, ' +(remainderPartM*(-1)).toString() +' phút');
-            // if(integerPartH>0 || remainderPartM>0)
-            apiCreateTask(integerPartDay.toString() +' ngày, ' +integerPartH.toString() +' giờ, ' +remainderPartM.toString() +' phút');
-          }
+          apiCreateTask(integerPartDay.toString() +' ngày, ' +integerPartH.toString() +' giờ, ' +remainderPartM.toString() +' phút');
+          // }
         }
-        else if(durationSeconds>=86400*7) { //ngày: 3600x24
+        else if(durationSeconds>=86400*7) { //tuần: 86400x7
           const durationWeeks = durationSeconds/(86400*7);
           integerPartW = Math.round(durationWeeks);
-          remainderPartDay = (durationWeeks - integerPartW)*7;
+          remainderPartDay = Math.abs((durationWeeks - integerPartW)*7);
 
           if(remainderPartDay===0) apiCreateTask(integerPartW.toString() +' tuần');
-          if(remainderPartDay>0) {
-            remainderPartDay = (durationWeeks - integerPartW)*7;
+          else {
+            remainderPartDay = Math.abs((durationWeeks - integerPartW)*7);
             integerPartDay = Math.round(remainderPartDay);
-            remainderPartH = (remainderPartDay - integerPartDay)*24;
+            remainderPartH = Math.abs((remainderPartDay - integerPartDay)*24);
 
             integerPartH = Math.round(remainderPartH);
-            remainderPartM = Math.round((remainderPartH - integerPartH)*60);
+            remainderPartM = Math.round(Math.abs((remainderPartH - integerPartH)*60));
+
             apiCreateTask(integerPartW.toString() +' tuần, ' +integerPartDay.toString() +' ngày, ' +integerPartH.toString() +' giờ, ' +remainderPartM.toString() +' phút');
           }
 
@@ -466,6 +468,7 @@ export default function CreateTaskScreen() {
                       setFlag(value);
                       setDisplayEndDate("... / ... / ....");
                       setDisplayEndTime("... giờ ... phút");
+                      setEndDateTime(displayEndDate +',\u00A0' + displayEndTime);
                     }
                   }}
                 />
