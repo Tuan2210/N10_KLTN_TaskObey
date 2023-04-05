@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const { Task, TaskDetail, Schedule } = require("../models");
 
 const taskController = {
@@ -7,8 +8,8 @@ const taskController = {
       taskName,
       initialDate,
       userId,
-      // taskDetailsId,
-      // scheduleId,
+      taskDetailId,
+      scheduleId,
       taskType,
       description,
       priority,
@@ -30,18 +31,19 @@ const taskController = {
         initialDate,
         status: "Chưa hoàn thành",
         userId,
-        // taskDetailsId,
+        taskDetailId: new mongoose.Types.ObjectId(),        
       });
       await newTask.save();
       // res.json(newTask);
 
       //details task
-      if (!newTask._id)
+      if(!newTask._id)
         return res.status(400).json({ success: false, message: "Missing taskId in taskDetail" });
       const newTaskDetail = new TaskDetail({
+        _id: newTask.taskDetailId,
         taskId: newTask._id,
         userId: newTask.userId,
-        // scheduleId,
+        scheduleId: new mongoose.Types.ObjectId(),
         taskType,
         description,
         priority,
@@ -55,6 +57,7 @@ const taskController = {
       if (!newTask._id || !newTaskDetail._id)
         return res.status(400).json({ success: false, message: "Missing taskId or taskDetailId" });
       const newSchedule = new Schedule({
+        _id: newTaskDetail.scheduleId,
         taskId: newTask._id,
         taskDetailId: newTaskDetail._id,
         userId: newTask.userId,
@@ -74,11 +77,22 @@ const taskController = {
   //GET ALL TASKS NOT FINISH BY USERID
   getNotFinishTasksByUserId: async (req, res) => {
     try {
-      await TaskDetail.find({
+      // await TaskDetail.find({
+      //   userId: req.params.userId,
+      //   initialDate: req.params.initialDate,
+      //   status: "Chưa hoàn thành",
+      // }).populate('taskId').then((resData1) => res.json(resData1));
+
+      await Task.find({
         userId: req.params.userId,
         initialDate: req.params.initialDate,
         status: "Chưa hoàn thành",
-      }).populate('taskId').then((resData1) => res.json(resData1));
+      })
+        .populate({ path: 'taskDetailId', populate: {path: 'scheduleId'}})
+        .exec(function(err, tasks) {
+          if(err) res.status(500).json(err);
+          res.status(200).json(tasks);
+        });
 
       // const taskDetail = await TaskDetail.findOne({dayTime: "2023-03-25"}).populate('taskId');
       // res.json(taskDetail);

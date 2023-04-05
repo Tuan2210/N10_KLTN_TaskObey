@@ -12,7 +12,9 @@ const taskDetailSchema = new mongoose.Schema({
     ref: "users",
   },
   scheduleId: {
-    type: String,
+    // type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "schedules",
   },
   taskType: {
     type: String,

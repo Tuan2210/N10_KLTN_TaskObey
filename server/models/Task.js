@@ -17,9 +17,15 @@ const taskSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
   },
-  // taskDetailsId: {
+  taskDetailId: {
+    // type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "taskDetails",
+  },
+  // scheduleId: {
+  //   // type: String,
   //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: "taskDetails",
+  //   ref: "schedules",
   // },
 });
 
