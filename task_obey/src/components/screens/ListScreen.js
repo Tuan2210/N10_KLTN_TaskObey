@@ -82,44 +82,45 @@ export default function ListScreen({navigation}) {
   //   // loadListNotFinishTasks();
   // }, []);
 
-  useEffect(() => {
-    loadListNotFinishTasks();
-  }, [])
-  const loadListNotFinishTasks = async () => {
-    if (registerUserId === undefined && loginUserId !== undefined) {
-      // console.log(registerUserId);
-      // console.log(loginUserId);
-      // try {
-      const res = await axios.get(`${url}/api/task/notFinishTasks/${loginUserId}/${currentDate}`);
-      // setEvents(res.data)
-      // console.log(events);
-      const newEvent: EventItem[] = res.data.map((item, index) => ({
-        id: item._id,
-        title: item.taskId.taskName,
-        start: item.dayTime,
-        end: "2023-03-26T14:00:05.313Z",
-        color: "#A3C7D6",
-        description: item.description,
-        imageUrl: '',
-        dayTime: item.dayTime,
-        status: item.status,
-        taskType: item.taskType,
-        priority: item.priority,
-        reminderTime: item.reminderTime
-      }));
-      setEvents(newEvent)
-      console.log(events);
-      // {res.data.map((item, index) => {
-      //     setTaskId(item._id);
-      //     setTaskName(item.taskName);
-      // })};
-      // console.log(taskId);
-      // console.log(taskName);
-      // } catch (error) {
-      //   console.log(error);
-      // }
-    }
-  };
+  // useEffect(() => {
+  //   loadListNotFinishTasks();
+  // }, [])
+  // const loadListNotFinishTasks = async () => {
+  //   if (registerUserId === undefined && loginUserId !== undefined) {
+  //     // console.log(registerUserId);
+  //     // console.log(loginUserId);
+  //     // try {
+  //     const res = await axios.get(`${url}/api/task/notFinishTasks/${loginUserId}/${currentDate}`);
+  //     // setEvents(res.data)
+  //     // console.log(events);
+  //     const newEvent: EventItem[] = res.data.map((item, index) => ({
+  //       id: item._id,
+  //       title: item.taskId.taskName,
+  //       start: item.dayTime,
+  //       end: "2023-03-26T14:00:05.313Z",
+  //       color: "#A3C7D6",
+  //       description: item.description,
+  //       imageUrl: '',
+  //       dayTime: item.dayTime,
+  //       status: item.status,
+  //       taskType: item.taskType,
+  //       priority: item.priority,
+  //       reminderTime: item.reminderTime
+  //     }));
+  //     setEvents(newEvent)
+  //     console.log(events);
+
+  //     // {res.data.map((item, index) => {
+  //     //     setTaskId(item._id);
+  //     //     setTaskName(item.taskName);
+  //     // })};
+  //     // console.log(taskId);
+  //     // console.log(taskName);
+  //     // } catch (error) {
+  //     //   console.log(error);
+  //     // }
+  //   }
+  // };
 
   // async function loadListNotFinishTasks(id, date) { //userId, currentDate
   //   // const res = await axios.get(`${url}/api/task/notFinishTasks/${id}/${date}`);

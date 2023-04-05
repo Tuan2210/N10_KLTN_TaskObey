@@ -339,17 +339,17 @@ export default function CreateTaskScreen() {
           placeholder="Nhập tên công việc"
           numberOfLines={1}
           autoFocus
-          onChangeText={(txt) => setTxtInputTask(txt.trim())}
+          onChangeText={(txt) => setTxtInputTask(txt)}
           value={txtInputTask}
         />
 
         {/* mô tả */}
         <TextInput
-          style={[styles.styleInput, {height: '15%', marginTop: '3%', borderRadius: 0, borderColor: 'gray'}]}
+          style={[styles.styleInput, {textAlignVertical: 'top', height: '15%', marginTop: '3%', borderRadius: 0, borderColor: 'gray'}]}
           placeholder="Nhập mô tả"
-          numberOfLines={3}
+          numberOfLines={4}
           multiline
-          onChangeText={(txt) => setTxtInputDesc(txt.trim())}
+          onChangeText={(txt) => setTxtInputDesc(txt)}
           value={txtInputDesc}
         />
 
