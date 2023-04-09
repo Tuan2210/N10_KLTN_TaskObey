@@ -50,6 +50,8 @@ export default function CreateTaskScreen() {
   }, [currentRegisterUser, currentLoginUser]);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [heightScrollView, setHeightScrollView] = useState('140%');
+  const [marginTopSize, setMarginTopSize] = useState('-10%');
 
   //////handle start-date-time picker
   const currentDateVN = new Date().toISOString().split("T")[0];
@@ -331,240 +333,236 @@ export default function CreateTaskScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={{ width: "100%", height: "100%", padding: "3%", justifyContent: "space-between", paddingBottom: '3%' }}>
-        {/* tên cv */}
-        <TextInput
-          style={[styles.styleInput, {borderRadius: 0, borderColor: 'gray'}]}
-          placeholder="Nhập tên công việc"
-          numberOfLines={1}
-          autoFocus
-          onChangeText={(txt) => setTxtInputTask(txt)}
-          value={txtInputTask}
-        />
-
-        {/* mô tả */}
-        <TextInput
-          style={[styles.styleInput, {textAlignVertical: 'top', height: '15%', marginTop: '3%', borderRadius: 0, borderColor: 'gray'}]}
-          placeholder="Nhập mô tả"
-          numberOfLines={4}
-          multiline
-          onChangeText={(txt) => setTxtInputDesc(txt)}
-          value={txtInputDesc}
-        />
-
-        {/* loại cv, ưu tiên */}
-        <View style={{flexDirection: "row", width: '100%', justifyContent: "space-between"}}>
-          <View style={{flexDirection: "row", width: '55%', justifyContent: "space-between", alignItems: "center"}}>
-            <Text style={{color: '#09CBD0'}}>Loại công việc:</Text>
-            <Picker
-              style={{width: '70%', backgroundColor: '#f4f4f4'}}
-              selectedValue={taskType}
-              onValueChange={(itemValue, itemIndex) => setTaskType(itemValue)}
-            >
-              <Picker.Item style={{fontWeight: "bold", fontSize: 14}} label="Cá nhân" value="Cá nhân" />
-              <Picker.Item style={{fontWeight: "bold", fontSize: 14}} label="Học tập" value="Học tập" />
-              <Picker.Item style={{fontWeight: "bold", fontSize: 14}} label="Công việc" value="Công việc" />
-            </Picker>
-          </View>
-          <View style={{flexDirection: "row", width: '32%', justifyContent: "space-between", alignItems: "center"}}>
-            <Text style={{color: '#09CBD0'}}>Ưu tiên:</Text>
-            <Picker
-              style={{width: '72%', backgroundColor: '#f4f4f4'}}
-              selectedValue={priority}
-              onValueChange={(itemValue, itemIndex) => setPriority(itemValue)}
-            >
-              <Picker.Item style={{fontWeight: "bold", color: 'red'}} label="1" value="1" />
-              <Picker.Item style={{fontWeight: "bold", color: 'orange'}} label="2" value="2" />
-              <Picker.Item style={{fontWeight: "bold", color: '#09CBD0'}} label="3" value="3" />
-            </Picker>
-          </View>
-        </View>
-
-        {/* lời nhắc */}
-        <View style={[styles.viewTwoColumns, {height: '7%', alignItems: "center"}]}>
-          <Text style={{ color: "#09CBD0" }}>Đặt lời nhắc</Text>
-          <Picker
-            style={{width: '82%', backgroundColor: '#f4f4f4'}}
-            selectedValue={reminderTime}
-            onValueChange={(itemValue, itemIndex) => setReminderTime(itemValue)}
-          >
-            <Picker.Item style={{fontSize: 18}} label="Không" value="Không" />
-            <Picker.Item style={{fontSize: 18}} label="Đúng giờ" value="Đúng giờ" />
-            <Picker.Item style={{fontSize: 18}} label="Trước 5 phút" value="Trước 5 phút" />
-            <Picker.Item style={{fontSize: 18}} label="Trước 30 phút" value="Trước 30 phút" />
-            <Picker.Item style={{fontSize: 18}} label="Trước 1 tiếng" value="Trước 1 tiếng" />
-            <Picker.Item style={{fontSize: 18}} label="Trước 1 ngày" value="Trước 1 ngày" />
-          </Picker>
-        </View>
-
-        {/* lặp lại */}
-        <View style={[styles.viewTwoColumns, {height: '7%', alignItems: "center"}]}>
-          <Text style={{ color: "#09CBD0" }}>Đặt lặp lại</Text>
-          <Picker
-            style={{width: '82%', backgroundColor: '#f4f4f4'}}
-            selectedValue={repeat}
-            onValueChange={(itemValue, itemIndex) => setRepeat(itemValue)}
-          >
-            <Picker.Item style={{fontSize: 18}} label="Không" value="Không" />
-            <Picker.Item style={{fontSize: 18}} label="Mỗi ngày" value="Mỗi ngày" />
-            <Picker.Item style={{fontSize: 18}} label="Mỗi tuần" value="Mỗi tuần" />
-            <Picker.Item style={{fontSize: 18}} label="Mỗi tháng" value="Mỗi tháng" />
-            <Picker.Item style={{fontSize: 18}} label="Mỗi năm" value="Mỗi năm" />
-          </Picker>
-        </View>
-
-        {/* ngày, th.gian */}
-        <View style={{width: '100%', height: '30%', justifyContent: 'space-around', alignItems: "center"}}>
-          {/* startTime */}
-          <Text style={{alignSelf: "flex-start", marginBottom: '-3%', color: '#09CBD0'}}>Thời gian bắt đầu:</Text>
-          <View style={styles.viewTwoColumns}>
-            <View style={{flexDirection: 'row', width: '46%', justifyContent: "space-between", alignItems: "center"}}>
-              <View style={styles.displayDateTime}>
-                <Text style={{fontSize: 18}}>{displayStartDate}</Text>
-              </View>
-              <TouchableOpacity
-                style={styles.btnDayTime}
-                onPress={() => {
-                  setShowStartDateTime(true);
-                  setModeStartDateTime("date");
-                }}
+      <ScrollView style={styles.container} contentContainerStyle={{height: heightScrollView}}>
+        <View style={{width: '100%', height: '100%', padding: '3%'}}>
+          {/* tên cv */}
+          <TextInput
+            style={[styles.styleInput, {borderRadius: 0, borderColor: 'gray'}]}
+            placeholder="Nhập tên công việc"
+            numberOfLines={1}
+            // autoFocus
+            onChangeText={(txt) => setTxtInputTask(txt)}
+            value={txtInputTask}
+          />
+          {/* mô tả */}
+          <TextInput
+            style={[styles.styleInput, {textAlignVertical: 'top', height: '15%', marginTop: '3%', borderRadius: 0, borderColor: 'gray'}]}
+            placeholder="Nhập mô tả"
+            numberOfLines={4}
+            multiline
+            onChangeText={(txt) => setTxtInputDesc(txt)}
+            value={txtInputDesc}
+          />
+          {/* loại cv, ưu tiên */}
+          <View style={{flexDirection: "row", width: '100%', justifyContent: "space-between"}}>
+            <View style={{flexDirection: "row", width: '55%', justifyContent: "space-between", alignItems: "center"}}>
+              <Text style={{color: '#09CBD0'}}>Loại công việc:</Text>
+              <Picker
+                style={{width: '70%', backgroundColor: '#f4f4f4'}}
+                selectedValue={taskType}
+                onValueChange={(itemValue, itemIndex) => setTaskType(itemValue)}
               >
-                <Text style={{ fontSize: 15, fontWeight: "bold", color: "#09CBD0" }}>Chọn ngày</Text>
-              </TouchableOpacity>
+                <Picker.Item style={{fontWeight: "bold", fontSize: 14}} label="Cá nhân" value="Cá nhân" />
+                <Picker.Item style={{fontWeight: "bold", fontSize: 14}} label="Học tập" value="Học tập" />
+                <Picker.Item style={{fontWeight: "bold", fontSize: 14}} label="Công việc" value="Công việc" />
+              </Picker>
             </View>
-            <View style={{flexDirection: 'row', width: '46%', justifyContent: "space-between", alignItems: "center", marginRight: '3%'}}>
-              <View style={styles.displayDateTime}>
-                <Text style={{fontSize: 18}}>{displayStartTime}</Text>
-              </View>
-              <TouchableOpacity
-                style={[styles.btnDayTime]}
-                onPress={() => {
-                  setShowStartDateTime(true);
-                  setModeStartDateTime("time");
-                }}
+            <View style={{flexDirection: "row", width: '32%', justifyContent: "space-between", alignItems: "center"}}>
+              <Text style={{color: '#09CBD0'}}>Ưu tiên:</Text>
+              <Picker
+                style={{width: '72%', backgroundColor: '#f4f4f4'}}
+                selectedValue={priority}
+                onValueChange={(itemValue, itemIndex) => setPriority(itemValue)}
               >
-                <Text style={{ fontSize: 15, fontWeight: "bold", color: "#09CBD0" }}>Chọn thời gian</Text>
-              </TouchableOpacity>
+                <Picker.Item style={{fontWeight: "bold", color: 'red'}} label="1" value="1" />
+                <Picker.Item style={{fontWeight: "bold", color: 'orange'}} label="2" value="2" />
+                <Picker.Item style={{fontWeight: "bold", color: '#09CBD0'}} label="3" value="3" />
+              </Picker>
             </View>
           </View>
-
-          {/* endTime */}
-          <View style={{flexDirection: "row", width: '65%', alignSelf: "flex-start", justifyContent: "space-between"}}>
-            <Text style={{alignSelf: "center", color: '#09CBD0'}}>Thời gian kết thúc (nếu có):</Text>
-            <View style={{flexDirection: "row", alignItems: "center", width: '50%', justifyContent: "center"}}>
-              <Text style={{color: '#09CBD0', fontStyle: "italic"}}>Không</Text>
-              <Switch
-                  trackColor={{false: '#09CBD0', true: '#09CBD0'}}
-                  thumbColor={'#fff9c4'}
-                  style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }], marginLeft: '7%', marginRight: '7%' }}
-                  value={flag}
-                  onValueChange={(value) => {
-                    if(displayStartTime===('... giờ ... phút')){
-                      setShowEndDateTime(false);
-                      setModeEndDateTime("");
-                      Alert.alert('Thông báo', 'Vui lòng chọn thời gian bắt đầu trước!');
-                    } else {
-                      setFlag(value);
-                      setDisplayEndDate("... / ... / ....");
-                      setDisplayEndTime("... giờ ... phút");
-                      setEndDateTime(displayEndDate +',\u00A0' + displayEndTime);
-                    }
+          {/* lời nhắc */}
+          <View style={[styles.viewTwoColumns, {height: '8%', alignItems: "center"}]}>
+            <Text style={{ color: "#09CBD0" }}>Đặt lời nhắc</Text>
+            <Picker
+              style={{width: '82%', backgroundColor: '#f4f4f4'}}
+              selectedValue={reminderTime}
+              onValueChange={(itemValue, itemIndex) => setReminderTime(itemValue)}
+            >
+              <Picker.Item style={{fontSize: 18}} label="Không" value="Không" />
+              <Picker.Item style={{fontSize: 18}} label="Đúng giờ" value="Đúng giờ" />
+              <Picker.Item style={{fontSize: 18}} label="Trước 5 phút" value="Trước 5 phút" />
+              <Picker.Item style={{fontSize: 18}} label="Trước 30 phút" value="Trước 30 phút" />
+              <Picker.Item style={{fontSize: 18}} label="Trước 1 tiếng" value="Trước 1 tiếng" />
+              <Picker.Item style={{fontSize: 18}} label="Trước 1 ngày" value="Trước 1 ngày" />
+            </Picker>
+          </View>
+          {/* lặp lại */}
+          <View style={[styles.viewTwoColumns, {height: '8%', alignItems: "center"}]}>
+            <Text style={{ color: "#09CBD0" }}>Đặt lặp lại</Text>
+            <Picker
+              style={{width: '82%', backgroundColor: '#f4f4f4'}}
+              selectedValue={repeat}
+              onValueChange={(itemValue, itemIndex) => setRepeat(itemValue)}
+            >
+              <Picker.Item style={{fontSize: 18}} label="Không" value="Không" />
+              <Picker.Item style={{fontSize: 18}} label="Mỗi ngày" value="Mỗi ngày" />
+              <Picker.Item style={{fontSize: 18}} label="Mỗi tuần" value="Mỗi tuần" />
+              <Picker.Item style={{fontSize: 18}} label="Mỗi tháng" value="Mỗi tháng" />
+              <Picker.Item style={{fontSize: 18}} label="Mỗi năm" value="Mỗi năm" />
+            </Picker>
+          </View>
+          {/* ngày, th.gian */}
+          <View style={{width: '100%', height: '45%', justifyContent: 'space-around', marginTop: marginTopSize}}>
+            {/* startTime */}
+            <Text style={{alignSelf: "flex-start", marginBottom: '-3%', color: '#09CBD0'}}>Thời gian bắt đầu:</Text>
+            <View style={{height: '35%', backgroundColor: 'red', justifyContent: "center", marginTop: marginTopSize}}>
+              <View style={[styles.viewTwoColumns, {alignSelf: "center"}]}>
+                {/* <View style={{flexDirection: 'row', width: '46%', justifyContent: "space-between", alignItems: "center"}}> */}
+                  <View style={styles.displayDateTime}>
+                    <Text style={{fontSize: 18}}>{displayStartDate}</Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.btnDayTime}
+                    onPress={() => {
+                      setShowStartDateTime(true);
+                      setModeStartDateTime("date");
+                    }}
+                  >
+                    <Text style={{ fontSize: 15, fontWeight: "bold", color: "#09CBD0" }}>Chọn ngày</Text>
+                  </TouchableOpacity>
+              </View>
+                {/* <View style={{flexDirection: 'row', width: '46%', justifyContent: "space-between", alignItems: "center", marginRight: '3%'}}> */}
+                <View style={[styles.viewTwoColumns, {alignSelf: "center"}]}>
+                    <View style={styles.displayDateTime}>
+                      <Text style={{fontSize: 18}}>{displayStartTime}</Text>
+                    </View>
+                    <TouchableOpacity
+                      style={[styles.btnDayTime]}
+                      onPress={() => {
+                        setShowStartDateTime(true);
+                        setModeStartDateTime("time");
+                      }}
+                    >
+                      <Text style={{ fontSize: 15, fontWeight: "bold", color: "#09CBD0" }}>Chọn thời gian</Text>
+                    </TouchableOpacity>
+                {/* </View> */}
+                </View>
+            </View>
+            {/* endTime */}
+            <View style={{flexDirection: "row", width: '65%', alignSelf: "flex-start", justifyContent: "space-between", marginTop: marginTopSize}}>
+              <Text style={{alignSelf: "center", color: '#09CBD0'}}>Thời gian kết thúc (nếu có):</Text>
+              <View style={{flexDirection: "row", alignItems: "center", width: '50%', justifyContent: "center"}}>
+                <Text style={{color: '#09CBD0', fontStyle: "italic"}}>Không</Text>
+                <Switch
+                    trackColor={{false: '#09CBD0', true: '#09CBD0'}}
+                    thumbColor={'#fff9c4'}
+                    style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }], marginLeft: '7%', marginRight: '7%' }}
+                    value={flag}
+                    onValueChange={(value) => {
+                      if(displayStartTime===('... giờ ... phút')){
+                        setShowEndDateTime(false);
+                        setModeEndDateTime("");
+                        Alert.alert('Thông báo', 'Vui lòng chọn thời gian bắt đầu trước!');
+                      } else {
+                        setHeightScrollView(heightScreen*1.2);
+                        setMarginTopSize(0);
+                        setFlag(value);
+                        setDisplayEndDate("... / ... / ....");
+                        setDisplayEndTime("... giờ ... phút");
+                        setEndDateTime(displayEndDate +',\u00A0' + displayEndTime);
+                      }
+                    }}
+                  />
+                <Text style={{color: '#09CBD0', fontStyle: "italic"}}>Có</Text>
+              </View>
+            </View>
+            <View style={{display: flag ? 'flex' : 'none', width: '100%', height: '35%', backgroundColor: 'red', justifyContent: "center", marginTop: '-5%'}}>
+              <View style={[styles.viewTwoColumns, {height: '40%', alignSelf: "center"}]}>
+                <View style={[styles.displayDateTime, {height: '70%'}]}>
+                  <Text style={{fontSize: 18}}>{displayEndDate}</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.btnDayTime}
+                  onPress={() => {
+                    setShowEndDateTime(true);
+                    setModeEndDateTime("date");
                   }}
-                />
-              <Text style={{color: '#09CBD0', fontStyle: "italic"}}>Có</Text>
+                >
+                  <Text style={{ fontSize: 15, fontWeight: "bold", color: "#09CBD0" }}>Chọn ngày</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={[styles.viewTwoColumns, {height: '40%', alignSelf: "center"}]}>
+                <View style={[styles.displayDateTime, {height: '70%'}]}>
+                  <Text style={{fontSize: 18}}>{displayEndTime}</Text>
+                </View>
+                <TouchableOpacity
+                  style={[styles.btnDayTime]}
+                  onPress={() => {
+                    setShowEndDateTime(true);
+                    setModeEndDateTime("time");
+                  }}
+                >
+                  <Text style={{ fontSize: 15, fontWeight: "bold", color: "#09CBD0" }}>Chọn thời gian</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-          <View style={[styles.viewTwoColumns, {display: flag ? 'flex' : 'none'}]}>
-            <View style={{flexDirection: 'row', width: '46%', justifyContent: "space-between", alignItems: "center"}}>
-              <View style={styles.displayDateTime}>
-                <Text style={{fontSize: 18}}>{displayEndDate}</Text>
-              </View>
-              <TouchableOpacity
-                style={styles.btnDayTime}
-                onPress={() => {
-                  setShowEndDateTime(true);
-                  setModeEndDateTime("date");
-                }}
-              >
-                <Text style={{ fontSize: 15, fontWeight: "bold", color: "#09CBD0" }}>Chọn ngày</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{flexDirection: 'row', width: '46%', justifyContent: "space-between", alignItems: "center", marginRight: '3%'}}>
-              <View style={styles.displayDateTime}>
-                <Text style={{fontSize: 18}}>{displayEndTime}</Text>
-              </View>
-              <TouchableOpacity
-                style={[styles.btnDayTime]}
-                onPress={() => {
-                  setShowEndDateTime(true);
-                  setModeEndDateTime("time");
-                }}
-              >
-                <Text style={{ fontSize: 15, fontWeight: "bold", color: "#09CBD0" }}>Chọn thời gian</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-
-        {showStartDateTime && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            show={showStartDateTime}
-            mode={modeStartDateTime}
-            value={startDate}
-            minimumDate={new Date()}
-            is24Hour={true}
-            display="default"
-            onChange={onChangeStartDateTime}
-          />
-        )}
-
-        {showEndDateTime && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            show={showEndDateTime}
-            mode={modeEndDateTime}
-            value={endDate}
-            minimumDate={new Date()}
-            is24Hour={true}
-            display="default"
-            onChange={onChangeEndDateTime}
-          />
-        )}
-
-        {isLoading ? (
-          <View style={{flexDirection: "row", alignSelf: "center", justifyContent: "center"}}>
-            <Text style={{alignSelf: "center"}}>Đang khởi tạo</Text>
-            <Image 
-              source={require('../../../assets/loading-dots.gif')}
-              style={{resizeMode: "contain", width: 50, height: 50, marginLeft: '3%'}}
+          {showStartDateTime && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              show={showStartDateTime}
+              mode={modeStartDateTime}
+              value={startDate}
+              minimumDate={new Date()}
+              is24Hour={true}
+              display="default"
+              onChange={onChangeStartDateTime}
             />
-          </View>
-        ) : (
-          <View style={{flexDirection: 'row', width: '100%', justifyContent: "space-around"}}>
-            <TouchableOpacity
-              style={styles.btn}
-              onPress={handleCreateTask}
-            >
-              <Text style={{ fontSize: 20, color: "#fff" }}>Tạo</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.btn}
-              onPress={() => {
-                setTxtInputTask(''); setTxtInputDesc('');
-                setTaskType('Cá nhân'); setPriority('1');
-                setReminderTime('Không'); setRepeat('Không');
-                setDisplayStartDate(formatCurrentDateVN); setDisplayStartTime('... giờ ... phút');
-                setDisplayEndDate('... / ... / ....'); setDisplayEndTime('... giờ ... phút');
-              }}
-            >
-              <Text style={{ fontSize: 20, color: "#fff" }}>Hủy</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+          )}
+          {showEndDateTime && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              show={showEndDateTime}
+              mode={modeEndDateTime}
+              value={endDate}
+              minimumDate={new Date()}
+              is24Hour={true}
+              display="default"
+              onChange={onChangeEndDateTime}
+            />
+          )}
+          {isLoading ? (
+            <View style={{flexDirection: "row", alignSelf: "center", justifyContent: "center"}}>
+              <Text style={{alignSelf: "center"}}>Đang khởi tạo</Text>
+              <Image
+                source={require('../../../assets/loading-dots.gif')}
+                style={{resizeMode: "contain", width: 50, height: 50, marginLeft: '3%'}}
+              />
+            </View>
+          ) : (
+            <View style={{flexDirection: 'row', width: '100%', justifyContent: "space-around", marginTop: '3%'}}>
+              <TouchableOpacity
+                style={styles.btn}
+                onPress={handleCreateTask}
+              >
+                <Text style={{ fontSize: 20, color: "#fff" }}>Tạo</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.btn}
+                onPress={() => {
+                  setTxtInputTask(''); setTxtInputDesc('');
+                  setTaskType('Cá nhân'); setPriority('1');
+                  setReminderTime('Không'); setRepeat('Không');
+                  setDisplayStartDate(formatCurrentDateVN); setDisplayStartTime('... giờ ... phút');
+                  setDisplayEndDate('... / ... / ....'); setDisplayEndTime('... giờ ... phút');
+                }}
+              >
+                <Text style={{ fontSize: 20, color: "#fff" }}>Hủy</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
       </ScrollView>
-    </SafeAreaView>
   );
 }
 
@@ -589,16 +587,17 @@ const styles = StyleSheet.create({
   },
   viewTwoColumns: {
     width: '100%', 
-    height: '20%', 
+    height: '50%', 
     flexDirection: 'row', 
     justifyContent: "space-between"
   },
   displayDateTime: {
-    width: "50%",
-    height: "100%",
+    width: "45%",
+    height: "60%",
     backgroundColor: "#f4f4f4",
     justifyContent: "center",
     alignItems: "center",
+    alignSelf: "center"
   },
   btnDayTime: {
     alignSelf: "center",
@@ -609,7 +608,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: "solid",
     borderRadius: 100,
-    width: "55%",
+    width: "50%",
   },
   btn: {
     alignSelf: "center",
