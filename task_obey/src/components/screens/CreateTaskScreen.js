@@ -50,7 +50,7 @@ export default function CreateTaskScreen() {
   }, [currentRegisterUser, currentLoginUser]);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [heightScrollView, setHeightScrollView] = useState('140%');
+  const [heightScrollView, setHeightScrollView] = useState('130%');
   const [marginTopSize, setMarginTopSize] = useState('-10%');
 
   //////handle start-date-time picker
@@ -91,7 +91,7 @@ export default function CreateTaskScreen() {
       setShowStartDateTime(false);
       setModeStartDateTime("");
       console.log(startDate);
-      console.log('pick startDateTime:', fDate1 +",\u00A0" +fTime1);
+      console.log('pick startDateTime:', displayStartDate +",\u00A0" +displayStartTime);
     }
   }
   //////
@@ -116,28 +116,33 @@ export default function CreateTaskScreen() {
     let template = new Date(currentDate);
     const realCurrentDate2 = new Date();
 
-    if((template.getDate()===startDate.getDate() && template.getMonth()===startDate.getMonth() && template.getFullYear()===startDate.getFullYear())
-        && (template.getHours()<=startDate.getHours() && template.getMinutes()<=startDate.getMinutes() || (template.getTime()<=startDate.getTime()))
-      ) {
-      setDisplayEndDate(displayStartDate);
-      setDisplayEndTime('... giờ ... phút');
-      setShowEndDateTime(false);
-      setModeEndDateTime("");
-      Alert.alert('Thông báo', 'Vui lòng đặt thời gian kết thúc sau thời gian bắt đầu');
+    if(flag===true){
+      if((template.getDate()===startDate.getDate() && template.getMonth()===startDate.getMonth() && template.getFullYear()===startDate.getFullYear())
+          && (template.getHours()<=startDate.getHours() && template.getMinutes()<=startDate.getMinutes() || (template.getTime()<=startDate.getTime()))
+        ) {
+        setDisplayEndDate(displayStartDate);
+        setDisplayEndTime('... giờ ... phút');
+        setShowEndDateTime(false);
+        setModeEndDateTime("");
+        Alert.alert('Thông báo', 'Vui lòng đặt thời gian kết thúc sau thời gian bắt đầu');
+      }
+  
+      else {
+        let fDate2 = template.getDate() + '/' + (template.getMonth()+1) + '/' + template.getFullYear();
+        let fTime2 = template.getHours() + ' giờ ' + template.getMinutes() + ' phút';
+        setDisplayEndDate(fDate2)
+        setDisplayEndTime(fTime2);
+        setEndDateTime(displayEndDate +",\u00A0" +displayEndTime)
+        setShowEndDateTime(false);
+        setModeEndDateTime("");
+        console.log(endDate);
+        console.log('pick endDateTime:', endDateTime);
+      }
+    } else {
+      setDisplayEndDate("... / ... / ....");
+      setDisplayEndTime("... giờ ... phút");
+      setEndDateTime('');
     }
-
-    else {
-      let fDate2 = template.getDate() + '/' + (template.getMonth()+1) + '/' + template.getFullYear();
-      let fTime2 = template.getHours() + ' giờ ' + template.getMinutes() + ' phút';
-      setDisplayEndDate(fDate2)
-      setDisplayEndTime(fTime2);
-      setEndDateTime(fDate2 +",\u00A0" +fTime2)
-      setShowEndDateTime(false);
-      setModeEndDateTime("");
-      console.log(endDate);
-      console.log('pick endDateTime:', fDate2 +",\u00A0" +fTime2);
-    }
-
   }
   //////
 
@@ -316,7 +321,7 @@ export default function CreateTaskScreen() {
           repeat: repeat,
         }
         await axios
-          .post(`${url}/api/task/addTask`, newTask)
+          .post(`${url}/api/task/addTask`, newTask, {timeout: 5000})
           .then((task) => {
             window.setTimeout(function () {
               console.log(task.data);
@@ -354,7 +359,7 @@ export default function CreateTaskScreen() {
             value={txtInputDesc}
           />
           {/* loại cv, ưu tiên */}
-          <View style={{flexDirection: "row", width: '100%', justifyContent: "space-between"}}>
+          <View style={{flexDirection: "row", width: '100%', height: '8.5%', justifyContent: "space-between"}}>
             <View style={{flexDirection: "row", width: '55%', justifyContent: "space-between", alignItems: "center"}}>
               <Text style={{color: '#09CBD0'}}>Loại công việc:</Text>
               <Picker
@@ -381,7 +386,7 @@ export default function CreateTaskScreen() {
             </View>
           </View>
           {/* lời nhắc */}
-          <View style={[styles.viewTwoColumns, {height: '8%', alignItems: "center"}]}>
+          <View style={[styles.viewTwoColumns, {height: '8.5%', alignItems: "center"}]}>
             <Text style={{ color: "#09CBD0" }}>Đặt lời nhắc</Text>
             <Picker
               style={{width: '82%', backgroundColor: '#f4f4f4'}}
@@ -397,7 +402,7 @@ export default function CreateTaskScreen() {
             </Picker>
           </View>
           {/* lặp lại */}
-          <View style={[styles.viewTwoColumns, {height: '8%', alignItems: "center"}]}>
+          <View style={[styles.viewTwoColumns, {height: '8.5%', alignItems: "center"}]}>
             <Text style={{ color: "#09CBD0" }}>Đặt lặp lại</Text>
             <Picker
               style={{width: '82%', backgroundColor: '#f4f4f4'}}
@@ -415,7 +420,7 @@ export default function CreateTaskScreen() {
           <View style={{width: '100%', height: '45%', justifyContent: 'space-around', marginTop: marginTopSize}}>
             {/* startTime */}
             <Text style={{alignSelf: "flex-start", marginBottom: '-3%', color: '#09CBD0'}}>Thời gian bắt đầu:</Text>
-            <View style={{height: '35%', backgroundColor: 'red', justifyContent: "center", marginTop: marginTopSize}}>
+            <View style={{height: '35%', justifyContent: "center", marginTop: '-15%'}}>
               <View style={[styles.viewTwoColumns, {alignSelf: "center"}]}>
                 {/* <View style={{flexDirection: 'row', width: '46%', justifyContent: "space-between", alignItems: "center"}}> */}
                   <View style={styles.displayDateTime}>
@@ -449,7 +454,7 @@ export default function CreateTaskScreen() {
                 </View>
             </View>
             {/* endTime */}
-            <View style={{flexDirection: "row", width: '65%', alignSelf: "flex-start", justifyContent: "space-between", marginTop: marginTopSize}}>
+            <View style={{flexDirection: "row", width: '65%', alignSelf: "flex-start", justifyContent: "space-between", marginTop: '-15%'}}>
               <Text style={{alignSelf: "center", color: '#09CBD0'}}>Thời gian kết thúc (nếu có):</Text>
               <View style={{flexDirection: "row", alignItems: "center", width: '50%', justifyContent: "center"}}>
                 <Text style={{color: '#09CBD0', fontStyle: "italic"}}>Không</Text>
@@ -464,19 +469,25 @@ export default function CreateTaskScreen() {
                         setModeEndDateTime("");
                         Alert.alert('Thông báo', 'Vui lòng chọn thời gian bắt đầu trước!');
                       } else {
-                        setHeightScrollView(heightScreen*1.2);
-                        setMarginTopSize(0);
                         setFlag(value);
-                        setDisplayEndDate("... / ... / ....");
-                        setDisplayEndTime("... giờ ... phút");
-                        setEndDateTime(displayEndDate +',\u00A0' + displayEndTime);
+                        if(value===false || flag===false) {
+                          setHeightScrollView('130%');
+                          setDisplayEndDate("... / ... / ....");
+                          setDisplayEndTime("... giờ ... phút");
+                          setEndDateTime("");
+                          // console.log(endDateTime);
+                        } 
+                        if(value===true || flag===true) {
+                          setHeightScrollView(heightScreen*1.4);
+                          setMarginTopSize(0);
+                        }
                       }
                     }}
                   />
                 <Text style={{color: '#09CBD0', fontStyle: "italic"}}>Có</Text>
               </View>
             </View>
-            <View style={{display: flag ? 'flex' : 'none', width: '100%', height: '35%', backgroundColor: 'red', justifyContent: "center", marginTop: '-5%'}}>
+            <View style={{display: flag ? 'flex' : 'none', width: '100%', height: '35%', justifyContent: "center", marginTop: '-15%'}}>
               <View style={[styles.viewTwoColumns, {height: '40%', alignSelf: "center"}]}>
                 <View style={[styles.displayDateTime, {height: '70%'}]}>
                   <Text style={{fontSize: 18}}>{displayEndDate}</Text>
@@ -540,7 +551,7 @@ export default function CreateTaskScreen() {
               />
             </View>
           ) : (
-            <View style={{flexDirection: 'row', width: '100%', justifyContent: "space-around", marginTop: '3%'}}>
+            <View style={{flexDirection: 'row', width: '100%', justifyContent: "space-around", marginTop: '-5%'}}>
               <TouchableOpacity
                 style={styles.btn}
                 onPress={handleCreateTask}

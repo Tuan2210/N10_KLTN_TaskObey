@@ -127,12 +127,12 @@ export default function Home() {
       >
         <Tab.Screen
           name="HomeScreen"
-          options={{ title: "Công việc", headerShown: false }}
+          options={{ title: "Danh sách", headerShown: false }}
           component={ListScreen}
         />
         <Tab.Screen
           name="CreateTaskScreen"
-          options={{ title: "Ghi chú", headerShown: false }}
+          options={{ title: "Thêm công việc", headerShown: false }}
           component={CreateTaskScreen}
         />
         <Tab.Screen

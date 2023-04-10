@@ -46,9 +46,9 @@ export default function ListScreen({navigation}) {
         currentMonth = currentDate.slice(5,7),
         currentYear = currentDate.slice(0,4),
         formatCurrentDate = currentDay +'/' +currentMonth +'/'  +currentYear;
-  useEffect(()=> {
-    console.log(new Date("2023-03-26 10:30:59"));
-  })
+  // useEffect(()=> {
+  //   console.log(new Date("2023-03-26 10:30:59"));
+  // })
 
   ////////load list tasks by userId & current date
   // const [dataTasksList, setDataTasksList] = useState([]);

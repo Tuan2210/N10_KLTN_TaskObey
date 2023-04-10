@@ -353,8 +353,8 @@ export default function Login() {
               </TouchableOpacity>
             </View>
             <Text style={styles.errMess}>{errorMessPW}</Text>
-            {/* <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: '2%'}}>
-              <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: '48%'}}>
+            <View style={{alignItems: "flex-end", marginTop: '2%', marginRight: '2%'}}>
+              {/* <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: '48%'}}>
                 <Text style={{fontSize: 16, color: '#09CBD0'}}>SĐT</Text>
                 <Switch
                   trackColor={{false: '#09CBD0', true: '#09CBD0'}}
@@ -368,13 +368,13 @@ export default function Login() {
                   }}
                 />
                 <Text style={{fontSize: 16, color: '#09CBD0'}}>Email</Text>
-              </View>
+              </View> */}
               <Link to='/forgotPW'>
                 <Text style={[styles.labels, {fontWeight: "bold", textDecorationLine: "underline"}]}>
                   Bạn quên mật khẩu?
                 </Text>
               </Link>
-            </View> */}
+            </View>
           </View>
           {isLoading ? (
             <View style={{flexDirection: "row", alignSelf: "center", justifyContent: "center"}}>
