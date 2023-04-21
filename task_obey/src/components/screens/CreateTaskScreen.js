@@ -24,6 +24,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 //link how to code animation: https://blog.bitsrc.io/top-5-animation-libraries-in-react-native-d00ec8ddfc8d
 import * as Animatable from "react-native-animatable";
 
+//link all icons react-native: https://oblador.github.io/react-native-vector-icons/
+import Ionicons from "react-native-vector-icons/Ionicons";
+import FontAwesomeicons from "react-native-vector-icons/FontAwesome";
+import FontAwesome5icons from "react-native-vector-icons/FontAwesome5";
+import AntDesignicons from "react-native-vector-icons/AntDesign";
+
 //doc: https://github.com/react-native-picker/picker
 import { Picker } from "@react-native-picker/picker";
 
@@ -358,12 +364,12 @@ export default function CreateTaskScreen() {
             onChangeText={(txt) => setTxtInputDesc(txt)}
             value={txtInputDesc}
           />
-          {/* loại cv, ưu tiên */}
+          {/* loại cv */}
           <View style={{flexDirection: "row", width: '100%', height: '8.5%', justifyContent: "space-between"}}>
-            <View style={{flexDirection: "row", width: '55%', justifyContent: "space-between", alignItems: "center"}}>
+            <View style={{flexDirection: "row", width: '80%', justifyContent: "space-between", alignItems: "center"}}>
               <Text style={{color: '#09CBD0'}}>Loại công việc:</Text>
               <Picker
-                style={{width: '70%', backgroundColor: '#f4f4f4'}}
+                style={{width: '63%', backgroundColor: '#f4f4f4'}}
                 selectedValue={taskType}
                 onValueChange={(itemValue, itemIndex) => setTaskType(itemValue)}
               >
@@ -372,10 +378,32 @@ export default function CreateTaskScreen() {
                 <Picker.Item style={{fontWeight: "bold", fontSize: 14}} label="Công việc" value="Công việc" />
               </Picker>
             </View>
-            <View style={{flexDirection: "row", width: '32%', justifyContent: "space-between", alignItems: "center"}}>
+            <View style={{justifyContent: "center", alignItems: "center"}}>
+              <TouchableOpacity>
+                <FontAwesomeicons name='plus-square' size={45} color='#09CBD0' />
+              </TouchableOpacity>
+            </View>
+          </View>
+          {/* lặp lại */}
+          <View style={{flexDirection: "row", width: '100%', height: '8.5%', justifyContent: "space-between"}}>
+            <View style={{flexDirection: "row", width: '60%', justifyContent: "space-between", alignItems: "center"}}>
+              <Text style={{ color: "#09CBD0" }}>Đặt lặp lại:</Text>
+              <Picker
+                style={{width: '70%', backgroundColor: '#f4f4f4'}}
+                selectedValue={repeat}
+                onValueChange={(itemValue, itemIndex) => setRepeat(itemValue)}
+              >
+                <Picker.Item style={{fontSize: 18}} label="Không" value="Không" />
+                <Picker.Item style={{fontSize: 18}} label="Mỗi ngày" value="Mỗi ngày" />
+                <Picker.Item style={{fontSize: 18}} label="Mỗi tuần" value="Mỗi tuần" />
+                <Picker.Item style={{fontSize: 18}} label="Mỗi tháng" value="Mỗi tháng" />
+                <Picker.Item style={{fontSize: 18}} label="Mỗi năm" value="Mỗi năm" />
+              </Picker>
+            </View>
+            <View style={{flexDirection: "row", width: '35%', justifyContent: "space-between", alignItems: "center"}}>
               <Text style={{color: '#09CBD0'}}>Ưu tiên:</Text>
               <Picker
-                style={{width: '72%', backgroundColor: '#f4f4f4'}}
+                style={{width: '68%', backgroundColor: '#f4f4f4'}}
                 selectedValue={priority}
                 onValueChange={(itemValue, itemIndex) => setPriority(itemValue)}
               >
@@ -387,9 +415,9 @@ export default function CreateTaskScreen() {
           </View>
           {/* lời nhắc */}
           <View style={[styles.viewTwoColumns, {height: '8.5%', alignItems: "center"}]}>
-            <Text style={{ color: "#09CBD0" }}>Đặt lời nhắc</Text>
+            <Text style={{ color: "#09CBD0" }}>Đặt lời nhắc:</Text>
             <Picker
-              style={{width: '82%', backgroundColor: '#f4f4f4'}}
+              style={{width: '70%', backgroundColor: '#f4f4f4'}}
               selectedValue={reminderTime}
               onValueChange={(itemValue, itemIndex) => setReminderTime(itemValue)}
             >
@@ -399,21 +427,6 @@ export default function CreateTaskScreen() {
               <Picker.Item style={{fontSize: 18}} label="Trước 30 phút" value="Trước 30 phút" />
               <Picker.Item style={{fontSize: 18}} label="Trước 1 tiếng" value="Trước 1 tiếng" />
               <Picker.Item style={{fontSize: 18}} label="Trước 1 ngày" value="Trước 1 ngày" />
-            </Picker>
-          </View>
-          {/* lặp lại */}
-          <View style={[styles.viewTwoColumns, {height: '8.5%', alignItems: "center"}]}>
-            <Text style={{ color: "#09CBD0" }}>Đặt lặp lại</Text>
-            <Picker
-              style={{width: '82%', backgroundColor: '#f4f4f4'}}
-              selectedValue={repeat}
-              onValueChange={(itemValue, itemIndex) => setRepeat(itemValue)}
-            >
-              <Picker.Item style={{fontSize: 18}} label="Không" value="Không" />
-              <Picker.Item style={{fontSize: 18}} label="Mỗi ngày" value="Mỗi ngày" />
-              <Picker.Item style={{fontSize: 18}} label="Mỗi tuần" value="Mỗi tuần" />
-              <Picker.Item style={{fontSize: 18}} label="Mỗi tháng" value="Mỗi tháng" />
-              <Picker.Item style={{fontSize: 18}} label="Mỗi năm" value="Mỗi năm" />
             </Picker>
           </View>
           {/* ngày, th.gian */}
