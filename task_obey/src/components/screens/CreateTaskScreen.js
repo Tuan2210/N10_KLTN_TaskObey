@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Animated,
+  Modal,
   Dimensions,
   Image,
   Platform,
@@ -29,9 +30,12 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesomeicons from "react-native-vector-icons/FontAwesome";
 import FontAwesome5icons from "react-native-vector-icons/FontAwesome5";
 import AntDesignicons from "react-native-vector-icons/AntDesign";
+import Feathericons from "react-native-vector-icons/Feather";
 
 //doc: https://github.com/react-native-picker/picker
 import { Picker } from "@react-native-picker/picker";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //doc: https://github.com/react-native-datetimepicker/datetimepicker#display-optional
 //yt: https://www.youtube.com/watch?v=Imkw-xFFLeE
@@ -154,6 +158,62 @@ export default function CreateTaskScreen() {
 
   const [txtInputTask, setTxtInputTask] = useState('');
   const [txtInputDesc, setTxtInputDesc] = useState('');
+
+  //////handle add task-type
+  const [selectedValue, setSelectedValue] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [newItemValue, setNewItemValue] = useState('');
+  const [taskTypeData, setTaskTypeData] = useState(['Cá nhân', 'Học tập', 'Gia đình', 'Công ty', 'Du lịch'])
+  function handleAddNewTaskType() {
+    setTaskTypeData([...taskTypeData, newItemValue]);
+    setSelectedValue(newItemValue);
+    setModalVisible(false);
+    
+    AsyncStorage.setItem('taskTypeData', JSON.stringify([...taskTypeData, newItemValue]))
+    .then(() => {
+      setModalVisible(false);
+      Alert.alert('Thông báo', 'Thêm loại công việc thành công!');
+    })
+    .catch((err) => {
+      console.log('lỗi :', err);
+    });
+  }
+  //////
+
+  //////handle delete item task-type
+  const [itemToDelete, setItemToDelete] = useState();
+  const [modalVisibleDelTaskType, setModalVisibleDelTaskType] = useState(false);
+  function handleDeleteTaskType() {
+    const newData = taskTypeData.filter(item => item !== itemToDelete); //lọc bỏ item cần xóa khỏi newData
+    setTaskTypeData(newData);
+    AsyncStorage.setItem('taskTypeData', JSON.stringify(newData))
+    .then(() => {
+      setItemToDelete([0]);
+      setModalVisibleDelTaskType(false);
+      Alert.alert('Thông báo', 'Đã xóa loại công việc!');
+    })
+    .catch((err) => {
+      console.log('lỗi xóa:', err);
+    });
+  };
+  //////
+
+  //load data task-type
+  useEffect(() => { //update giá trị ban đầu của Picker từ mảng data
+    setSelectedValue(taskTypeData[0]);
+  }, [taskTypeData]);
+
+  useEffect(() => {
+    AsyncStorage.getItem('taskTypeData')
+      .then((value) => {
+        if(value)
+          setTaskTypeData(JSON.parse(value));
+      })
+      .catch((err) => {
+        console.log('lỗi khôi phục:', err);
+      });
+  }, []);
+  //
 
   //////handle combobox picker & value mongodb
   const [taskType, setTaskType] = useState('Cá nhân');
@@ -313,34 +373,34 @@ export default function CreateTaskScreen() {
 
   async function apiCreateTask(duration) {
     //handle create newTask
-        const newTask = {
-          taskName: txtInputTask,
-          userId: userId,
-          taskType: taskType,
-          description: txtInputDesc,
-          priority: priority,
-          startTime: displayStartDate +', ' +displayStartTime,
-          endTime: endDateTime,
-          reminderTime: reminderTime,
-          duration: duration,
-          deadline: deadline,
-          repeat: repeat,
-        }
-        await axios
-          .post(`${url}/api/task/addTask`, newTask, {timeout: 5000})
-          .then((task) => {
-            window.setTimeout(function () {
-              console.log(task.data);
-              setIsLoading(false);
-              setTxtInputTask('');
-              setTxtInputDesc('');
-              setDisplayStartDate(formatCurrentDateVN);
-              setDisplayStartTime("... giờ ... phút");
-              setDisplayEndDate("... / ... / ....");
-              setDisplayEndTime("... giờ ... phút");
-              Alert.alert('Thông báo', 'Thêm công việc thành công!');
-            }, 2000);
-          });
+    const newTask = {
+      taskName: txtInputTask,
+      userId: userId,
+      taskType: taskType,
+      description: txtInputDesc,
+      priority: priority,
+      startTime: displayStartDate +', ' +displayStartTime,
+      endTime: endDateTime,
+      reminderTime: reminderTime,
+      duration: duration,
+      deadline: deadline,
+      repeat: repeat,
+    }
+    await axios
+      .post(`${url}/api/task/addTask`, newTask, {timeout: 5000})
+      .then((task) => {
+        window.setTimeout(function () {
+          console.log(task.data);
+          setIsLoading(false);
+          setTxtInputTask('');
+          setTxtInputDesc('');
+          setDisplayStartDate(formatCurrentDateVN);
+          setDisplayStartTime("... giờ ... phút");
+          setDisplayEndDate("... / ... / ....");
+          setDisplayEndTime("... giờ ... phút");
+          Alert.alert('Thông báo', 'Thêm công việc thành công!');
+        }, 2000);
+      });
   }
 
   return (
@@ -355,6 +415,7 @@ export default function CreateTaskScreen() {
             onChangeText={(txt) => setTxtInputTask(txt)}
             value={txtInputTask}
           />
+
           {/* mô tả */}
           <TextInput
             style={[styles.styleInput, {textAlignVertical: 'top', height: '15%', marginTop: '3%', borderRadius: 0, borderColor: 'gray'}]}
@@ -364,26 +425,34 @@ export default function CreateTaskScreen() {
             onChangeText={(txt) => setTxtInputDesc(txt)}
             value={txtInputDesc}
           />
+
           {/* loại cv */}
           <View style={{flexDirection: "row", width: '100%', height: '8.5%', justifyContent: "space-between"}}>
-            <View style={{flexDirection: "row", width: '80%', justifyContent: "space-between", alignItems: "center"}}>
+            <View style={{flexDirection: "row", width: '70%', justifyContent: "space-between", alignItems: "center"}}>
               <Text style={{color: '#09CBD0'}}>Loại công việc:</Text>
               <Picker
-                style={{width: '63%', backgroundColor: '#f4f4f4'}}
+                style={{width: '65%', backgroundColor: '#f4f4f4'}}
                 selectedValue={taskType}
-                onValueChange={(itemValue, itemIndex) => setTaskType(itemValue)}
+                onValueChange={(itemValue, itemIndex) => {
+                  setItemToDelete(itemValue);
+                  setTaskType(itemValue);
+                }}
               >
-                <Picker.Item style={{fontWeight: "bold", fontSize: 14}} label="Cá nhân" value="Cá nhân" />
-                <Picker.Item style={{fontWeight: "bold", fontSize: 14}} label="Học tập" value="Học tập" />
-                <Picker.Item style={{fontWeight: "bold", fontSize: 14}} label="Công việc" value="Công việc" />
+                {taskTypeData.map((item, index) => (
+                  <Picker.Item style={{fontWeight: "bold", fontSize: 14}} key={index} label={item} value={item} />
+                ))}
               </Picker>
             </View>
-            <View style={{justifyContent: "center", alignItems: "center"}}>
-              <TouchableOpacity>
+            <View style={{justifyContent: "center", alignItems: "center", width: '25%', flexDirection: 'row', justifyContent: "space-around"}}>
+              <TouchableOpacity onPress={() => setModalVisible(true)}>
                 <FontAwesomeicons name='plus-square' size={45} color='#09CBD0' />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setModalVisibleDelTaskType(true)}>
+                <Feathericons name='delete' size={45} color='#09CBD0' />
               </TouchableOpacity>
             </View>
           </View>
+
           {/* lặp lại */}
           <View style={{flexDirection: "row", width: '100%', height: '8.5%', justifyContent: "space-between"}}>
             <View style={{flexDirection: "row", width: '60%', justifyContent: "space-between", alignItems: "center"}}>
@@ -413,6 +482,7 @@ export default function CreateTaskScreen() {
               </Picker>
             </View>
           </View>
+
           {/* lời nhắc */}
           <View style={[styles.viewTwoColumns, {height: '8.5%', alignItems: "center"}]}>
             <Text style={{ color: "#09CBD0" }}>Đặt lời nhắc:</Text>
@@ -429,6 +499,7 @@ export default function CreateTaskScreen() {
               <Picker.Item style={{fontSize: 18}} label="Trước 1 ngày" value="Trước 1 ngày" />
             </Picker>
           </View>
+
           {/* ngày, th.gian */}
           <View style={{width: '100%', height: '45%', justifyContent: 'space-around', marginTop: marginTopSize}}>
             {/* startTime */}
@@ -466,6 +537,7 @@ export default function CreateTaskScreen() {
                 {/* </View> */}
                 </View>
             </View>
+
             {/* endTime */}
             <View style={{flexDirection: "row", width: '65%', alignSelf: "flex-start", justifyContent: "space-between", marginTop: '-15%'}}>
               <Text style={{alignSelf: "center", color: '#09CBD0'}}>Thời gian kết thúc (nếu có):</Text>
@@ -531,6 +603,73 @@ export default function CreateTaskScreen() {
               </View>
             </View>
           </View>
+
+          {/* modal thêm loại cv */}
+          <Modal visible={modalVisible} animationType="slide" transparent>
+            <View 
+              style={{ 
+                flex: 1,
+                backgroundColor: 'rgba(0, 0, 0, 0.6)', // Màu đen bóng mờ
+                justifyContent: 'center',
+                alignItems: 'center',
+             }}
+            >
+              <View 
+                style={{ 
+                  backgroundColor: 'white',
+                  borderColor: '#09CBD0',
+                  borderStyle: "solid",
+                  borderWidth: 3,
+                  width: '50%',
+                  padding: 20,
+                  borderRadius: 5,
+               }}
+              >
+                <TextInput
+                  placeholder="Nhập loại công việc mới"
+                  style={{fontSize: 15}}
+                  value={newItemValue}
+                  onChangeText={(text) => setNewItemValue(text)}
+                />
+              </View>
+              <View style={{flexDirection: "row", marginTop: '5%', width: '40%', justifyContent: "space-around"}}>
+                <TouchableOpacity style={styles.btn} onPress={handleAddNewTaskType}>
+                  <Text style={{fontSize: 17, color: '#fff', fontWeight: "bold"}}>Thêm</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btn} onPress={() => setModalVisible(false)} >
+                  <Text style={{fontSize: 17, color: '#fff', fontWeight: "bold"}}>Hủy</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+
+          {/* modal xóa loại cv */}
+          <Modal visible={modalVisibleDelTaskType} animationType="slide" transparent >
+            <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.6)', justifyContent: 'center', alignItems: 'center'}}>
+              <View 
+                style={{ 
+                  backgroundColor: 'white',
+                  borderColor: '#09CBD0',
+                  borderStyle: "solid",
+                  borderWidth: 3,
+                  width: '50%',
+                  padding: 20,
+                  borderRadius: 5,
+               }}
+              >
+                <Text style={{fontSize: 15}}>Bạn có muốn xóa loại công việc này?</Text>
+              </View>
+              <View style={{flexDirection: "row", marginTop: '5%', width: '40%', justifyContent: "space-around"}}>
+                <TouchableOpacity style={styles.btn} onPress={handleDeleteTaskType}>
+                  <Text style={{fontSize: 17, color: '#fff', fontWeight: "bold"}}>Xóa</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btn} onPress={() => setModalVisibleDelTaskType(false)} >
+                  <Text style={{fontSize: 17, color: '#fff', fontWeight: "bold"}}>Hủy</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+
           {showStartDateTime && (
             <DateTimePicker
               testID="dateTimePicker"
@@ -555,6 +694,7 @@ export default function CreateTaskScreen() {
               onChange={onChangeEndDateTime}
             />
           )}
+
           {isLoading ? (
             <View style={{flexDirection: "row", alignSelf: "center", justifyContent: "center"}}>
               <Text style={{alignSelf: "center"}}>Đang khởi tạo</Text>
