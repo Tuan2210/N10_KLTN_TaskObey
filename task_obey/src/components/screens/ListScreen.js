@@ -17,6 +17,8 @@ import FontAwesomeicons from "react-native-vector-icons/FontAwesome";
 import FontAwesome5icons from "react-native-vector-icons/FontAwesome5";
 import AntDesignicons from "react-native-vector-icons/AntDesign";
 
+//link doc react-native-big-calendar: https://www.npmjs.com/package/react-native-big-calendar
+
 //link doc timelinecalendar: https://howljs.github.io/react-native-calendar-kit/docs/intro
 import { EventItem, MomentConfig, PackedEvent, RangeTime, TimelineCalendar } from '@howljs/calendar-kit';
 
@@ -30,13 +32,19 @@ export default function ListScreen({navigation}) {
   const currentRegisterUser = useSelector((state) => state.auth.register?.currentUserRegister);
   const registerUserId = currentRegisterUser?._id;
   
-  // const [userId, setUserId] = useState();
-  // useEffect(() => {
-  //   if(currentRegisterUser && !currentLoginUser)
-  //     setUserId(registerUserId);
-  //   if(!currentRegisterUser && currentLoginUser)
-  //     setUserId(loginUserId)
-  // }, [currentRegisterUser, currentLoginUser]);
+  const [userId, setUserId] = useState();
+  useEffect(() => {
+    if(currentRegisterUser && !currentLoginUser){
+      setUserId(registerUserId);
+      loadListNotFinishTasks(registerUserId, currentDate);
+    }
+    if(!currentRegisterUser && currentLoginUser){
+      setUserId(loginUserId);
+      loadListNotFinishTasks(loginUserId, currentDate);
+    }
+
+    // loadListNotFinishTasks();
+  }, [currentRegisterUser, currentLoginUser]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -47,7 +55,7 @@ export default function ListScreen({navigation}) {
         currentYear = currentDate.slice(0,4),
         formatCurrentDate = currentDay +'/' +currentMonth +'/'  +currentYear;
   // useEffect(()=> {
-  //   console.log(new Date("2023-03-26 10:30:59"));
+  //   console.log(currentDate);
   // })
 
   ////////load list tasks by userId & current date
@@ -74,12 +82,12 @@ export default function ListScreen({navigation}) {
   // }, [registerUserId, currentDate]);
   
   // useEffect(() => {
-  //   // if(registerUserId===undefined && loginUserId!==undefined)
-  //   //   loadListNotFinishTasks(loginUserId, currentDate);
-  //   // if(registerUserId!==undefined && loginUserId===undefined)
-  //   //   loadListNotFinishTasks(loginUserId, currentDate);
+  //   if(registerUserId===undefined && loginUserId!==undefined)
+  //     loadListNotFinishTasks(loginUserId, currentDate);
+  //   if(registerUserId!==undefined && loginUserId===undefined)
+  //     loadListNotFinishTasks(registerUserId, currentDate);
     
-  //   // loadListNotFinishTasks();
+  //   loadListNotFinishTasks();
   // }, []);
 
   // useEffect(() => {
@@ -122,37 +130,29 @@ export default function ListScreen({navigation}) {
   //   }
   // };
 
-  // async function loadListNotFinishTasks(id, date) { //userId, currentDate
-  //   // const res = await axios.get(`${url}/api/task/notFinishTasks/${id}/${date}`);
-    
-  //   await axios
-  //     .get(`${url}/api/task/notFinishTasks/${id}/${date}`)
-  //     .then((res) => {
-  //       if(res.data.length===0) console.log('no data task in list');
-  //       if(res.data.length > 0) {
-  //         // console.log('res data');
-  //         // console.log(res.data)
-  //         {res.data.map((item, index) => {
-  //           const itemDetail = {
-  //             id: item._id,
-  //             title: item.taskId.taskName,
-  //             // start: event.start,
-  //             // end: event.end,
-  //             // color: "#A3C7D6",
-  //             // description: "abc",
-  //             // imageUrl: '',
-  //             // dayTime: '',
-  //             // status: '',
-  //             // taskType: '',
-  //             // priority: '',
-  //             // reminderTime: ''
-  //           }
-  //           setObj(itemDetail);
-  //           console.log(obj);
-  //         })}
-  //       };
-  //     })
-  // }
+  async function loadListNotFinishTasks(id, date) { //userId, currentDate
+    // const res = await axios.get(`${url}/api/task/notFinishTasks/${id}/${date}`);
+    try {
+      const res = await axios.get(`${url}/api/task/notFinishTasks/${id}/${date}`);
+      if(res.data.length === 0) console.log('no data task in list');
+      if(res.data.length > 0) {
+        console.log(res.data);
+      };
+    } catch (error) {
+      console.log(error);
+    }
+    // await axios
+    //   // .get(`${url}/api/task/notFinishTasks/${id}/${date}`)
+    //   .get(`${url}/api/task/notFinishTasks/6432a67429d2ca71765afe4d/2023-04-27`)
+    //   .then((res) => {
+    //     if(res.data.length===0) console.log('no data task in list');
+    //     if(res.data.length > 0) {
+    //       // console.log('res data');
+    //       console.log(res.data)
+          
+    //     };
+    //   })
+  }
 
   // {dataTasksList.map((item, index) => {
   //   // setTaskId(item._id);
@@ -298,7 +298,7 @@ export default function ListScreen({navigation}) {
           // onDragCreateEnd={_onDragCreateEnd}
           dragCreateInterval={120}
           dragStep={20}
-          events={events}
+          events={exampleEvents}
           onLongPressEvent={_onLongPressEvent}
           // onPressEvent={(data) => console.log(data)}
           selectedEvent={selectedEvent}
