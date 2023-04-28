@@ -74,8 +74,26 @@ const taskController = {
     }
   },
 
-  //GET ALL TASKS NOT FINISH BY USERID
-  getNotFinishTasksByUserId: async (req, res) => {
+    //GET ALL TASKS NOT FINISH BY USERID
+    getNotFinishTasksByUserId: async (req, res) => {
+      try {
+        await Task.find({
+          userId: req.params.userId,
+          // initialDate: req.params.initialDate,
+          status: "Chưa hoàn thành",
+        })
+          .populate({ path: 'taskDetailId', populate: {path: 'scheduleId'}})
+          .exec(function(err, tasks) {
+            if(err) res.status(500).json(err);
+            res.status(200).json(tasks);
+          });
+      } catch (error) {
+        res.status(500).json(error);
+      }
+    },
+
+  //GET ALL TASKS NOT FINISH BY USERID AND INITIAL DATE
+  getNotFinishTasksByUserIdAndInittialDate: async (req, res) => {
     try {
       // await TaskDetail.find({
       //   userId: req.params.userId,

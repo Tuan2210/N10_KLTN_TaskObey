@@ -17,10 +17,18 @@ import FontAwesomeicons from "react-native-vector-icons/FontAwesome";
 import FontAwesome5icons from "react-native-vector-icons/FontAwesome5";
 import AntDesignicons from "react-native-vector-icons/AntDesign";
 
-//link doc react-native-big-calendar: https://www.npmjs.com/package/react-native-big-calendar
+//link doc react-native-big-calendar: https://github.com/acro5piano/react-native-big-calendar
+import { Calendar } from 'react-native-big-calendar';
+
+import moment from 'moment';
+// import 'moment/locale/vi';
+// moment.locale('vi');
+
+// import dayjs from 'dayjs';
+import 'dayjs/locale/vi';
 
 //link doc timelinecalendar: https://howljs.github.io/react-native-calendar-kit/docs/intro
-import { EventItem, MomentConfig, PackedEvent, RangeTime, TimelineCalendar } from '@howljs/calendar-kit';
+// import { EventItem, MomentConfig, PackedEvent, RangeTime, TimelineCalendar } from '@howljs/calendar-kit';
 
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
@@ -198,149 +206,31 @@ export default function ListScreen({navigation}) {
   // }
   ////////
 
-  const exampleEvents: EventItem[] = [
+  const exampleEvents = [
     {
-      id: "1",
-      title: "Event 1",
-      start: "2023-03-25T09:00:05.313Z",
-      end: "2023-03-25T12:00:05.313Z",
-      color: "#A3C7D6",
+      title: 'Meeting',
+      start: new Date(2023, 3, 25, 10, 0), //3 là tháng 4, vì tháng có bắt đầu từ 0 trong js
+      end: new Date(2023, 3, 25, 10, 30),
     },
     {
-      id: "2",
-      title: "Event 2",
-      start: "2023-03-25T11:00:05.313Z",
-      end: "2023-03-25T14:00:05.313Z",
-      color: "#B1AFFF",
+      title: 'Coffee break',
+      start: new Date(2023, 3, 28, 15, 45),
+      end: new Date(2023, 3, 28, 16, 30),
     },
-  ];
-  // useEffect(()=>console.log(exampleEvents))
+  ]
 
-  MomentConfig.updateLocale("vi", {
-    weekdaysShort: "Chủ nhật_Thứ 2_Thứ 3_Thứ 4_Thứ 5_Thứ 6_Thứ 7".split("_"),
-  });
-
-  //create task
-  // {dataTasksList.map((item, index) => {
-    
-  // })}
-  
-
-  // const _onDragCreateEnd = (event: RangeTime) => {
-  //   const randomId = Math.random().toString(36).slice(2, 10);
-  //   const newEvent = {
-  //     id: taskId,
-  //     title: taskName,
-  //     start: event.start,
-  //     end: event.end,
-  //     color: "#A3C7D6",
-  //     description: "abc",
-  //     imageUrl: '',
-  //     dayTime: '',
-  //     status: '',
-  //     taskType: '',
-  //     priority: '',
-  //     reminderTime: ''
-  //   };
-  //   setEvents((prev) => [...prev, newEvent]);
-  // };
-
-  //edit task
-  const [selectedEvent, setSelectedEvent] = useState();
-  const _onLongPressEvent = (event: PackedEvent) => {
-    setSelectedEvent(event);
-  };
-  const _onPressCancel = () => {
-    setSelectedEvent(undefined);
-  };
-  const _onPressSubmit = () => {
-    setEvents((prevEvents) =>
-      prevEvents.map((ev) => {
-        if (ev.id === selectedEvent?.id) {
-          return { ...ev, ...selectedEvent };
-        }
-        return ev;
-      })
-    );
-    setSelectedEvent(undefined);
-  };
-  const _renderEditFooter = () => {
-    return (
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.button} onPress={_onPressCancel}>
-          <Text style={styles.btnText}>Cancel</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={_onPressSubmit}>
-          <Text style={styles.btnText}>Save</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
-  // useEffect(() => {
-  //   const dateNow = new Date("26-03-2023".replace( /(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3"));
-  //   console.log(dateNow);
-    
-  //   // console.log('evts', events);
-  //   // console.log('selected evt', selectedEvent);
-  // })
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ width: "100%", height: "100%" }}>
-        <TimelineCalendar
-          key={'#'}
-          viewMode="week"
-          locale="vi"
-          initialDate={new Date().toISOString().split("T")[0]}
-          allowPinchToZoom
-          allowDragToCreate
-          // onDragCreateEnd={_onDragCreateEnd}
-          dragCreateInterval={120}
-          dragStep={20}
-          events={exampleEvents}
-          onLongPressEvent={_onLongPressEvent}
-          // onPressEvent={(data) => console.log(data)}
-          selectedEvent={selectedEvent}
-          onEndDragSelectedEvent={setSelectedEvent}
-          // isShowHeader={false}
-          theme={{
-            //normal
-            dayName: { color: "black", fontSize: 12 },
-            dayNumber: { color: "black" },
-
-            //today
-            todayName: { color: "#09CBD0", fontSize: 13 },
-            todayNumber: { color: "white" },
-            todayNumberContainer: { backgroundColor: "#09CBD0" },
-
-            //Saturday style
-            saturdayName: { color: "blue", fontSize: 12 },
-            saturdayNumber: { color: "blue" },
-
-            //Sunday style
-            sundayName: { color: "red", fontSize: 12 },
-            sundayNumber: { color: "red" },
-
-            //drag
-            dragHourContainer: {
-              backgroundColor: "#FFF",
-              borderColor: "#001253",
-            },
-            dragHourText: { color: "#001253" },
-            dragCreateItemBackgroundColor: "rgba(0, 18, 83, 0.2)",
-          }}
-          // Custom edit indicator
-          EditIndicatorComponent={
-            <View
-              style={{ backgroundColor: "red", width: "100%", height: 16 }}
-            />
-          }
-          // calendarWidth={widthScreen}
-          // isShowHalfLine={false}
-          // isLoading={true}
+        <Calendar 
+          events={exampleEvents} 
+          height={600} 
+          weekStartsOn={1}
+          locale='vi'
+          headerContainerStyle={{height: '7%', borderBottomColor: '#09CBD0', borderBottomWidth: 2, borderStyle: "dashed"}}
+          
         />
-        {selectedEvent && _renderEditFooter()}
       </View>
       {/* <TouchableOpacity onPress={() => navigation.navigate("Ghi chú")} style={{width:'12%', alignItems: "center", position: "absolute", marginTop: '1%'}}>
         <AntDesignicons name="pluscircleo" size={45} color="#09CBD0" />
