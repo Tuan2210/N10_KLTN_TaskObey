@@ -41,6 +41,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 //yt: https://www.youtube.com/watch?v=Imkw-xFFLeE
 import DateTimePicker from "@react-native-community/datetimepicker";
 
+import PushNotification from 'react-native-push-notification'
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
 
@@ -101,7 +102,7 @@ export default function CreateTaskScreen() {
       setShowStartDateTime(false);
       setModeStartDateTime("");
       console.log(startDate);
-      console.log('pick startDateTime:', fDate1 +",\u00A0" +fTime1);
+      console.log('pick startDateTime:', displayStartDate +",\u00A0" +displayStartTime);
     }
   }
   //////
@@ -146,7 +147,7 @@ export default function CreateTaskScreen() {
         setShowEndDateTime(false);
         setModeEndDateTime("");
         console.log(endDate);
-        console.log('pick endDateTime:', fDate2 +",\u00A0" +fTime2);
+        console.log('pick endDateTime:', endDateTime);
       }
     } else {
       setDisplayEndDate("... / ... / ....");
@@ -386,7 +387,7 @@ export default function CreateTaskScreen() {
       description: txtInputDesc,
       priority: priority,
       startTime: displayStartDate +', ' +displayStartTime,
-      endTime: displayEndDate +', ' +displayEndTime,
+      endTime: endDateTime,
       reminderTime: reminderTime,
       duration: duration,
       deadline: deadline,
@@ -409,10 +410,73 @@ export default function CreateTaskScreen() {
       });
   }
 
-  /////handle notification
-
-  /////
-
+   ///// notification
+   const [notification, setNotification] = useState(null);
+   useEffect(() => {
+     PushNotification.createChannel({
+       channelId: 'create Task',
+       channelName: 'notification',
+       channelDescription: 'notification'
+     })
+   },[])
+   // handle createChannel
+   /////handle notification
+   const handleNotification = () =>{
+     
+     PushNotification.cancelAllLocalNotifications();
+ 
+     PushNotification.localNotificationSchedule({
+       channelId: 'create Task',
+       title: txtInputTask,
+ 
+       message: txtInputDesc,
+       actions: ["Accept", "Reject"],
+       date: new Date(Date.now() + 1000),
+       allowWhileIdle: true,
+       invokeApp: false
+     });
+ 
+     PushNotification.configure({
+       onAction: function (notification){
+         if( notification.action === 'Accept'){
+           console.log('Alarm Snoozed')
+         }
+         else if( notification.action === "Reject"){
+           console.log('Alarm Stopped')
+         }
+         else{
+           console('Notification opened')
+         }
+       }
+     })
+   }
+   useEffect(() => {
+     if (notification) {
+       setTimeout(handleNotification, notification.fireDate - Date.now());
+     }
+   }, [notification]);
+   useEffect(() => {
+     PushNotification.configure({
+       onAction: function (notification) {
+         if (notification.action === 'Accept') {
+           console.log('Alarm Snoozed');
+         } else if (notification.action === 'Reject') {
+           console.log('Alarm Stoped');
+         } else {
+           console.log('Notification opened');
+         }
+       },
+       actions: ['Accept', 'Reject'],
+     });
+   }, []);
+ 
+   const setNotificationHandler = (fireDate) => {
+     setNotification({
+       fireDate: fireDate,
+     });
+   };
+ 
+   /////
   return (
       <ScrollView style={styles.container} contentContainerStyle={{height: heightScrollView}}>
         <View style={{width: '100%', height: '100%', padding: '3%'}}>
