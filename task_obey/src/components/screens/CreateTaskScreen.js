@@ -102,7 +102,7 @@ export default function CreateTaskScreen() {
       setShowStartDateTime(false);
       setModeStartDateTime("");
       console.log(startDate);
-      console.log('pick startDateTime:', displayStartDate +",\u00A0" +displayStartTime);
+      console.log('pick startDateTime:', fDate1 +",\u00A0" +fTime1);
     }
   }
   //////
@@ -147,7 +147,7 @@ export default function CreateTaskScreen() {
         setShowEndDateTime(false);
         setModeEndDateTime("");
         console.log(endDate);
-        console.log('pick endDateTime:', endDateTime);
+        console.log('pick endDateTime:', fDate2 +",\u00A0" +fTime2);
       }
     } else {
       setDisplayEndDate("... / ... / ....");
@@ -387,7 +387,7 @@ export default function CreateTaskScreen() {
       description: txtInputDesc,
       priority: priority,
       startTime: displayStartDate +', ' +displayStartTime,
-      endTime: endDateTime,
+      endTime: displayEndDate +', ' +displayEndTime,
       reminderTime: reminderTime,
       duration: duration,
       deadline: deadline,
