@@ -14,6 +14,8 @@ import {Avatar, Drawer} from 'react-native-paper'
 //link how to code animation: https://blog.bitsrc.io/top-5-animation-libraries-in-react-native-d00ec8ddfc8d
 import * as Animatable from "react-native-animatable";
 
+import {LineChart} from "react-native-chart-kit";
+
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
 
@@ -43,7 +45,44 @@ export default function StatisticScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text>statistic_thongke</Text>
+      <Text>Biểu đồ đường</Text>
+      <LineChart 
+        data={{
+          labels: ["January", "February", "March", "April", "May", "June"],
+          datasets: [
+            {
+              data: [
+                Math.random() * 100,
+                Math.random() * 100,
+                Math.random() * 100,
+                Math.random() * 100,
+                Math.random() * 100,
+                Math.random() * 100
+              ]
+            }
+          ]
+        }}
+        width={400}
+        height={420}
+        yAxisInterval={1}
+        chartConfig={{
+          backgroundColor: '#09CBD0',
+          backgroundGradientFrom: '#09CBD0',
+          backgroundGradientTo: '#09CBD0',
+          decimalPlaces: 2,
+          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          style: {
+            borderRadius: 20,
+          }
+        }}
+        bezier
+        style={{
+          marginVertical: 5, borderRadius: 5
+        }}
+        >
+
+      </LineChart>
     </SafeAreaView>
   );
 };
@@ -51,6 +90,8 @@ export default function StatisticScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    alignContent: 'center',
+    justifyContent: "center",
+    alignSelf: "center",  
   },
 });
