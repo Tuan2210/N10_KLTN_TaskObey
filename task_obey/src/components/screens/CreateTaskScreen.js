@@ -249,6 +249,12 @@ export default function CreateTaskScreen() {
             ) {
       Alert.alert('Thông báo', 'Vui lòng đặt thời gian kết thúc sau thời gian bắt đầu!');
     }
+    else if(flag===true && (endDate.getDate()<startDate.getDate() && endDate.getMonth()===startDate.getMonth() && endDate.getFullYear()===startDate.getFullYear()) 
+            || (endDate.getMonth()<startDate.getMonth() && endDate.getFullYear()===startDate.getFullYear())
+            || (endDate.getFullYear()<startDate.getFullYear())
+            ) {
+      Alert.alert('Thông báo', 'Vui lòng đặt thời gian kết thúc sau thời gian bắt đầu!');
+    }
     else {
       setIsLoading(true);
       
@@ -402,6 +408,10 @@ export default function CreateTaskScreen() {
         }, 2000);
       });
   }
+
+  /////handle notification
+
+  /////
 
   return (
       <ScrollView style={styles.container} contentContainerStyle={{height: heightScrollView}}>

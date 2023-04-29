@@ -24,6 +24,7 @@ import FinishTaskScreen from "./screens/FinishTaskScreen";
 
 import DrawerContent from "./screens/drawer/DrawerContent";
 import ProfileScreen from "./screens/ProfileScreen";
+import StatisticScreen from "./screens/StatisticScreen";
 
 const Stack = createNativeStackNavigator();
 const DrawerStack = createDrawerNavigator();
@@ -70,6 +71,20 @@ export default function Home() {
         <DrawerStack.Screen
           name="Thông tin cá nhân"
           component={ProfileScreen}
+          options={{
+            headerTitle: "Hôm nay, " +formatCurrentDate,
+            headerTitleStyle: {
+              color: "#fff",
+            },
+            headerStyle: {
+              backgroundColor: "#09CBD0",
+            },
+            headerTintColor: "#fff",
+          }}
+        />
+        <DrawerStack.Screen
+          name="Thống kê"
+          component={StatisticScreen}
           options={{
             headerTitle: "Hôm nay, " +formatCurrentDate,
             headerTitleStyle: {

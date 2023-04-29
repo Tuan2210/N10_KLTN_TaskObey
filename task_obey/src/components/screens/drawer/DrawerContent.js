@@ -21,6 +21,7 @@ import {Avatar, Drawer} from 'react-native-paper'
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesomeicons from "react-native-vector-icons/FontAwesome";
+import MaterialCommunityicons from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default function DrawerContent(props) {
   const currentLoginUser = useSelector((state) => state.auth.login?.currentUser);
@@ -74,6 +75,9 @@ export default function DrawerContent(props) {
     setActiveBgProfileTabDrawer("#fff");
     setActiveFontProfileTabDrawer("black");
     setActiveIconProfile("user-o");
+
+    setActiveBgStatisticTabDrawer('#fff');
+    setActiveFontStatisticTabDrawer('black');
   }
 
   const [activeBgProfileTabDrawer, setActiveBgProfileTabDrawer] = useState("#fff");
@@ -87,7 +91,26 @@ export default function DrawerContent(props) {
     setActiveBgHomeTabDrawer("#fff");
     setActiveFontHomeTabDrawer("black");
     setActiveIconHome("md-home-outline");
+
+    setActiveBgStatisticTabDrawer('#fff');
+    setActiveFontStatisticTabDrawer('black');
   }
+
+  const [activeBgStatisticTabDrawer, setActiveBgStatisticTabDrawer] = useState("#fff");
+  const [activeFontStatisticTabDrawer, setActiveFontStatisticTabDrawer] = useState("black");
+  function handleActiveStatisticTabDrawer() {
+    setActiveBgStatisticTabDrawer("#09CBD0");
+    setActiveFontStatisticTabDrawer("#fff");
+
+    setActiveBgHomeTabDrawer("#fff");
+    setActiveFontHomeTabDrawer("black");
+    setActiveIconHome("md-home-outline");
+
+    setActiveBgProfileTabDrawer("#fff");
+    setActiveFontProfileTabDrawer("black");
+    setActiveIconProfile("user-o");
+  }
+  
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -136,6 +159,16 @@ export default function DrawerContent(props) {
           >
             <FontAwesomeicons name={activeIconProfile} color={activeFontProfileTabDrawer} size={30} />
             <Text style={[styles.lblBtns, { color: activeFontProfileTabDrawer }]}>Thông tin cá nhân</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.btns, {backgroundColor: activeBgStatisticTabDrawer}]}
+            onPress={() => {
+              handleActiveStatisticTabDrawer();
+              props.navigation.navigate("Thống kê");
+            }}
+          >
+            <MaterialCommunityicons name="chart-line" color={activeFontStatisticTabDrawer} size={30} />
+            <Text style={[styles.lblBtns, { color: activeFontStatisticTabDrawer }]}>Thống kê</Text>
           </TouchableOpacity>
         </View>
       </DrawerContentScrollView>
