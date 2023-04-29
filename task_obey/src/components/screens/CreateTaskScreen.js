@@ -410,71 +410,71 @@ export default function CreateTaskScreen() {
       });
   }
 
-   ///// notification
-   const [notification, setNotification] = useState(null);
-   useEffect(() => {
-     PushNotification.createChannel({
-       channelId: 'create Task',
-       channelName: 'notification',
-       channelDescription: 'notification'
-     })
-   },[])
-   // handle createChannel
-   /////handle notification
-   const handleNotification = () =>{
+  //  ///// notification
+  //  const [notification, setNotification] = useState(null);
+  //  useEffect(() => {
+  //    PushNotification.createChannel({
+  //      channelId: 'create Task',
+  //      channelName: 'notification',
+  //      channelDescription: 'notification'
+  //    })
+  //  },[])
+  //  // handle createChannel
+  //  /////handle notification
+  //  const handleNotification = () =>{
      
-     PushNotification.cancelAllLocalNotifications();
+  //    PushNotification.cancelAllLocalNotifications();
  
-     PushNotification.localNotificationSchedule({
-       channelId: 'create Task',
-       title: txtInputTask,
+  //    PushNotification.localNotificationSchedule({
+  //      channelId: 'create Task',
+  //      title: txtInputTask,
  
-       message: txtInputDesc,
-       actions: ["Accept", "Reject"],
-       date: new Date(Date.now() + 1000),
-       allowWhileIdle: true,
-       invokeApp: false
-     });
+  //      message: txtInputDesc,
+  //      actions: ["Accept", "Reject"],
+  //      date: new Date(Date.now() + 1000),
+  //      allowWhileIdle: true,
+  //      invokeApp: false
+  //    });
  
-     PushNotification.configure({
-       onAction: function (notification){
-         if( notification.action === 'Accept'){
-           console.log('Alarm Snoozed')
-         }
-         else if( notification.action === "Reject"){
-           console.log('Alarm Stopped')
-         }
-         else{
-           console('Notification opened')
-         }
-       }
-     })
-   }
-   useEffect(() => {
-     if (notification) {
-       setTimeout(handleNotification, notification.fireDate - Date.now());
-     }
-   }, [notification]);
-   useEffect(() => {
-     PushNotification.configure({
-       onAction: function (notification) {
-         if (notification.action === 'Accept') {
-           console.log('Alarm Snoozed');
-         } else if (notification.action === 'Reject') {
-           console.log('Alarm Stoped');
-         } else {
-           console.log('Notification opened');
-         }
-       },
-       actions: ['Accept', 'Reject'],
-     });
-   }, []);
+  //    PushNotification.configure({
+  //      onAction: function (notification){
+  //        if( notification.action === 'Accept'){
+  //          console.log('Alarm Snoozed')
+  //        }
+  //        else if( notification.action === "Reject"){
+  //          console.log('Alarm Stopped')
+  //        }
+  //        else{
+  //          console('Notification opened')
+  //        }
+  //      }
+  //    })
+  //  }
+  //  useEffect(() => {
+  //    if (notification) {
+  //      setTimeout(handleNotification, notification.fireDate - Date.now());
+  //    }
+  //  }, [notification]);
+  //  useEffect(() => {
+  //    PushNotification.configure({
+  //      onAction: function (notification) {
+  //        if (notification.action === 'Accept') {
+  //          console.log('Alarm Snoozed');
+  //        } else if (notification.action === 'Reject') {
+  //          console.log('Alarm Stoped');
+  //        } else {
+  //          console.log('Notification opened');
+  //        }
+  //      },
+  //      actions: ['Accept', 'Reject'],
+  //    });
+  //  }, []);
  
-   const setNotificationHandler = (fireDate) => {
-     setNotification({
-       fireDate: fireDate,
-     });
-   };
+  //  const setNotificationHandler = (fireDate) => {
+  //    setNotification({
+  //      fireDate: fireDate,
+  //    });
+  //  };
  
    /////
   return (
