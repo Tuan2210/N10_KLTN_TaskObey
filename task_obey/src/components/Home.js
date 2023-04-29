@@ -69,8 +69,8 @@ export default function Home() {
           }}
         />
         <DrawerStack.Screen
-          name="Thông tin cá nhân"
-          component={ProfileScreen}
+          name="Thống kê"
+          component={StatisticScreen}
           options={{
             headerTitle: "Hôm nay, " +formatCurrentDate,
             headerTitleStyle: {
@@ -83,8 +83,8 @@ export default function Home() {
           }}
         />
         <DrawerStack.Screen
-          name="Thống kê"
-          component={StatisticScreen}
+          name="Thông tin cá nhân"
+          component={ProfileScreen}
           options={{
             headerTitle: "Hôm nay, " +formatCurrentDate,
             headerTitleStyle: {

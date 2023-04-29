@@ -80,6 +80,21 @@ export default function DrawerContent(props) {
     setActiveFontStatisticTabDrawer('black');
   }
 
+  const [activeBgStatisticTabDrawer, setActiveBgStatisticTabDrawer] = useState("#fff");
+  const [activeFontStatisticTabDrawer, setActiveFontStatisticTabDrawer] = useState("black");
+  function handleActiveStatisticTabDrawer() {
+    setActiveBgStatisticTabDrawer("#09CBD0");
+    setActiveFontStatisticTabDrawer("#fff");
+
+    setActiveBgHomeTabDrawer("#fff");
+    setActiveFontHomeTabDrawer("black");
+    setActiveIconHome("md-home-outline");
+
+    setActiveBgProfileTabDrawer("#fff");
+    setActiveFontProfileTabDrawer("black");
+    setActiveIconProfile("user-o");
+  }
+
   const [activeBgProfileTabDrawer, setActiveBgProfileTabDrawer] = useState("#fff");
   const [activeFontProfileTabDrawer, setActiveFontProfileTabDrawer] = useState("black");
   const [activeIconProfile, setActiveIconProfile] = useState('user-o');
@@ -94,21 +109,6 @@ export default function DrawerContent(props) {
 
     setActiveBgStatisticTabDrawer('#fff');
     setActiveFontStatisticTabDrawer('black');
-  }
-
-  const [activeBgStatisticTabDrawer, setActiveBgStatisticTabDrawer] = useState("#fff");
-  const [activeFontStatisticTabDrawer, setActiveFontStatisticTabDrawer] = useState("black");
-  function handleActiveStatisticTabDrawer() {
-    setActiveBgStatisticTabDrawer("#09CBD0");
-    setActiveFontStatisticTabDrawer("#fff");
-
-    setActiveBgHomeTabDrawer("#fff");
-    setActiveFontHomeTabDrawer("black");
-    setActiveIconHome("md-home-outline");
-
-    setActiveBgProfileTabDrawer("#fff");
-    setActiveFontProfileTabDrawer("black");
-    setActiveIconProfile("user-o");
   }
   
 
@@ -151,16 +151,6 @@ export default function DrawerContent(props) {
             <Text style={[styles.lblBtns, { color: activeFontHomeTabDrawer }]}>Trang chủ</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.btns, {backgroundColor: activeBgProfileTabDrawer}]}
-            onPress={() => {
-              handleActiveProfileTabDrawer();
-              props.navigation.navigate("Thông tin cá nhân");
-            }}
-          >
-            <FontAwesomeicons name={activeIconProfile} color={activeFontProfileTabDrawer} size={30} />
-            <Text style={[styles.lblBtns, { color: activeFontProfileTabDrawer }]}>Thông tin cá nhân</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
             style={[styles.btns, {backgroundColor: activeBgStatisticTabDrawer}]}
             onPress={() => {
               handleActiveStatisticTabDrawer();
@@ -169,6 +159,16 @@ export default function DrawerContent(props) {
           >
             <MaterialCommunityicons name="chart-line" color={activeFontStatisticTabDrawer} size={30} />
             <Text style={[styles.lblBtns, { color: activeFontStatisticTabDrawer }]}>Thống kê</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.btns, {backgroundColor: activeBgProfileTabDrawer}]}
+            onPress={() => {
+              handleActiveProfileTabDrawer();
+              props.navigation.navigate("Thông tin cá nhân");
+            }}
+          >
+            <FontAwesomeicons name={activeIconProfile} color={activeFontProfileTabDrawer} size={30} />
+            <Text style={[styles.lblBtns, { color: activeFontProfileTabDrawer }]}>Thông tin cá nhân</Text>
           </TouchableOpacity>
         </View>
       </DrawerContentScrollView>
