@@ -63,12 +63,12 @@ const loginUserPhone = async (user, dispatch, navigate, setIsLoading) => {
 //   }
 // };
 
-const logOutRegsiter= async (dispatch, navigate, id, token, axiosJWTLogout) => {
+const logOutRegsiter= async (dispatch, navigate, id, token) => {
   dispatch(logoutRegisterStart());
   try {
-    await axiosJWTLogout.post(`${url}/api/auth/logoutRegister`, id, token, {
+    await axios.post(`${url}/api/auth/logoutRegister`, id, token, {
       headers: { ['authorization']: `Bearer ${token}` },
-    });
+    }, {timeout: 3000});
     dispatch(logoutRegisterSuccess());
     navigate("/"); //login
   } catch (error) {
@@ -76,12 +76,12 @@ const logOutRegsiter= async (dispatch, navigate, id, token, axiosJWTLogout) => {
   }
 };
 
-const logOut = async (dispatch, navigate, id, token, axiosJWTLogout) => {
+const logOut = async (dispatch, navigate, id, token) => {
   dispatch(logoutStart());
   try {
-    await axiosJWTLogout.post(`${url}/api/auth/logout`, id, {
+    await axios.post(`${url}/api/auth/logout`, id, {
       headers: { ['authorization']: `Bearer ${token}` },
-    });
+    }, {timeout: 3000});
     dispatch(logoutSuccess());
     // dispatch(clearSender());
     // dispatch(clearActor());

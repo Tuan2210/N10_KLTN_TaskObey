@@ -52,15 +52,19 @@ export default function DrawerContent(props) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  let axiosJWTLogout = createAxios(currentLoginUser, dispatch, logoutSuccess);
-  let axiosJWTLogoutRegistered = createAxios(currentRegisterUser, dispatch, logoutSuccess);
+  // let axiosJWTLogout = createAxios(currentLoginUser, dispatch, logoutSuccess);
+  // let axiosJWTLogoutRegistered = createAxios(currentRegisterUser, dispatch, logoutSuccess);
 
   //handle logout
   function handleLogout() {
-    if(currentRegisterUser)
-      logOutRegsiter(dispatch, navigate, registerUserId, accessToken, axiosJWTLogoutRegistered);
-    if(currentLoginUser)
-      logOut(dispatch, navigate, loginUserId, refreshToken, axiosJWTLogout);
+    if(currentRegisterUser){
+      const axiosJWTLogoutRegistered = createAxios(currentRegisterUser, dispatch, logoutSuccess);
+      logOutRegsiter(dispatch, navigate, registerUserId, accessToken);
+    }
+    if(currentLoginUser){
+      const axiosJWTLogout = createAxios(currentLoginUser, dispatch, logoutSuccess);
+      logOut(dispatch, navigate, loginUserId, refreshToken);
+    }
   }
 
   //handle active tab drawer

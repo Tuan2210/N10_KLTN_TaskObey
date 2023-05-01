@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Dimensions, FlatList, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, RefreshControl, ScrollView } from "react-native";
+import { Animated, Dimensions, FlatList, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, RefreshControl, ScrollView, LogBox } from "react-native";
 import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -32,6 +32,9 @@ import 'dayjs/locale/vi';
 
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
+
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs();//Ignore all log notifications
 
 export default function ListScreen({navigation}) {
   const currentLoginUser = useSelector((state) => state.auth.login?.currentUser);
@@ -67,7 +70,11 @@ export default function ListScreen({navigation}) {
   // })
 
   const [refreshing, setRefreshing] = useState(false);
-
+  const wait = (timeout) => {
+    return new Promise(resolve => {
+      setTimeout(resolve, timeout);
+    });
+  }
   const onRefresh = async () => {
     setRefreshing(true);
 
@@ -81,6 +88,7 @@ export default function ListScreen({navigation}) {
     } catch (error) {
       console.log(error);
     }
+    wait(4000).then(() => setRefreshing(false));
   };
 
 
@@ -405,15 +413,15 @@ export default function ListScreen({navigation}) {
                         }
                       </Text>
                     </Text>
-                    {/* th.g thực hiện */}
-                    <Text style={styles.txtModal}>
-                      Thời gian thực hiện:{'\t'}
+                    {/* th.g lượng */}
+                    {/* <Text style={styles.txtModal}>
+                      Thời lượng:{'\t'}
                       <Text style={{fontSize: 18, color: 'black'}}>
                         {selectedEvent.duration==='' ?
                           'Không' : moment(selectedEvent.duration).utcOffset('+0700').format('D/M/YYYY, HH [giờ] mm [phút]')
                         }
                       </Text>
-                    </Text>
+                    </Text> */}
                     {/* thời hạn */}
                     <Text style={styles.txtModal}>
                       Thời hạn:{'\u00A0'}
