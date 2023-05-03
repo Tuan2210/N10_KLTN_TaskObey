@@ -55,7 +55,7 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* <Text>profile</Text> */}
-      <View style={{width: "100%", height:"20%", justifyContent:'flex-start',}}>
+      <View style={{width: "100%", height:"15%", justifyContent:'flex-start',}}>
           <Avatar.Image source={require("../../../assets/avaUser.gif")} 
             size={210} 
             style={styles.avatar}/>
@@ -75,7 +75,9 @@ export default function ProfileScreen() {
           <TextInput editable={false} placeholder="Mật khẩu" style={styles.StyleTextInput}></TextInput>
         </View>
         <View style={styles.columnButton}>
-        <TouchableOpacity style={styles.btns} onPress={handleLogout}>
+        <TouchableOpacity style={styles.btns} 
+          // onPress={handleLogout}
+          >
           <Text style={styles.tittleLabel}>Cập nhật thông tin</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.btns} onPress={handleLogout}>
@@ -92,6 +94,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    justifyContent: 'space-evenly'
   },
   btns: {
     // padding: 15,
@@ -151,7 +154,7 @@ const styles = StyleSheet.create({
     margin: "5%"
   },
   StyleTextInput: {
-    backgroundColor: "rgba(211, 211, 211, 0.404)",
+    backgroundColor: "#BCF4F5",
     alignSelf: "center",
     width: "95%",
     height: "127%",
