@@ -638,7 +638,8 @@ export default function CreateTaskScreen() {
       <View style={{ width: "100%", height: "100%", padding: "3%" }}>
         {/* tên cv */}
         <TextInput
-          style={[styles.styleInput, { borderRadius: 0, borderColor: "gray" }]}
+          style={[styles.styleInput, 
+            { borderRadius: 10, borderColor: "gray" }]}
           placeholder="Nhập tên công việc"
           numberOfLines={1}
           // autoFocus
@@ -654,7 +655,7 @@ export default function CreateTaskScreen() {
               textAlignVertical: "top",
               height: "15%",
               marginTop: "3%",
-              borderRadius: 0,
+              borderRadius: 10,
               borderColor: "gray",
             },
           ]}
@@ -684,7 +685,10 @@ export default function CreateTaskScreen() {
           >
             <Text style={{ color: "#09CBD0" }}>Loại công việc:</Text>
             <Picker
-              style={{ width: "65%", backgroundColor: "#f4f4f4" }}
+              style={{ 
+                width: "65%", 
+                backgroundColor: "#BCF4F5",
+               }}
               selectedValue={taskType}
               onValueChange={(itemValue, itemIndex) => {
                 setItemToDelete(itemValue);
@@ -738,7 +742,7 @@ export default function CreateTaskScreen() {
           >
             <Text style={{ color: "#09CBD0" }}>Đặt lặp lại:</Text>
             <Picker
-              style={{ width: "70%", backgroundColor: "#f4f4f4" }}
+              style={{ width: "70%", backgroundColor: "#BCF4F5" }}
               selectedValue={repeat}
               onValueChange={(itemValue, itemIndex) => setRepeat(itemValue)}
             >
@@ -779,7 +783,7 @@ export default function CreateTaskScreen() {
           >
             <Text style={{ color: "#09CBD0" }}>Ưu tiên:</Text>
             <Picker
-              style={{ width: "68%", backgroundColor: "#f4f4f4" }}
+              style={{ width: "68%", backgroundColor: "#BCF4F5" }}
               selectedValue={priority}
               onValueChange={(itemValue, itemIndex) => setPriority(itemValue)}
             >
@@ -811,7 +815,7 @@ export default function CreateTaskScreen() {
         >
           <Text style={{ color: "#09CBD0" }}>Đặt lời nhắc:</Text>
           <Picker
-            style={{ width: "70%", backgroundColor: "#f4f4f4" }}
+            style={{ width: "70%", backgroundColor: "#BCF4F5" }}
             selectedValue={reminderTime}
             onValueChange={(itemValue, itemIndex) => setReminderTime(itemValue)}
           >
@@ -1258,7 +1262,7 @@ const styles = StyleSheet.create({
   displayDateTime: {
     width: "45%",
     height: "60%",
-    backgroundColor: "#f4f4f4",
+    backgroundColor: "#BCF4F5",
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center",
