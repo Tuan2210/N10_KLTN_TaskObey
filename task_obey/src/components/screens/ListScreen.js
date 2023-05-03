@@ -234,7 +234,8 @@ export default function ListScreen({ navigation }) {
   // }, [events]);
 
   const showEventItem = [];
-  const [bgColorItem, setBgColorItem] = useState("");
+  // const [startDateTimeNotify, setStartDateTimeNotify] = useState([]);
+  const startDateTimeNotify = [];
   events.forEach((evt) => {
     // const start = evt.taskDetailId.startTime ? new Date(evt.taskDetailId.startTime) : null;
     // const end = evt.taskDetailId.endTime ? new Date(evt.taskDetailId.endTime) : null;
@@ -387,6 +388,16 @@ export default function ListScreen({ navigation }) {
     setSelectedEvent(null);
     setIsModalVisible(false);
   }
+  /////
+
+  /////handle notification
+  {
+    showEventItem.map((e) => {
+      startDateTimeNotify.push(e.start);
+      // console.log(startDateTimeNotify);
+    });
+  }
+
   /////
 
   return (

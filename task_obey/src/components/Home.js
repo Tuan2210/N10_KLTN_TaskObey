@@ -2,7 +2,7 @@ import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
 
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator, DrawerView } from "@react-navigation/drawer";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
@@ -19,7 +19,7 @@ import FontAwesome5icons from "react-native-vector-icons/FontAwesome5";
 
 import ListScreen from "./screens/ListScreen";
 import CreateTaskScreen from "./screens/CreateTaskScreen";
-import CalendarScreen from "./screens/CalendarScreen";
+// import CalendarScreen from "./screens/CalendarScreen";
 import FinishTaskScreen from "./screens/FinishTaskScreen";
 
 import DrawerContent from "./screens/drawer/DrawerContent";
@@ -34,7 +34,7 @@ export default function Home() {
   //current date,time
   // const [currentDate, setCurrentDate] = useState(Date);
   // useEffect(() => {
-  //   // const curDate = new Date().toLocaleString(); 
+  //   // const curDate = new Date().toLocaleString();
   //   setInterval(() => {
   //     const curDate = new Date().toLocaleString();
   //     setCurrentDate(curDate)
@@ -42,10 +42,10 @@ export default function Home() {
   //   }, 1000)
   // })
   const currentDate = new Date().toISOString().split("T")[0];
-  const currentDay = currentDate.slice(8,10),
-        currentMonth = currentDate.slice(5,7),
-        currentYear = currentDate.slice(0,4),
-        formatCurrentDate = currentDay +'/' +currentMonth +'/'  +currentYear;
+  const currentDay = currentDate.slice(8, 10),
+    currentMonth = currentDate.slice(5, 7),
+    currentYear = currentDate.slice(0, 4),
+    formatCurrentDate = currentDay + "/" + currentMonth + "/" + currentYear;
 
   //Drawer
   function AppDrawerStack() {
@@ -58,7 +58,7 @@ export default function Home() {
           name="Trang chủ"
           component={HomeBottomTabs}
           options={{
-            headerTitle: "Hôm nay, " +formatCurrentDate,
+            headerTitle: "Hôm nay, " + formatCurrentDate,
             headerTitleStyle: {
               color: "#fff",
             },
@@ -72,7 +72,7 @@ export default function Home() {
           name="Thống kê"
           component={StatisticScreen}
           options={{
-            headerTitle: "Hôm nay, " +formatCurrentDate,
+            headerTitle: "Hôm nay, " + formatCurrentDate,
             headerTitleStyle: {
               color: "#fff",
             },
@@ -86,7 +86,7 @@ export default function Home() {
           name="Thông tin cá nhân"
           component={ProfileScreen}
           options={{
-            headerTitle: "Hôm nay, " +formatCurrentDate,
+            headerTitle: "Hôm nay, " + formatCurrentDate,
             headerTitleStyle: {
               color: "#fff",
             },
@@ -111,10 +111,14 @@ export default function Home() {
               iconFA5 = "tasks";
             } else if (route.name === "CreateTaskScreen") {
               iconIon = focused ? "md-create" : "md-create-outline";
-            } else if (route.name === "CalendarScreen") {
-              iconIon = focused ? "md-calendar" : "md-calendar-outline";
-            } else if (route.name === "FinishTaskScreen") {
-              iconIon = focused ? "checkmark-done-circle" : "checkmark-done-circle-outline";
+            }
+            // else if (route.name === "CalendarScreen") {
+            //   iconIon = focused ? "md-calendar" : "md-calendar-outline";
+            // }
+            else if (route.name === "FinishTaskScreen") {
+              iconIon = focused
+                ? "checkmark-done-circle"
+                : "checkmark-done-circle-outline";
             }
             size = focused ? 28 : 24;
             return (
@@ -150,11 +154,11 @@ export default function Home() {
           options={{ title: "Thêm công việc", headerShown: false }}
           component={CreateTaskScreen}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           name="CalendarScreen"
           options={{ title: "Lịch", headerShown: false }}
           component={CalendarScreen}
-        />
+        /> */}
         <Tab.Screen
           name="FinishTaskScreen"
           options={{ title: "Hoàn thành", headerShown: false }}
@@ -166,9 +170,9 @@ export default function Home() {
 
   return (
     <Animatable.View animation="lightSpeedIn" style={{ flex: 1 }}>
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
-          <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="AppDrawerStack" component={AppDrawerStack} />
           </Stack.Navigator>
         </NavigationContainer>
