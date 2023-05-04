@@ -30,7 +30,7 @@ import * as Animatable from "react-native-animatable";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesomeicons from "react-native-vector-icons/FontAwesome";
 import FontAwesome5icons from "react-native-vector-icons/FontAwesome5";
-import AntDesignicons from "react-native-vector-icons/AntDesign";
+import Feather from "react-native-vector-icons/Feather";
 
 //link doc react-native-big-calendar: https://github.com/acro5piano/react-native-big-calendar
 import { Calendar } from "react-native-big-calendar";
@@ -48,7 +48,11 @@ import "dayjs/locale/vi";
 //doc: https://github.com/react-native-picker/picker
 import { Picker } from "@react-native-picker/picker";
 
-import * as Notifications from 'expo-notifications';
+import * as Notifications from "expo-notifications";
+
+import { RadioGroup, RadioButton } from "react-native-flexi-radio-button";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
@@ -192,8 +196,6 @@ export default function ListScreen({ navigation }) {
   // };
 
   async function loadListNotFinishTasks(id) {
-    //userId, currentDate
-    // const res = await axios.get(`${url}/api/task/notFinishTasks/${id}/${date}`);
     try {
       const res = await axios.get(`${url}/api/task/notFinishTasks/${id}`, {
         timeout: 4000,
@@ -207,17 +209,6 @@ export default function ListScreen({ navigation }) {
     } catch (error) {
       console.log(error);
     }
-    // await axios
-    //   // .get(`${url}/api/task/notFinishTasks/${id}/${date}`)
-    //   .get(`${url}/api/task/notFinishTasks/6432a67429d2ca71765afe4d/2023-04-27`)
-    //   .then((res) => {
-    //     if(res.data.length===0) console.log('no data task in list');
-    //     if(res.data.length > 0) {
-    //       // console.log('res data');
-    //       console.log(res.data)
-
-    //     };
-    //   })
   }
 
   // useEffect(() => {
@@ -392,6 +383,35 @@ export default function ListScreen({ navigation }) {
   }
   /////
 
+  /////handle filter
+  const [modalFilter, setModalFilter] = useState(false);
+
+  //load data task-type
+  const [taskTypeData, setTaskTypeData] = useState([
+    "Cá nhân",
+    "Học tập",
+    "Gia đình",
+    "Công ty",
+    "Du lịch",
+  ]);
+  useEffect(() => {
+    AsyncStorage.getItem("taskTypeData")
+      .then((value) => {
+        if (value) setTaskTypeData(JSON.parse(value));
+      })
+      .catch((err) => {
+        console.log("lỗi khôi phục:", err);
+      });
+  }, []);
+  // useEffect(() => console.log(taskTypeData), [taskTypeData]);
+
+  const [filterTaskType, setFilterTaskType] = useState("");
+  const [filterRepeat, setFilterRepeat] = useState("");
+  const [filterReminderTime, setFilterReminderTime] = useState("");
+  const [filterPriority, setFilterPriority] = useState("");
+  const [activeColorPriority, setActiveColorPriority] = useState("");
+  /////
+
   /////handle notification
   {
     showEventItem.map((e) => {
@@ -399,43 +419,49 @@ export default function ListScreen({ navigation }) {
       // console.log(startDateTimeNotify);
     });
   }
-  const [expoPushToken, setExpoPushToken] = useState('');
+  const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+    registerForPushNotificationsAsync().then((token) =>
+      setExpoPushToken(token)
+    );
 
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      setNotification(notification);
-    });
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
+      });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
-    });
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
 
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
       Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
-  
+
   // const dateParts = startTime.split(", ")
   // const date = dateParts[0].split("/").reverse().join("-")
   // const time = dateParts[1].split(" ")[0].split("giờ").join(":").split("phút").join("")
   // const dateTimeStart = `${date}T${time}:00`
-  console.log('start bat đầu là' + startDateTimeNotify)
+  // console.log("start bat đầu là" + startDateTimeNotify);
 
-  const trigger = startDateTimeNotify
+  const trigger = startDateTimeNotify;
   Notifications.scheduleNotificationAsync({
     content: {
       title: taskName,
       body: description,
-      data: { data: 'goes here' }
+      data: { data: "goes here" },
     },
-    trigger
-  })
+    trigger,
+  });
   /////
 
   return (
@@ -514,6 +540,7 @@ export default function ListScreen({ navigation }) {
           //   textDayHeaderFontSize: 16
           // }}
         />
+        {/* modal details info event */}
         {selectedEvent && (
           <Modal
             visible={isModalVisible}
@@ -529,19 +556,7 @@ export default function ListScreen({ navigation }) {
                 alignItems: "center",
               }}
             >
-              <View
-                style={{
-                  backgroundColor: "white",
-                  borderColor: "#09CBD0",
-                  borderStyle: "solid",
-                  borderWidth: 3,
-                  width: "88%",
-                  height: "50%",
-                  padding: 20,
-                  borderRadius: 20,
-                  justifyContent: "space-around",
-                }}
-              >
+              <View style={styles.styleModal}>
                 <View style={{ height: "90%", justifyContent: "space-around" }}>
                   {/* tên cv */}
                   <Text style={styles.txtModal}>
@@ -683,7 +698,7 @@ export default function ListScreen({ navigation }) {
           </Modal>
         )}
       </RefreshControl>
-      {/* </View> */}
+      {/* mode view, refresh, filter, prev-next */}
       <View
         style={{
           height: "20%",
@@ -734,7 +749,7 @@ export default function ListScreen({ navigation }) {
               justifyContent: "space-around",
             }}
           >
-            <Text style={{ color: "#09CBD0" }}>Chế độ xem:</Text>
+            <Text style={{ color: "#09CBD0" }}>Xem lịch theo:</Text>
             <Picker
               style={{
                 width: "55%",
@@ -764,9 +779,26 @@ export default function ListScreen({ navigation }) {
               />
             </Picker>
           </View>
-          <TouchableOpacity onPress={onRefresh}>
-            <Ionicons name="refresh-circle" size={45} color="#09CBD0" />
-          </TouchableOpacity>
+          <View
+            style={{
+              flexDirection: "row",
+              width: "100%",
+              alignItems: "center",
+              justifyContent: "space-around",
+            }}
+          >
+            <TouchableOpacity style={styles.btnHandle} onPress={onRefresh}>
+              <Ionicons name="refresh" size={25} color="#fff" />
+              <Text style={{ color: "#fff", fontSize: 16 }}>Làm mới</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.btnHandle}
+              onPress={() => setModalFilter(true)}
+            >
+              <Feather name="filter" size={25} color="#fff" />
+              <Text style={{ color: "#fff", fontSize: 16 }}>Lọc</Text>
+            </TouchableOpacity>
+          </View>
         </View>
         <TouchableOpacity
           onPress={() => {
@@ -793,6 +825,197 @@ export default function ListScreen({ navigation }) {
           <FontAwesome5icons name="caret-right" size={30} color="#fff" />
         </TouchableOpacity>
       </View>
+      {/* modal filter */}
+      <Modal
+        visible={modalFilter}
+        onRequestClose={closeModal}
+        animationType="slide"
+        transparent
+      >
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View style={styles.styleModal}>
+            <View style={{ height: "90%", justifyContent: "space-around" }}>
+              <Text
+                style={[styles.txtModal, { fontSize: 17, fontWeight: "bold" }]}
+              >
+                Lọc công việc theo:
+              </Text>
+              {/* lọc loại cv */}
+              <View style={styles.rowFilterModal}>
+                <Text style={styles.txtModal}>Loại công việc:</Text>
+                <Picker
+                  style={{ width: "60%", backgroundColor: "#BCF4F5" }}
+                  selectedValue={filterTaskType}
+                  onValueChange={(itemValue, itemIndex) => {
+                    setFilterTaskType(itemValue);
+                  }}
+                >
+                  {taskTypeData.map((item, index) => (
+                    <Picker.Item
+                      style={{ fontWeight: "bold", fontSize: 14 }}
+                      key={index}
+                      label={item}
+                      value={item}
+                    />
+                  ))}
+                </Picker>
+              </View>
+              {/* lọc lặp lại */}
+              <View style={styles.rowFilterModal}>
+                <Text style={styles.txtModal}>Lặp lại:</Text>
+                <Picker
+                  style={{ width: "60%", backgroundColor: "#BCF4F5" }}
+                  selectedValue={filterRepeat}
+                  onValueChange={(itemValue, itemIndex) =>
+                    setFilterRepeat(itemValue)
+                  }
+                >
+                  <Picker.Item
+                    style={{ fontSize: 18 }}
+                    label="Không"
+                    value="Không"
+                  />
+                  <Picker.Item
+                    style={{ fontSize: 18 }}
+                    label="Mỗi ngày"
+                    value="Mỗi ngày"
+                  />
+                  <Picker.Item
+                    style={{ fontSize: 18 }}
+                    label="Mỗi tuần"
+                    value="Mỗi tuần"
+                  />
+                  <Picker.Item
+                    style={{ fontSize: 18 }}
+                    label="Mỗi tháng"
+                    value="Mỗi tháng"
+                  />
+                  <Picker.Item
+                    style={{ fontSize: 18 }}
+                    label="Mỗi năm"
+                    value="Mỗi năm"
+                  />
+                </Picker>
+              </View>
+              {/* lọc lời nhắc */}
+              <View style={styles.rowFilterModal}>
+                <Text style={styles.txtModal}>Lời nhắc:</Text>
+                <Picker
+                  style={{ width: "60%", backgroundColor: "#BCF4F5" }}
+                  selectedValue={filterReminderTime}
+                  onValueChange={(itemValue, itemIndex) =>
+                    setFilterReminderTime(itemValue)
+                  }
+                >
+                  <Picker.Item
+                    style={{ fontSize: 18 }}
+                    label="Không"
+                    value="Không"
+                  />
+                  <Picker.Item
+                    style={{ fontSize: 18 }}
+                    label="Đúng giờ"
+                    value="Đúng giờ"
+                  />
+                  <Picker.Item
+                    style={{ fontSize: 18 }}
+                    label="Trước 5 phút"
+                    value="Trước 5 phút"
+                  />
+                  <Picker.Item
+                    style={{ fontSize: 18 }}
+                    label="Trước 30 phút"
+                    value="Trước 30 phút"
+                  />
+                  <Picker.Item
+                    style={{ fontSize: 18 }}
+                    label="Trước 1 tiếng"
+                    value="Trước 1 tiếng"
+                  />
+                  <Picker.Item
+                    style={{ fontSize: 18 }}
+                    label="Trước 1 ngày"
+                    value="Trước 1 ngày"
+                  />
+                </Picker>
+              </View>
+              {/* lọc ưu tiên */}
+              <View style={styles.rowFilterModal}>
+                <Text style={styles.txtModal}>Ưu tiên:</Text>
+                <RadioGroup
+                  size={25}
+                  color="black"
+                  activeColor={activeColorPriority}
+                  selectedIndex={0}
+                  onSelect={(index, value) => {
+                    if (index === 0) setActiveColorPriority("black");
+                    if (index === 1) setActiveColorPriority("red");
+                    if (index === 2) setActiveColorPriority("orange");
+                    if (index === 3) setActiveColorPriority("#09CBD0");
+                    setFilterPriority(value);
+                  }}
+                  style={{ flexDirection: "row" }}
+                >
+                  <RadioButton value={""}>
+                    <Text>Không lọc</Text>
+                  </RadioButton>
+                  <RadioButton value={"1"}>
+                    <Text style={{ color: "red" }}>1</Text>
+                  </RadioButton>
+                  <RadioButton value={"2"}>
+                    <Text style={{ color: "orange" }}>2</Text>
+                  </RadioButton>
+                  <RadioButton value={"3"}>
+                    <Text style={{ color: "#09CBD0" }}>3</Text>
+                  </RadioButton>
+                </RadioGroup>
+              </View>
+            </View>
+            <View
+              style={{
+                width: "35%",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignSelf: "center",
+              }}
+            >
+              <TouchableOpacity
+                // onPress={() => }
+                style={{ alignItems: "center" }}
+              >
+                <Text
+                  style={{ color: "#09CBD0", fontWeight: "bold", fontSize: 16 }}
+                >
+                  [ Lọc ]
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setFilterTaskType("");
+                  setFilterRepeat("");
+                  setFilterReminderTime("");
+                  setFilterPriority("");
+                  setModalFilter(false);
+                }}
+                style={{ alignItems: "center" }}
+              >
+                <Text
+                  style={{ color: "red", fontWeight: "bold", fontSize: 16 }}
+                >
+                  [ Hủy ]
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -815,35 +1038,63 @@ const styles = StyleSheet.create({
     backgroundColor: "#09CBD0",
     borderRadius: 10,
   },
+  btnHandle: {
+    backgroundColor: "#09CBD0",
+    flexDirection: "row",
+    height: "100%",
+    width: "40%",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "2%",
+    borderRadius: 10,
+  },
+  styleModal: {
+    backgroundColor: "white",
+    borderColor: "#09CBD0",
+    borderStyle: "solid",
+    borderWidth: 3,
+    width: "88%",
+    height: "50%",
+    padding: 20,
+    borderRadius: 20,
+    justifyContent: "space-around",
+  },
+  rowFilterModal: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    justifyContent: "space-between",
+  },
 });
 
 async function registerForPushNotificationsAsync() {
   let token;
 
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "default",
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
+      lightColor: "#FF231F7C",
     });
   }
 
   if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
+    if (existingStatus !== "granted") {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
-    if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
+    if (finalStatus !== "granted") {
+      alert("Failed to get push token for push notification!");
       return;
     }
     token = (await Notifications.getExpoPushTokenAsync()).data;
     console.log(token);
   } else {
-    alert('Must use physical device for Push Notifications');
+    alert("Must use physical device for Push Notifications");
   }
 
   return token;
