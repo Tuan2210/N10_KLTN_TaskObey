@@ -48,8 +48,6 @@ import "dayjs/locale/vi";
 //doc: https://github.com/react-native-picker/picker
 import { Picker } from "@react-native-picker/picker";
 
-import * as Notifications from "expo-notifications";
-
 import { RadioGroup, RadioButton } from "react-native-flexi-radio-button";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -60,7 +58,7 @@ const heightScreen = Dimensions.get("window").height;
 LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 
-export default function ListScreen({ navigation }) {
+export default function ListScreen() {
   const currentLoginUser = useSelector(
     (state) => state.auth.login?.currentUser
   );
@@ -410,58 +408,6 @@ export default function ListScreen({ navigation }) {
   const [filterReminderTime, setFilterReminderTime] = useState("");
   const [filterPriority, setFilterPriority] = useState("");
   const [activeColorPriority, setActiveColorPriority] = useState("");
-  /////
-
-  /////handle notification
-  {
-    showEventItem.map((e) => {
-      startDateTimeNotify.push(e.start);
-      // console.log(startDateTimeNotify);
-    });
-  }
-  const [expoPushToken, setExpoPushToken] = useState("");
-  const [notification, setNotification] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
-
-  useEffect(() => {
-    registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
-    );
-
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
-      });
-
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
-      });
-
-    return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current
-      );
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
-  }, []);
-
-  // const dateParts = startTime.split(", ")
-  // const date = dateParts[0].split("/").reverse().join("-")
-  // const time = dateParts[1].split(" ")[0].split("giờ").join(":").split("phút").join("")
-  // const dateTimeStart = `${date}T${time}:00`
-  // console.log("start bat đầu là" + startDateTimeNotify);
-
-  const trigger = startDateTimeNotify;
-  Notifications.scheduleNotificationAsync({
-    content: {
-      title: taskName,
-      body: description,
-      data: { data: "goes here" },
-    },
-    trigger,
-  });
   /////
 
   return (
@@ -1066,36 +1012,3 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 });
-
-async function registerForPushNotificationsAsync() {
-  let token;
-
-  if (Platform.OS === "android") {
-    await Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#FF231F7C",
-    });
-  }
-
-  if (Device.isDevice) {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== "granted") {
-      alert("Failed to get push token for push notification!");
-      return;
-    }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
-  } else {
-    alert("Must use physical device for Push Notifications");
-  }
-
-  return token;
-}
