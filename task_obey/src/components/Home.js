@@ -17,6 +17,8 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesomeicons from "react-native-vector-icons/FontAwesome";
 import FontAwesome5icons from "react-native-vector-icons/FontAwesome5";
 
+import moment from "moment";
+
 import ListScreen from "./screens/ListScreen";
 import CreateTaskScreen from "./screens/CreateTaskScreen";
 // import CalendarScreen from "./screens/CalendarScreen";
@@ -41,11 +43,13 @@ export default function Home() {
   //     // console.log(curDate);
   //   }, 1000)
   // })
-  const currentDate = new Date().toISOString().split("T")[0];
-  const currentDay = currentDate.slice(8, 10),
-    currentMonth = currentDate.slice(5, 7),
-    currentYear = currentDate.slice(0, 4),
-    formatCurrentDate = currentDay + "/" + currentMonth + "/" + currentYear;
+
+  // const currentDate = new Date().toISOString().split("T")[0];
+  // const currentDay = currentDate.slice(8, 10),
+  //   currentMonth = currentDate.slice(5, 7),
+  //   currentYear = currentDate.slice(0, 4),
+  // formatCurrentDate = currentDay + "/" + currentMonth + "/" + currentYear;
+  const formatCurrentDate = moment().utcOffset(7).format("DD/MM/YYYY");
 
   //Drawer
   function AppDrawerStack() {
