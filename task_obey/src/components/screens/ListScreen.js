@@ -14,6 +14,7 @@ import {
   RefreshControl,
   ScrollView,
   LogBox,
+  Alert,
 } from "react-native";
 import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -313,7 +314,7 @@ export default function ListScreen() {
   //   // },
   // ]
 
-  ////handle previous-nex week
+  ////handle previous-next
   const [dateCalendar, setDateCalendar] = useState(new Date());
   const handleNextWeek = () => {
     const nextWeek = new Date(dateCalendar.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -408,6 +409,121 @@ export default function ListScreen() {
   const [filterReminderTime, setFilterReminderTime] = useState("");
   const [filterPriority, setFilterPriority] = useState("");
   const [activeColorPriority, setActiveColorPriority] = useState("");
+
+  const [filterEventItem, setFilterEventItem] = useState(showEventItem);
+  const [noFilterselectedIndex, setNoFilterSelectedIndex] = useState();
+  const [noFilter, setNoFilter] = useState("");
+  const [prioritySelectedIndex, setPrioritySelectedIndex] = useState();
+  function handleFilter() {
+    if (noFilter === "allDetailTasks") {
+      setFilterEventItem(showEventItem);
+      setModalFilter(false);
+    }
+    // if(noFilter !== "allDetailTasks" && filterTaskType!== '' && filterRepeat!== '' && filterReminderTime!== '' && filterPriority!== ''){
+    // }
+    else {
+      if (filterTaskType !== "") {
+        setFilterEventItem(
+          showEventItem.filter((item) => item.taskType === filterTaskType)
+        );
+        console.log("=====> filterTaskType:", filterTaskType);
+        setModalFilter(false);
+      }
+      ///
+      if (filterTaskType !== "" && filterRepeat !== "") {
+        const filteredItems = showEventItem.reduce((acc, item) => {
+          if (
+            item.taskType === filterTaskType &&
+            item.repeat === filterRepeat
+          ) {
+            acc.push(item);
+          }
+          return acc;
+        }, []);
+        if (filteredItems.length === 0) {
+          setFilterEventItem(showEventItem);
+          Alert.alert(
+            "Thông báo",
+            "Công việc lọc theo điều kiện này hiện không có!"
+          );
+        } else {
+          setFilterEventItem(filteredItems);
+          console.log(
+            "=====> filterTaskType: " +
+              filterTaskType +
+              ", filterRepeat: " +
+              filterRepeat
+          );
+        }
+        setModalFilter(false);
+      }
+      ///
+      if (filterTaskType !== "" && filterReminderTime !== "") {
+        const filteredItems = showEventItem.reduce((acc, item) => {
+          if (
+            item.taskType === filterTaskType &&
+            item.reminderTime === filterReminderTime
+          ) {
+            acc.push(item);
+          }
+          return acc;
+        }, []);
+        if (filteredItems.length === 0) {
+          setFilterEventItem(showEventItem);
+          Alert.alert(
+            "Thông báo",
+            "Công việc lọc theo điều kiện này hiện không có!"
+          );
+        } else {
+          setFilterEventItem(filteredItems);
+          console.log(
+            "=====> filterTaskType: " +
+              filterTaskType +
+              ", filterReminderTime: " +
+              filterReminderTime
+          );
+        }
+        setModalFilter(false);
+      }
+      ///
+      if (filterTaskType !== "" && filterPriority !== "") {
+        const filteredItems = showEventItem.reduce((acc, item) => {
+          if (
+            item.taskType === filterTaskType &&
+            item.priority === filterPriority
+          ) {
+            acc.push(item);
+          }
+          return acc;
+        }, []);
+        if (filteredItems.length === 0) {
+          setFilterEventItem(showEventItem);
+          Alert.alert(
+            "Thông báo",
+            "Công việc lọc theo điều kiện này hiện không có!"
+          );
+        } else {
+          setFilterEventItem(filteredItems);
+          console.log(
+            "=====> filterTaskType: " +
+              filterTaskType +
+              ", filterPriority: " +
+              filterPriority
+          );
+        }
+        setModalFilter(false);
+      }
+    }
+  }
+  function handleCancelFilter() {
+    setNoFilterSelectedIndex(-1);
+    setPrioritySelectedIndex(-1);
+    setFilterTaskType("");
+    setFilterRepeat("");
+    setFilterReminderTime("");
+    setFilterPriority("");
+    setModalFilter(false);
+  }
   /////
 
   return (
@@ -419,7 +535,9 @@ export default function ListScreen() {
       >
         <Calendar
           // style={{height: '70%'}}
-          events={showEventItem}
+          events={
+            filterEventItem.length === 0 ? showEventItem : filterEventItem
+          }
           height={800}
           weekStartsOn={1}
           locale="vi"
@@ -797,7 +915,7 @@ export default function ListScreen() {
               <View style={styles.rowFilterModal}>
                 <Text style={styles.txtModal}>Loại công việc:</Text>
                 <Picker
-                  style={{ width: "60%", backgroundColor: "#BCF4F5" }}
+                  style={{ width: "70%", backgroundColor: "#BCF4F5" }}
                   selectedValue={filterTaskType}
                   onValueChange={(itemValue, itemIndex) => {
                     setFilterTaskType(itemValue);
@@ -817,12 +935,17 @@ export default function ListScreen() {
               <View style={styles.rowFilterModal}>
                 <Text style={styles.txtModal}>Lặp lại:</Text>
                 <Picker
-                  style={{ width: "60%", backgroundColor: "#BCF4F5" }}
+                  style={{ width: "70%", backgroundColor: "#BCF4F5" }}
                   selectedValue={filterRepeat}
                   onValueChange={(itemValue, itemIndex) =>
                     setFilterRepeat(itemValue)
                   }
                 >
+                  <Picker.Item
+                    style={{ fontSize: 18 }}
+                    label="Không lọc"
+                    value=""
+                  />
                   <Picker.Item
                     style={{ fontSize: 18 }}
                     label="Không"
@@ -854,12 +977,17 @@ export default function ListScreen() {
               <View style={styles.rowFilterModal}>
                 <Text style={styles.txtModal}>Lời nhắc:</Text>
                 <Picker
-                  style={{ width: "60%", backgroundColor: "#BCF4F5" }}
+                  style={{ width: "70%", backgroundColor: "#BCF4F5" }}
                   selectedValue={filterReminderTime}
                   onValueChange={(itemValue, itemIndex) =>
                     setFilterReminderTime(itemValue)
                   }
                 >
+                  <Picker.Item
+                    style={{ fontSize: 18 }}
+                    label="Không lọc"
+                    value=""
+                  />
                   <Picker.Item
                     style={{ fontSize: 18 }}
                     label="Không"
@@ -899,18 +1027,38 @@ export default function ListScreen() {
                   size={25}
                   color="black"
                   activeColor={activeColorPriority}
-                  selectedIndex={0}
+                  selectedIndex={prioritySelectedIndex}
                   onSelect={(index, value) => {
-                    if (index === 0) setActiveColorPriority("black");
-                    if (index === 1) setActiveColorPriority("red");
-                    if (index === 2) setActiveColorPriority("orange");
-                    if (index === 3) setActiveColorPriority("#09CBD0");
+                    if (index !== -1) {
+                      setNoFilterSelectedIndex(-1);
+                      setNoFilter("");
+                    }
+                    if (index === 0) {
+                      setPrioritySelectedIndex(0);
+                      setActiveColorPriority("black");
+                    }
+                    if (index === 1) {
+                      setPrioritySelectedIndex(1);
+                      setActiveColorPriority("red");
+                    }
+                    if (index === 2) {
+                      setPrioritySelectedIndex(2);
+                      setActiveColorPriority("orange");
+                    }
+                    if (index === 3) {
+                      setPrioritySelectedIndex(3);
+                      setActiveColorPriority("#09CBD0");
+                    }
                     setFilterPriority(value);
                   }}
-                  style={{ flexDirection: "row" }}
+                  style={{
+                    flexDirection: "row",
+                    width: "70%",
+                    justifyContent: "space-between",
+                  }}
                 >
                   <RadioButton value={""}>
-                    <Text>Không lọc</Text>
+                    <Text style={{ color: "black" }}>Không lọc</Text>
                   </RadioButton>
                   <RadioButton value={"1"}>
                     <Text style={{ color: "red" }}>1</Text>
@@ -923,6 +1071,30 @@ export default function ListScreen() {
                   </RadioButton>
                 </RadioGroup>
               </View>
+              {/* ko lọc, hiện tất cả */}
+              <RadioGroup
+                size={25}
+                color="black"
+                selectedIndex={noFilterselectedIndex}
+                onSelect={(index, value) => {
+                  setNoFilterSelectedIndex(0);
+                  setNoFilter(value);
+                  if (index !== -1) {
+                    setPrioritySelectedIndex(0);
+                    setActiveColorPriority("black");
+                    setFilterPriority("");
+                  }
+                }}
+                style={{
+                  width: "100%",
+                  height: "10%",
+                  alignItems: "center",
+                }}
+              >
+                <RadioButton value={"allDetailTasks"}>
+                  <Text>Hiện tất cả</Text>
+                </RadioButton>
+              </RadioGroup>
             </View>
             <View
               style={{
@@ -933,23 +1105,17 @@ export default function ListScreen() {
               }}
             >
               <TouchableOpacity
-                // onPress={() => }
+                onPress={handleFilter}
                 style={{ alignItems: "center" }}
               >
                 <Text
                   style={{ color: "#09CBD0", fontWeight: "bold", fontSize: 16 }}
                 >
-                  [ Lọc ]
+                  [ OK ]
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => {
-                  setFilterTaskType("");
-                  setFilterRepeat("");
-                  setFilterReminderTime("");
-                  setFilterPriority("");
-                  setModalFilter(false);
-                }}
+                onPress={handleCancelFilter}
                 style={{ alignItems: "center" }}
               >
                 <Text
@@ -1000,7 +1166,7 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 3,
     width: "88%",
-    height: "50%",
+    height: "55%",
     padding: 20,
     borderRadius: 20,
     justifyContent: "space-around",
