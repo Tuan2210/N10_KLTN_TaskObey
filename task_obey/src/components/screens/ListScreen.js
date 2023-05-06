@@ -416,7 +416,9 @@ export default function ListScreen() {
   const [prioritySelectedIndex, setPrioritySelectedIndex] = useState();
   function handleFilter() {
     if (noFilter === "allDetailTasks") {
-      setFilterEventItem(showEventItem);
+      // setFilterEventItem(showEventItem);
+      filterEventItem.length = 0;
+      console.log("hiện tất cả");
       setModalFilter(false);
     }
     // if(noFilter !== "allDetailTasks" && filterTaskType!== '' && filterRepeat!== '' && filterReminderTime!== '' && filterPriority!== ''){
