@@ -292,7 +292,15 @@ export default function Login() {
         <Animatable.View animation="fadeInUp" style={styles.container}>
           <Image source={require("../../assets/img-header-login.png")} resizeMode="contain" style={{height: '30%'}}/>
           <View style={{width: '70%'}}>
-            <View style={{ flexDirection: "row", alignSelf: "center", display: !flag ? 'flex' : 'none' }}>
+            <View 
+              style={{ 
+                flexDirection: "row", 
+                alignSelf: "center", 
+                justifyContent: "space-between", 
+                width: '100%', 
+                // display: !flag ? 'flex' : 'none' 
+              }}
+            >
               <TextInput
                 style={styles.styleInput}
                 placeholder="Số điện thoại"
@@ -320,7 +328,7 @@ export default function Login() {
             </View> */}
             <Text style={[styles.errMess, {display: !flag ? 'flex' : 'none'}]}>{errorMessSDT}</Text>
             {/* <Text style={[styles.errMess, {display: flag ? 'flex' : 'none'}]}>{errorMessEmail}</Text> */}
-            <View style={{ flexDirection: "row", alignSelf: "center", marginTop: '5%' }}>
+            <View style={{ flexDirection: "row", alignSelf: "center", marginTop: '5%', justifyContent: "space-between", width: '100%',  }}>
               <TextInput
                 style={styles.styleInput}
                 placeholder="Mật khẩu"
