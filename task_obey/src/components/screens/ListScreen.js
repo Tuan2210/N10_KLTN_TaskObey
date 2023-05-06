@@ -278,6 +278,7 @@ export default function ListScreen() {
     });
   });
   // useEffect(() => console.log(showEventItem))
+  const eventColors = ["red", "orange", "#09CBD0"];
 
   // const renderEvent = (event) => {
   //   return (
@@ -549,10 +550,29 @@ export default function ListScreen() {
             borderBottomWidth: 2,
             borderStyle: "dashed",
           }}
-          eventCellStyle={{
-            // opacity: 0.8,
-            borderRadius: 5,
-            height: "auto",
+          eventCellStyle={(event, start, end, isSelected) => {
+            let backgroundColor;
+            switch (event.priority) {
+              case "1":
+                backgroundColor = eventColors[0];
+                break;
+              case "2":
+                backgroundColor = eventColors[1];
+                break;
+              case "3":
+                backgroundColor = eventColors[2];
+                break;
+              default:
+                break;
+            }
+            return {
+              backgroundColor,
+              borderRadius: 5,
+              opacity: isSelected ? 0.8 : 1,
+              borderRadius: 5,
+              height: "auto",
+              color: "#fff",
+            };
           }}
           // renderEvent={renderEvent}
           onPressEvent={(ev) => handlePressEvent(ev)}
@@ -906,7 +926,12 @@ export default function ListScreen() {
             alignItems: "center",
           }}
         >
-          <View style={styles.styleModal}>
+          <View
+            style={[
+              styles.styleModal,
+              { paddingLeft: "2%", paddingRight: "2%", width: "95%" },
+            ]}
+          >
             <View style={{ height: "90%", justifyContent: "space-around" }}>
               <Text
                 style={[styles.txtModal, { fontSize: 17, fontWeight: "bold" }]}
@@ -1029,6 +1054,11 @@ export default function ListScreen() {
                   size={25}
                   color="black"
                   activeColor={activeColorPriority}
+                  style={{
+                    flexDirection: "row",
+                    width: "80%",
+                    justifyContent: "space-between",
+                  }}
                   selectedIndex={prioritySelectedIndex}
                   onSelect={(index, value) => {
                     if (index !== -1) {
@@ -1052,11 +1082,6 @@ export default function ListScreen() {
                       setActiveColorPriority("#09CBD0");
                     }
                     setFilterPriority(value);
-                  }}
-                  style={{
-                    flexDirection: "row",
-                    width: "70%",
-                    justifyContent: "space-between",
                   }}
                 >
                   <RadioButton value={""}>
@@ -1104,6 +1129,7 @@ export default function ListScreen() {
                 flexDirection: "row",
                 justifyContent: "space-between",
                 alignSelf: "center",
+                marginTop: "2%",
               }}
             >
               <TouchableOpacity
