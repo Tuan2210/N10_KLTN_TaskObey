@@ -66,7 +66,7 @@ const loginUserPhone = async (user, dispatch, navigate, setIsLoading) => {
 const logOutRegsiter= async (dispatch, navigate, id, token) => {
   dispatch(logoutRegisterStart());
   try {
-    await axios.post(`${url}/api/auth/logoutRegister`, id, token, {
+    await axios.post(`${url}/api/auth/logoutRegister`, id, {
       headers: { ['authorization']: `Bearer ${token}` },
     }, {timeout: 3000});
     dispatch(logoutRegisterSuccess());
