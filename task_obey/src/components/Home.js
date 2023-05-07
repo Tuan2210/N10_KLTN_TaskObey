@@ -49,7 +49,11 @@ export default function Home() {
   //   currentMonth = currentDate.slice(5, 7),
   //   currentYear = currentDate.slice(0, 4),
   // formatCurrentDate = currentDay + "/" + currentMonth + "/" + currentYear;
-  const formatCurrentDate = moment().utcOffset(7).format("DD/MM/YYYY");
+  const currentDate = moment().utcOffset(7).format("DD/MM/YYYY");
+  const [formatCurrentDate, setFormatCurrentDate] = useState("");
+  useEffect(() => {
+    setFormatCurrentDate(currentDate);
+  }, [currentDate]);
 
   //Drawer
   function AppDrawerStack() {

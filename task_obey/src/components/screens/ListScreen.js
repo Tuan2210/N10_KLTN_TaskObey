@@ -32,6 +32,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesomeicons from "react-native-vector-icons/FontAwesome";
 import FontAwesome5icons from "react-native-vector-icons/FontAwesome5";
 import Feather from "react-native-vector-icons/Feather";
+import Materialicons from "react-native-vector-icons/MaterialIcons";
 
 //link doc react-native-big-calendar: https://github.com/acro5piano/react-native-big-calendar
 import { Calendar } from "react-native-big-calendar";
@@ -544,6 +545,7 @@ export default function ListScreen() {
           height={800}
           weekStartsOn={1}
           locale="vi"
+          headerContentStyle={{ alignItems: "center" }}
           headerContainerStyle={{
             height: "12%",
             borderBottomColor: "#09CBD0",
@@ -570,7 +572,11 @@ export default function ListScreen() {
               borderRadius: 5,
               opacity: isSelected ? 0.8 : 1,
               borderRadius: 5,
+              borderStyle: "solid",
+              borderWidth: 1,
+              borderColor: "black",
               height: "auto",
+              width: "auto",
               color: "#fff",
             };
           }}
@@ -581,18 +587,11 @@ export default function ListScreen() {
           mode={viewModeCalendar}
           swipeEnabled={false}
           showTime={false}
+          // hideHours={true}
+          hourRowHeight={200}
           // ampm
           // overlapOffset={10} //ko chồng lên nhau
-          // hourRowHeight={60}
 
-          // eventCellStyle={({ event, index, color }) => {
-          //   return {
-          //     backgroundColor: eventColors[index % eventColors.length],
-          //     opacity: 0.8,
-          //     borderRadius: 5,
-          //     borderColor: 'transparent'
-          //   };
-          // }}
           // onDayPress={onDayPress}
           // markedDates={items}
           // pastScrollRange={50}
@@ -643,7 +642,7 @@ export default function ListScreen() {
               }}
             >
               <View style={styles.styleModal}>
-                <View style={{ height: "90%", justifyContent: "space-around" }}>
+                <View style={{ height: "75%", justifyContent: "space-around" }}>
                   {/* tên cv */}
                   <Text style={styles.txtModal}>
                     Tên công việc:{"\t\t"}
@@ -770,6 +769,27 @@ export default function ListScreen() {
                       </Text>
                     </Text>
                   </View>
+                </View>
+                <View
+                  style={{
+                    justifyContent: "space-around",
+                    flexDirection: "row",
+                  }}
+                >
+                  <TouchableOpacity style={styles.btnHandle}>
+                    <Ionicons
+                      name="remove-circle-outline"
+                      size={25}
+                      color="#fff"
+                    />
+                    <Text style={{ color: "#fff", fontSize: 16 }}>Xóa</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.btnHandle}>
+                    <Materialicons name="done" size={25} color="#fff" />
+                    <Text style={{ color: "#fff", fontSize: 16 }}>
+                      Hoàn thành
+                    </Text>
+                  </TouchableOpacity>
                 </View>
                 <TouchableOpacity
                   onPress={closeModal}
