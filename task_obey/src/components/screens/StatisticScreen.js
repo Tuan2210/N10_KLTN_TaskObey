@@ -23,25 +23,74 @@ const heightScreen = Dimensions.get("window").height;
 export default function StatisticScreen() {
   const currentLoginUser = useSelector((state) => state.auth.login?.currentUser);
   const loginUserId = currentLoginUser?._id;
-  const phoneLoginrUser = currentLoginUser?.phoneNumber;
-  const refreshToken = currentLoginUser?.refreshToken;
-  const loginUserNameAcc = currentLoginUser?.userName;
 
   const currentRegisterUser = useSelector((state) => state.auth.register?.currentUserRegister);
   const registerUserId = currentRegisterUser?._id;
-  const phoneRegisterUser = currentRegisterUser?.phoneNumber;
-  const accessToken = currentRegisterUser?.token;
-  const registerUserNameAcc = currentRegisterUser?.userName;
 
-//   useEffect(() => {
-//     if(currentRegisterUser && !currentLoginUser)
-//     //   setUserNameAcc(registerUserNameAcc);
-//     if(!currentRegisterUser && currentLoginUser)
-//     //   setUserNameAcc(loginUserNameAcc);
-//   }, [currentRegisterUser, currentLoginUser]);
+  const [userId, setUserId] = useState();
+  useEffect(() => {
+    if (currentRegisterUser && !currentLoginUser) {
+      setUserId(registerUserId);
+      loadListNotFinishTasks(registerUserId);
+    }
+    if (!currentRegisterUser && currentLoginUser) {
+      setUserId(loginUserId);
+      loadListNotFinishTasks(loginUserId);
+    }
+  }, [currentRegisterUser, currentLoginUser]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  /////load all data tasks
+  async function loadListNotFinishTasks(id) {
+    try {
+      const res = await axios.get(`${url}/api/task/notFinishTasks/${id}`, {
+        timeout: 4000,
+      });
+      if (res.data.length === 0) console.log("no data task in list");
+      if (res.data.length > 0) {
+        // console.log(res.data);
+        setEvents(res.data);
+        // console.log(events)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const showEventItem = [];
+  events.forEach((evt) => {
+    const start = moment(
+      evt.taskDetailId.startTime,
+      "D/M/YYYY, HH [giờ] mm [phút]"
+    ).toDate();
+    const end =
+      evt.taskDetailId.endTime !== "... / ... / ...., ... giờ ... phút"
+        ? moment(
+            evt.taskDetailId.endTime,
+            "D/M/YYYY, HH [giờ] mm [phút]"
+          ).toDate()
+        : null;
+
+    showEventItem.push({
+      id: evt._id,
+      title: evt.taskName,
+      description: evt.taskDetailId.description,
+      start: start,
+      end: end,
+      initialDate: evt.initialDate,
+      status: evt.status,
+      priority: evt.taskDetailId.priority,
+      reminderTime: evt.taskDetailId.reminderTime,
+      taskType: evt.taskDetailId.taskType,
+      deadline: evt.taskDetailId.scheduleId.deadline,
+      duration: evt.taskDetailId.scheduleId.duration,
+      repeat: evt.taskDetailId.scheduleId.repeat,
+    });
+  });
+  // useEffect(() => console.log(showEventItem))
+  /////
   
   const [viewModelStatic, setViewModelStatic] = useState("Line")
 
