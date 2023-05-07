@@ -43,6 +43,7 @@ export default function StatisticScreen() {
   const dispatch = useDispatch();
 
   /////load all data tasks
+  const [events, setEvents] = useState([]);
   async function loadListNotFinishTasks(id) {
     try {
       const res = await axios.get(`${url}/api/task/notFinishTasks/${id}`, {
