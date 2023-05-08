@@ -14,4 +14,7 @@ router.get("/notFinishTaskDetails/:taskId", taskController.getNotFinishTaskDetai
 //GET ALL TASKS FINISH BY USERID
 router.get("/finishTasks/:userId", taskController.getFinishTasksByUserId);
 
+//DELETE A NOT FINISH TASK
+router.get("/deleteNotFinishTask/:taskId/:taskDetailId/:scheduleId", taskController.deleteNotFinishTask);
+
 module.exports = router;

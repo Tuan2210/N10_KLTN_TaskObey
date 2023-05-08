@@ -166,7 +166,7 @@ const taskController = {
 
   },
 
-  //GET ALL TASKS NOT FINISH BY USERID
+  //GET ALL DETAIL-TASKS NOT FINISH BY USERID
   getNotFinishTaskDetailsByTaskId: async (req, res) => {
     try {
       await TaskDetail.find({
@@ -191,6 +191,45 @@ const taskController = {
       res.status(500).json(error);
     }
   },
+
+  //DELETE A NOT FINISH TASK
+  deleteNotFinishTask: async (req, res) => {
+    try {
+      await Task.find({ _id: req.params.taskId })
+                .then((data) => {
+                  {data.map((item, index) => {
+                    Task.deleteOne({ _id: item._id })
+                      .then(console.log('deleted taskId:', item._id))
+                  })}
+                });
+    } catch (error) {
+      res.status(500).json(error);
+    }
+
+    try {
+      await TaskDetail.find({ _id: req.params.taskDetailId })
+                .then((data) => {
+                  {data.map((item, index) => {
+                    TaskDetail.deleteOne({ _id: item._id })
+                      .then(console.log('deleted taskDetailId:', item._id))
+                  })}
+                });
+    } catch (error) {
+      res.status(500).json(error);
+    }
+
+    try {
+      await Schedule.find({ _id: req.params.scheduleId })
+                .then((data) => {
+                  {data.map((item, index) => {
+                    Schedule.deleteOne({ _id: item._id })
+                      .then(console.log('deleted scheduleId:', item._id))
+                  })}
+                });
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
 };
 
 module.exports = taskController;
