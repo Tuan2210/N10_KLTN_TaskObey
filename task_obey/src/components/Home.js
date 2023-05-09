@@ -116,7 +116,8 @@ export default function Home() {
           tabBarIcon: ({ focused, color, size }) => {
             let iconIon, iconFA, iconFA5;
             if (route.name === "HomeScreen") {
-              iconFA5 = "tasks";
+              // iconFA5 = "tasks";
+              iconIon = focused ? "md-calendar" : "md-calendar-outline";
             } else if (route.name === "CreateTaskScreen") {
               iconIon = focused ? "md-create" : "md-create-outline";
             }
@@ -154,7 +155,7 @@ export default function Home() {
       >
         <Tab.Screen
           name="HomeScreen"
-          options={{ title: "Danh sách", headerShown: false }}
+          options={{ title: "Lịch", headerShown: false }}
           component={ListScreen}
         />
         <Tab.Screen

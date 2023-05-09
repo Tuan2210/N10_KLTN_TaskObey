@@ -303,6 +303,7 @@ export default function CreateTaskScreen() {
   const [deadline, setDeadline] = useState("");
   //////
 
+  /////handle create task
   function handleCreateTask() {
     const newestCurrentDateTime = new Date(),
       newestHour = newestCurrentDateTime.getHours(),
@@ -562,74 +563,8 @@ export default function CreateTaskScreen() {
         }, 2000);
       });
   }
-
-  //  ///// notification
-  //  const [notification, setNotification] = useState(null);
-  //  useEffect(() => {
-  //    PushNotification.createChannel({
-  //      channelId: 'create Task',
-  //      channelName: 'notification',
-  //      channelDescription: 'notification'
-  //    })
-  //  },[])
-  //  // handle createChannel
-  //  /////handle notification
-  //  const handleNotification = () =>{
-
-  //    PushNotification.cancelAllLocalNotifications();
-
-  //    PushNotification.localNotificationSchedule({
-  //      channelId: 'create Task',
-  //      title: txtInputTask,
-
-  //      message: txtInputDesc,
-  //      actions: ["Accept", "Reject"],
-  //      date: new Date(Date.now() + 1000),
-  //      allowWhileIdle: true,
-  //      invokeApp: false
-  //    });
-
-  //    PushNotification.configure({
-  //      onAction: function (notification){
-  //        if( notification.action === 'Accept'){
-  //          console.log('Alarm Snoozed')
-  //        }
-  //        else if( notification.action === "Reject"){
-  //          console.log('Alarm Stopped')
-  //        }
-  //        else{
-  //          console('Notification opened')
-  //        }
-  //      }
-  //    })
-  //  }
-  //  useEffect(() => {
-  //    if (notification) {
-  //      setTimeout(handleNotification, notification.fireDate - Date.now());
-  //    }
-  //  }, [notification]);
-  //  useEffect(() => {
-  //    PushNotification.configure({
-  //      onAction: function (notification) {
-  //        if (notification.action === 'Accept') {
-  //          console.log('Alarm Snoozed');
-  //        } else if (notification.action === 'Reject') {
-  //          console.log('Alarm Stoped');
-  //        } else {
-  //          console.log('Notification opened');
-  //        }
-  //      },
-  //      actions: ['Accept', 'Reject'],
-  //    });
-  //  }, []);
-
-  //  const setNotificationHandler = (fireDate) => {
-  //    setNotification({
-  //      fireDate: fireDate,
-  //    });
-  //  };
-
   /////
+
   return (
     <ScrollView
       style={styles.container}
@@ -638,8 +573,7 @@ export default function CreateTaskScreen() {
       <View style={{ width: "100%", height: "100%", padding: "3%" }}>
         {/* tên cv */}
         <TextInput
-          style={[styles.styleInput, 
-            { borderRadius: 10, borderColor: "gray" }]}
+          style={[styles.styleInput, { borderRadius: 10, borderColor: "gray" }]}
           placeholder="Nhập tên công việc"
           numberOfLines={1}
           // autoFocus
@@ -685,10 +619,10 @@ export default function CreateTaskScreen() {
           >
             <Text style={{ color: "#09CBD0" }}>Loại công việc:</Text>
             <Picker
-              style={{ 
-                width: "65%", 
+              style={{
+                width: "65%",
                 backgroundColor: "#BCF4F5",
-               }}
+              }}
               selectedValue={taskType}
               onValueChange={(itemValue, itemIndex) => {
                 setItemToDelete(itemValue);
