@@ -211,21 +211,6 @@ export default function ListScreen() {
     }
   }
 
-  // useEffect(() => {
-  //   events.forEach(event => {
-  //     // console.log('initialDate', event.initialDate);
-  //     // console.log('startTime', event.taskDetailId.startTime);
-  //     // console.log('endTime', event.taskDetailId.endTime);
-  //     // console.log('duration', event.taskDetailId.scheduleId.duration);
-  //     setTaskId(event._id);
-  //     setTaskName(event.taskName);
-  //     setDescription(event.taskDetailId.description);
-  //     setInitialDate(event.initialDate);
-  //     setStartTime(event.taskDetailId.startTime);
-  //     setEndTime(event.taskDetailId.endTime);
-  //   });
-  // }, [events]);
-
   const showEventItem = [];
   // const [startDateTimeNotify, setStartDateTimeNotify] = useState([]);
   const startDateTimeNotify = [];
@@ -245,21 +230,6 @@ export default function ListScreen() {
           ).toDate()
         : null;
 
-    // let bgColorItem = '';
-    // switch (evt.taskDetailId.priority) {
-    //   case 1:
-    //     setBgColorItem('red');
-    //     break;
-    //   case 2:
-    //     setBgColorItem('orange');
-    //     break;
-    //   case 3:
-    //     setBgColorItem('#09CBD0');
-    //     break;
-    //   default:
-    //     break;
-    // }
-
     // console.log(evt.taskDetailId.priority);
 
     showEventItem.push({
@@ -276,6 +246,8 @@ export default function ListScreen() {
       deadline: evt.taskDetailId.scheduleId.deadline,
       duration: evt.taskDetailId.scheduleId.duration,
       repeat: evt.taskDetailId.scheduleId.repeat,
+      taskDetail_id: evt.taskDetailId._id,
+      schedule_id: evt.taskDetailId.scheduleId._id,
     });
   });
   // useEffect(() => console.log(showEventItem))
@@ -315,6 +287,26 @@ export default function ListScreen() {
   //   //   end: "2023-4-28T00:00:00.000Z", // same date as `start`
   //   // },
   // ]
+  ////////
+
+  ////////handle delete item evt task
+  async function handleDeleteNotFinishTask(
+    task_id,
+    taskDetail_id,
+    schedule_id
+  ) {
+    try {
+      await axios.get(
+        `${url}/api/task/deleteNotFinishTask/${task_id}/${taskDetail_id}/${schedule_id}`,
+        {
+          timeout: 4000,
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  ////////
 
   ////handle previous-next
   const [dateCalendar, setDateCalendar] = useState(new Date());
@@ -776,7 +768,37 @@ export default function ListScreen() {
                     flexDirection: "row",
                   }}
                 >
-                  <TouchableOpacity style={styles.btnHandle}>
+                  <TouchableOpacity
+                    style={styles.btnHandle}
+                    onPress={() => {
+                      Alert.alert(
+                        "Xác nhận",
+                        "Bạn có muốn xóa công việc này?",
+                        [
+                          {
+                            text: "Xóa",
+                            onPress: () => {
+                              handleDeleteNotFinishTask(
+                                selectedEvent.id,
+                                selectedEvent.taskDetail_id,
+                                selectedEvent.schedule_id
+                              );
+                              closeModal(); //close modal info evt
+                              onRefresh();
+                              console.log("Đã xóa cv");
+                              Alert.alert("Thông báo", "Đã xóa công việc!");
+                            },
+                          },
+                          {
+                            text: "Hủy",
+                            onPress: () => console.log("Hủy xóa"),
+                            style: "cancel",
+                          },
+                        ],
+                        { cancelable: false }
+                      );
+                    }}
+                  >
                     <Ionicons
                       name="remove-circle-outline"
                       size={25}
