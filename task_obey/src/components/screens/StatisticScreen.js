@@ -3,7 +3,7 @@ import { Animated, Dimensions, Image, Platform, StyleSheet, Text, TextInput, Tou
 import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
 
-import { createAxios } from "../../redux/createInstance";
+import { createAxios, url } from "../../redux/createInstance";
 import { logoutSuccess } from "../../redux/authSlice";
 import { logOut, logOutRegsiter } from "../../redux/apiRequest/authApiRequest";
 
@@ -16,6 +16,8 @@ import * as Animatable from "react-native-animatable";
 
 import {BarChart, LineChart, PieChart} from "react-native-chart-kit";
 import { Picker } from "@react-native-picker/picker";
+import axios from "axios";
+import moment from "moment";
 
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
@@ -23,9 +25,15 @@ const heightScreen = Dimensions.get("window").height;
 export default function StatisticScreen() {
   const currentLoginUser = useSelector((state) => state.auth.login?.currentUser);
   const loginUserId = currentLoginUser?._id;
+  const phoneLoginrUser = currentLoginUser?.phoneNumber;
+  const refreshToken = currentLoginUser?.refreshToken;
+  const loginUserNameAcc = currentLoginUser?.userName;
 
   const currentRegisterUser = useSelector((state) => state.auth.register?.currentUserRegister);
   const registerUserId = currentRegisterUser?._id;
+  const phoneRegisterUser = currentRegisterUser?.phoneNumber;
+  const accessToken = currentRegisterUser?.token;
+  const registerUserNameAcc = currentRegisterUser?.userName;
 
   const [userId, setUserId] = useState();
   useEffect(() => {
@@ -41,6 +49,8 @@ export default function StatisticScreen() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  
+  const [viewModelStatic, setViewModelStatic] = useState("Line")
 
   /////load all data tasks
   const [events, setEvents] = useState([]);
@@ -90,170 +100,276 @@ export default function StatisticScreen() {
       repeat: evt.taskDetailId.scheduleId.repeat,
     });
   });
-  // useEffect(() => console.log(showEventItem))
+  useEffect(() => console.log(showEventItem))
   /////
-  
-  const [viewModelStatic, setViewModelStatic] = useState("Line")
+  const [showLabels, setShowLabels] = useState(true);
+  const [prevNumLabels, setPrevNumLabels] = useState(0);
 
+  // const [taskDoneForDay, setTaskDoneForDay] = useState(0);
+  // const [taskDoneForWeek, setTaskDoneForWeek] = useState(0);
+  // const [taskDoneForMonth, setTaskDoneForMonth] = useState(0);
+  
+  // const [taskUnDoneForDay, setTaskUnDoneForDay] = useState(0);
+  // const [taskUnDoneForWeek, setTaskUnDoneForWeek] = useState(0);
+  // const [taskUnDoneForMonth, setTaskUnDoneForMonth] = useState(0);
+  
+  const completedTasksByDay = showEventItem.reduce((result, task) => {
+    if (task.status === 'Đã hoàn thành') {
+      const date = task.initialDate.slice(0, 10); // Lấy ngày từ thuộc tính initialDate
+      result[date] = (result[date] || 0) + 1; // Tăng số công việc hoàn thành của ngày đó lên 1
+    }
+    return result;
+  }, {});
+  
+  console.log(completedTasksByDay); // In ra mảng thống kê số công việc hoàn thành của mỗi ngày
+  // console.log(taskIncompleteByDay)
+  function BarChartScreen() {
+    const moment = require('moment')
+    console.log(showEventItem)
+    const months = showEventItem.map((item) => moment(item.initialDate).format('MMMM'))
+
+    const uniqueMonths = months.filter((month, index, self) => {
+      const currentMonth = moment().month(month);
+      const previousMonth = currentMonth.clone().subtract(2, 'months');
+      const nextMonth = currentMonth.clone().add(2, 'months');
+    
+      return (
+        index === self.indexOf(month) &&
+        !self.some((m, i) => {
+          if (i !== index) {
+            const otherMonth = moment().month(m);
+            return (
+              otherMonth.isBetween(previousMonth, nextMonth, 'month', '[]') ||
+              otherMonth.isSame(currentMonth, 'month')
+            );
+          }
+          return false;
+        })
+      );
+    });
+  
+    uniqueMonths.sort((a, b) => moment().month(a) - moment().month(b));
+    console.log(uniqueMonths);
+
+    useEffect(() => {
+      if (uniqueMonths.length === 1) {
+        setShowLabels(false);
+      } else if (prevNumLabels === 1 && uniqueMonths.length > 1) {
+        setShowLabels(true);
+      }
+      setPrevNumLabels(uniqueMonths.length);
+    }, [uniqueMonths]);
+  
+
+    return(
+      <BarChart
+      data={{
+        labels: uniqueMonths,
+        datasets: [
+          {
+            data: [
+              5,6,1,
+              // Math.random() * 100,
+              // Math.random() * 100,
+              // Math.random() * 100,
+              // Math.random() * 100,
+              // Math.random() * 100,
+              // Math.random() * 100
+            ]
+          }
+        ]
+      }}
+      width={400}
+      height={420}
+      // yAxisInterval={1}
+      chartConfig={{
+        backgroundColor: '#09CBD0',
+        backgroundGradientFrom: '#09CBD0',
+        backgroundGradientTo: '#09CBD0',
+        decimalPlaces: 2,
+        color: (opacity = 0.0) => `rgba(255, 255, 255, ${opacity})`,
+        labelColor: (opacity = 0.0) => `rgba(255, 255, 255, ${opacity})`,
+        style: {
+          borderRadius: 50,
+        }
+      }}
+      verticalLabelRotation={50}
+      showValues={true}
+      showBarTops={true}
+      fromZero={true}
+      axis={{
+        fromZero: true,
+        inverted: true,
+        showAxis: false,
+        showGrid: false,
+        showLabels: false,
+        paddingRight: 0
+      }}
+      axisRight={{
+        showAxis: true,
+        showGrid: false,
+        showLabels: true,
+        renderTicks: () => <View />,
+        label: uniqueMonths,
+        labelStyle: {
+          color: 'black',
+          fontWeight: 'bold'
+        }
+      }}
+      withVerticalLabels={showLabels} 
+      >
+      </BarChart>
+    )
+  }
+  function LineChartScreen() {
+    return(  
+      <LineChart 
+            data={{
+              // labels: ["January", "February", "March", "April", "May", "June"],
+              datasets: [
+                {
+                  data: 
+                  [
+                    5,6,1,0,2,1,0,7
+                    // Math.random() * 100,
+                    // Math.random() * 100,
+                    // Math.random() * 100,
+                    // Math.random() * 100,
+                    // Math.random() * 100,
+                    // Math.random() * 100
+                  ]
+                }
+              ]
+            }}
+            fromZero={true}
+            showBarTops={false}
+            // yAxisLabel="Số công việc hòa"
+            width={400}
+            height={420}
+            yAxisInterval={1}
+            chartConfig={{
+              backgroundColor: '#09CBD0',
+              backgroundGradientFrom: '#09CBD0',
+              backgroundGradientTo: '#09CBD0',
+              decimalPlaces: 2,
+              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              style: {
+                borderRadius: 20,
+              }
+            }}
+            bezier
+            style={{
+              marginVertical: 5, borderRadius: 5
+            }}
+            >
+  
+          </LineChart>
+    )
+  }
   return (
     <SafeAreaView style={styles.container}>
     <View style={{flex: 1}}>
-      <View
-        style={{
-          flex: 0.5,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-around'
-        }}>
-          <Text style={{ color: "#09CBD0" }}>Biểu đồ xem:</Text>
-          <Picker
-            style={{
-              width: "55%",
-              backgroundColor: "#BCF4F5",
-              marginLeft: "3%",
-            }}
-            selectedValue={viewModelStatic}
-            onValueChange={(itemValue, itemIndex) => 
-              setViewModelStatic(itemValue)
-              }>
-                <Picker.Item style={{fontSize: 18}}
-                  label="Đường"
-                  value={"Line"}/>
-                <Picker.Item style={{fontSize: 18}} 
-                  label="Cột"
-                  value={"Chart"}/>  
-          </Picker>
-      </View>
-      {/* <View
+    <View
         style={{
           flex: 0.3,
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-around'
         }}>
-          <Text style={{ color: "#09CBD0" }}>Mức độ:</Text>
-          <Picker
-            style={{
-              width: "55%",
-              backgroundColor: "#BCF4F5",
-              marginLeft: "3%",
-            }}
-            selectedValue={viewModelStatic}
-            onValueChange={(itemValue, itemIndex) => 
-              setViewModelStatic(itemValue)
-              }>
-                <Picker.Item style={{fontSize: 18}}
-                  label="Quan trọng"
-                  value={"Line"}/>
-                <Picker.Item style={{fontSize: 18}} 
-                  label="Không quan trọng"
-                  value={"Chart"}/>  
-          </Picker>
-      </View> */}
+          <View style={{flex: 0.4}}>
+            <Text style={{ color: "#09CBD0" }}>Loại biểu đồ:</Text>
+          </View>
+          <View style={{flex: 0.6,flexDirection: 'row', alignSelf:'center', justifyContent:'flex-start'}}>
+            <Picker
+              style={{
+                width: "98%",
+                backgroundColor: "#BCF4F5",
+                marginLeft: "3%",
+              }}
+              selectedValue={viewModelStatic}
+              onValueChange={(itemValue, itemIndex) => 
+                setViewModelStatic(itemValue)
+                }>
+                  <Picker.Item style={{fontSize: 18}}
+                    label="Ngày"
+                    value={"Day"}/>
+                  <Picker.Item style={{fontSize: 18}} 
+                    label="Tuần"
+                    value={"Week"}/>
+                  <Picker.Item style={{fontSize: 18}} 
+                    label="Tháng"
+                    value={"Month"}/>  
+            </Picker>
+          </View>
+      </View>
+      <View
+        style={{
+          flex: 0.3,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-around'
+        }}>
+          <View style={{flex: 0.4}}>
+            <Text style={{ color: "#09CBD0" }}>Loại biểu đồ:</Text>
+          </View>
+          <View style={{flex: 0.6,flexDirection: 'row', alignSelf:'center', justifyContent:'flex-start'}}>
+            <Picker
+              style={{
+                width: "98%",
+                backgroundColor: "#BCF4F5",
+                marginLeft: "3%",
+              }}
+              selectedValue={viewModelStatic}
+              onValueChange={(itemValue, itemIndex) => 
+                setViewModelStatic(itemValue)
+                }>
+                  <Picker.Item style={{fontSize: 18}}
+                    label="Đường"
+                    value={"Line"}/>
+                  <Picker.Item style={{fontSize: 18}} 
+                    label="Cột"
+                    value={"Chart"}/>  
+            </Picker>
+          </View>
+      </View>
+      <View
+        style={{
+          flex: 0.3,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-around'
+        }}>
+          <View style={{flex: 0.4}}>  
+            <Text style={{ color: "#09CBD0" }}>Mức độ hoàn thành:</Text>
+          </View>
+          <View style={{flex: 0.6,flexDirection: 'row', alignSelf:'center', justifyContent:'flex-start'}}>
+            <Picker
+              style={{
+                width: "98%",
+                backgroundColor: "#BCF4F5",
+                marginLeft: "3%",
+              }}
+              selectedValue={viewModelStatic}
+              onValueChange={(itemValue, itemIndex) => 
+                setViewModelStatic(itemValue)
+                }>
+                  <Picker.Item style={{fontSize: 18}}
+                    label="Hoàn thành"
+                    value={"Finish"}/>
+                  <Picker.Item style={{fontSize: 18}} 
+                    label="Chưa hoàn thành"
+                    value={"Unfinish"}/>  
+            </Picker>
+          </View>
+      </View>
       {viewModelStatic === "Line" && <LineChartScreen />}
       {viewModelStatic === "Chart" && <BarChartScreen />}
-      {/* <TouchableOpacity
-        onPress={() => {
-          switch (viewModelStatic){
-            case "Line":
-              LineChartScreen()
-              break
-            case "Pie":
-              PieChartScreen()
-              break
-            default:
-              break
-          }
-          }
-        }
-        >
-
-      </TouchableOpacity> */}
     </View>  
     </SafeAreaView>
   );
 };
-function BarChartScreen() {
-  return(
-    <BarChart
-    data={{
-      labels: ["January", "February", "March", "April", "May", "June"],
-      datasets: [
-        {
-          data: [
-            5,6,1,0,2,3
-            // Math.random() * 100,
-            // Math.random() * 100,
-            // Math.random() * 100,
-            // Math.random() * 100,
-            // Math.random() * 100,
-            // Math.random() * 100
-          ]
-        }
-      ]
-    }}
-    width={400}
-    height={420}
-    // yAxisInterval={1}
-    chartConfig={{
-      backgroundColor: '#09CBD0',
-      backgroundGradientFrom: '#09CBD0',
-      backgroundGradientTo: '#09CBD0',
-      decimalPlaces: 2,
-      color: (opacity = 0.0) => `rgba(255, 255, 255, ${opacity})`,
-      labelColor: (opacity = 0.0) => `rgba(255, 255, 255, ${opacity})`,
-      style: {
-        borderRadius: 50,
-      }
-    }}
-    verticalLabelRotation={50}
-    >
-    </BarChart>
-  )
-}
-function LineChartScreen() {
-  
-  return(  
-    <LineChart 
-          data={{
-            labels: ["January", "February", "March", "April", "May", "June"],
-            datasets: [
-              {
-                data: [
-                  5,6,1,0,2,1,0,7
-                  // Math.random() * 100,
-                  // Math.random() * 100,
-                  // Math.random() * 100,
-                  // Math.random() * 100,
-                  // Math.random() * 100,
-                  // Math.random() * 100
-                ]
-              }
-            ]
-          }}
-          width={400}
-          height={420}
-          yAxisInterval={1}
-          chartConfig={{
-            backgroundColor: '#09CBD0',
-            backgroundGradientFrom: '#09CBD0',
-            backgroundGradientTo: '#09CBD0',
-            decimalPlaces: 2,
-            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            style: {
-              borderRadius: 20,
-            }
-          }}
-          bezier
-          style={{
-            marginVertical: 5, borderRadius: 5
-          }}
-          >
 
-        </LineChart>
-  )
-}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
