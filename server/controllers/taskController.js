@@ -229,6 +229,38 @@ const taskController = {
     } catch (error) {
       res.status(500).json(error);
     }
+  },
+
+  //UPDATE NOT FINISH TASK
+  updateNotFinishTask: async (req, res) => {
+    const {
+      taskName,
+      description,
+      taskType,
+      priority,
+      reminderTime,
+      repeat,
+      startTime,
+      endTime,
+    } = req.body;
+    try {
+      Task.findOneAndUpdate({ _id: req.params.taskId }, {taskName: taskName}, {new: true}).then((updated) => console.log(updated));
+      TaskDetail.findOneAndUpdate(
+        { _id: req.params.taskDetailId },
+        {
+          taskType: taskType,
+          description: description,
+          priority: priority,
+          startTime: startTime,
+          endTime: endTime,
+          reminderTime: reminderTime
+        },
+        {new: true}
+      ).then((updated) => console.log(updated));
+      Schedule.findOneAndUpdate({ _id: req.params.scheduleId }, {repeat: repeat}, {new: true}).then((updated) => console.log(updated));
+    } catch (error) {
+      res.status(500).json(error);
+    }
   }
 };
 

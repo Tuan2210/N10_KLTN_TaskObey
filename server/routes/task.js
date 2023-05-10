@@ -14,7 +14,10 @@ router.get("/notFinishTaskDetails/:taskId", taskController.getNotFinishTaskDetai
 //GET ALL TASKS FINISH BY USERID
 router.get("/finishTasks/:userId", taskController.getFinishTasksByUserId);
 
-//DELETE A NOT FINISH TASK
+//DELETE A NOT FINISH TASK - dùng get vì có find id và xóa theo id
 router.get("/deleteNotFinishTask/:taskId/:taskDetailId/:scheduleId", taskController.deleteNotFinishTask);
+
+//UPDATE A NOT FINISH TASK
+router.put("/updateNotFinishTask/:taskId/:taskDetailId/:scheduleId", taskController.updateNotFinishTask);
 
 module.exports = router;
