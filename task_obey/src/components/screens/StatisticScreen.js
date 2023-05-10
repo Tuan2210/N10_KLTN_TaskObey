@@ -100,7 +100,9 @@ export default function StatisticScreen() {
       repeat: evt.taskDetailId.scheduleId.repeat,
     });
   });
-  useEffect(() => console.log(showEventItem))
+  // useEffect(() => console.log(showEventItem))
+  // console.log('data la')
+  // console.log(showEventItem)
   /////
   const [showLabels, setShowLabels] = useState(true);
   const [prevNumLabels, setPrevNumLabels] = useState(0);
@@ -113,16 +115,33 @@ export default function StatisticScreen() {
   // const [taskUnDoneForWeek, setTaskUnDoneForWeek] = useState(0);
   // const [taskUnDoneForMonth, setTaskUnDoneForMonth] = useState(0);
   
-  const completedTasksByDay = showEventItem.reduce((result, task) => {
-    if (task.status === 'Đã hoàn thành') {
-      const date = task.initialDate.slice(0, 10); // Lấy ngày từ thuộc tính initialDate
-      result[date] = (result[date] || 0) + 1; // Tăng số công việc hoàn thành của ngày đó lên 1
-    }
-    return result;
-  }, {});
-  
-  console.log(completedTasksByDay); // In ra mảng thống kê số công việc hoàn thành của mỗi ngày
-  // console.log(taskIncompleteByDay)
+  // const completedTasksByDay = showEventItem.reduce((result, task) => {
+  //   if (task.status === 'Đã hoàn thành') {
+  //     const date = task.initialDate.slice(0, 10); // Lấy ngày từ thuộc tính initialDate
+  //     result[date] = (result[date] || 0) + 1; // Tăng số công việc hoàn thành của ngày đó lên 1
+  //   }
+  //   return result;
+  // }, {});
+  const setDayRenderOrders = (tasks) => {
+    const newDate = new Date('2023-06-04T04:50:00.000Z');
+    newDate.setHours(0, 0, 0, 0);
+
+    const result = tasks.reduce((result, task) => {
+      const timeTask = new Date(task.start);
+      timeTask.setHours(0, 0, 0, 0);
+      if (newDate.getTime() === timeTask.getTime()) {
+        return [...result, task];
+      }
+      return result;
+    }, []);
+    console.log(result)
+    // setDataCsv(result);
+  };
+
+  useEffect(() => {
+    setDayRenderOrders(showEventItem)
+  },[])
+
   function BarChartScreen() {
     const moment = require('moment')
     console.log(showEventItem)
@@ -228,16 +247,18 @@ export default function StatisticScreen() {
               // labels: ["January", "February", "March", "April", "May", "June"],
               datasets: [
                 {
+                  // data: dataTaskWeek,
                   data: 
                   [
                     5,6,1,0,2,1,0,7
-                    // Math.random() * 100,
-                    // Math.random() * 100,
-                    // Math.random() * 100,
-                    // Math.random() * 100,
-                    // Math.random() * 100,
-                    // Math.random() * 100
-                  ]
+                  ],
+                  color: (opacity = 1) => `rgba(0, 150, 214, ${opacity})`, // Màu đường
+                  strokeWidth: 3, // Độ dày đường
+                  gradient: {
+                    colors: ["#09CBD0", "#09CBD0"], // Màu gradient từ đường xuống trục x
+                    start: { x: 1, y: 1 },
+                    end: { x: 1, y: 1 },
+                  },
                 }
               ]
             }}
@@ -248,25 +269,66 @@ export default function StatisticScreen() {
             height={420}
             yAxisInterval={1}
             chartConfig={{
-              backgroundColor: '#09CBD0',
-              backgroundGradientFrom: '#09CBD0',
-              backgroundGradientTo: '#09CBD0',
-              decimalPlaces: 2,
-              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              yAxis: {
+                drawAxisLine: false,
+                drawGridLines: false,
+                drawLabels: false,
+                zeroLine: false,
+              },
+              xAxis: {
+                drawAxisLine: false,
+                drawGridLines: false,
+                drawLabels: false,
+                zeroLine: false,
+              },
+              backgroundColor: '#FFFFFF',
+              backgroundGradientFrom: '#FFFFFF',
+              backgroundGradientTo: '#FFFFFF',
+              decimalPlaces: 0,
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
               style: {
                 borderRadius: 20,
+              },
+              propsForDots:{
+                stroke: '#09CBD0',
+                r: 0,
+                strokeWidth: 0
               }
             }}
             bezier
             style={{
-              marginVertical: 5, borderRadius: 5
+              marginVertical: 5, borderRadius: 5,
+            }}
+            yAxis={{
+              color: "transparent", // Loại bỏ lưới trục y
+              labelColor: "rgba(0, 0, 0, 0)", // Ẩn nhãn trục y
+            }}
+            xAxis={{
+              color: "transparent", // Loại bỏ lưới trục x
+              labelColor: "rgba(0, 0, 0, 0)", // Ẩn nhãn trục x
             }}
             >
   
           </LineChart>
     )
   }
+  const [dataTaskWeek, setDataTaskWeek] = useState([]);
+
+  // useEffect(() => {
+  //   const today = moment().startOf('day')
+  //   const taskCountByDay = showEventItem.reduce((result, task) =>{
+  //     const taskDate = moment(task.start)
+  //     if(taskDate.isAfter(today.subtract(1, 'week'))){
+  //       const day = taskDate.format('ddd');
+  //       result[day] = result[day] ? result[day] + 1 : 1;
+  //     }
+  //     return result
+  //   }, {});
+  //   setDataTaskWeek(Object.values(taskCountByDay));
+  // }, [])
+
+  // console.log(dataTaskWeek)
   return (
     <SafeAreaView style={styles.container}>
     <View style={{flex: 1}}>
@@ -333,7 +395,7 @@ export default function StatisticScreen() {
             </Picker>
           </View>
       </View>
-      <View
+      {/* <View
         style={{
           flex: 0.3,
           flexDirection: 'row',
@@ -362,7 +424,7 @@ export default function StatisticScreen() {
                     value={"Unfinish"}/>  
             </Picker>
           </View>
-      </View>
+      </View> */}
       {viewModelStatic === "Line" && <LineChartScreen />}
       {viewModelStatic === "Chart" && <BarChartScreen />}
     </View>  
@@ -372,10 +434,10 @@ export default function StatisticScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignContent: 'center',
-    justifyContent: "center",
+    width: '98%',
+    height: '100%',
     alignSelf: "center",  
+    backgroundColor: 'white'
   },
   btnPrevNext: {
     flexDirection: "row",
