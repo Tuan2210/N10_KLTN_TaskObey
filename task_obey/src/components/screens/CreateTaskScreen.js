@@ -69,7 +69,6 @@ export default function CreateTaskScreen() {
   }, [currentRegisterUser, currentLoginUser]);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [heightScrollView, setHeightScrollView] = useState("130%");
   const [marginTopSize, setMarginTopSize] = useState("-10%");
 
   //////handle read all data tasks
@@ -325,7 +324,7 @@ export default function CreateTaskScreen() {
       startDate.getMonth() === newestMonth &&
       startDate.getFullYear() === newestYear &&
       startDate.getHours() === newestHour &&
-      startDate.getMinutes() === newestMinute
+      startDate.getMinutes() <= newestMinute
     ) {
       Alert.alert(
         "Thông báo",
@@ -568,9 +567,11 @@ export default function CreateTaskScreen() {
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={{ height: heightScrollView }}
+      contentContainerStyle={{ height: flag ? "155%" : "125%" }}
     >
-      <View style={{ width: "100%", height: "100%", padding: "3%" }}>
+      <View
+        style={{ width: "100%", height: flag ? "95%" : "90%", padding: "3%" }}
+      >
         {/* tên cv */}
         <TextInput
           style={[styles.styleInput, { borderRadius: 10, borderColor: "gray" }]}
@@ -657,87 +658,72 @@ export default function CreateTaskScreen() {
           </View>
         </View>
 
+        {/* ưu tiên */}
+        <View
+          style={[
+            styles.viewTwoColumns,
+            { height: "8.5%", alignItems: "center" },
+          ]}
+        >
+          <Text style={{ color: "#09CBD0" }}>Ưu tiên:</Text>
+          <Picker
+            style={{ width: "75.5%", backgroundColor: "#BCF4F5" }}
+            selectedValue={priority}
+            onValueChange={(itemValue, itemIndex) => setPriority(itemValue)}
+          >
+            <Picker.Item
+              style={{ fontWeight: "bold", color: "red" }}
+              label="1"
+              value="1"
+            />
+            <Picker.Item
+              style={{ fontWeight: "bold", color: "orange" }}
+              label="2"
+              value="2"
+            />
+            <Picker.Item
+              style={{ fontWeight: "bold", color: "#09CBD0" }}
+              label="3"
+              value="3"
+            />
+          </Picker>
+        </View>
+
         {/* lặp lại */}
         <View
-          style={{
-            flexDirection: "row",
-            width: "100%",
-            height: "8.5%",
-            justifyContent: "space-between",
-          }}
+          style={[
+            styles.viewTwoColumns,
+            { height: "8.5%", alignItems: "center" },
+          ]}
         >
-          <View
-            style={{
-              flexDirection: "row",
-              width: "60%",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
+          <Text style={{ color: "#09CBD0" }}>Đặt lặp lại:</Text>
+          <Picker
+            style={{ width: "75.5%", backgroundColor: "#BCF4F5" }}
+            selectedValue={repeat}
+            onValueChange={(itemValue, itemIndex) => setRepeat(itemValue)}
           >
-            <Text style={{ color: "#09CBD0" }}>Đặt lặp lại:</Text>
-            <Picker
-              style={{ width: "70%", backgroundColor: "#BCF4F5" }}
-              selectedValue={repeat}
-              onValueChange={(itemValue, itemIndex) => setRepeat(itemValue)}
-            >
-              <Picker.Item
-                style={{ fontSize: 18 }}
-                label="Không"
-                value="Không"
-              />
-              <Picker.Item
-                style={{ fontSize: 18 }}
-                label="Mỗi ngày"
-                value="Mỗi ngày"
-              />
-              <Picker.Item
-                style={{ fontSize: 18 }}
-                label="Mỗi tuần"
-                value="Mỗi tuần"
-              />
-              <Picker.Item
-                style={{ fontSize: 18 }}
-                label="Mỗi tháng"
-                value="Mỗi tháng"
-              />
-              <Picker.Item
-                style={{ fontSize: 18 }}
-                label="Mỗi năm"
-                value="Mỗi năm"
-              />
-            </Picker>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              width: "35%",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "#09CBD0" }}>Ưu tiên:</Text>
-            <Picker
-              style={{ width: "68%", backgroundColor: "#BCF4F5" }}
-              selectedValue={priority}
-              onValueChange={(itemValue, itemIndex) => setPriority(itemValue)}
-            >
-              <Picker.Item
-                style={{ fontWeight: "bold", color: "red" }}
-                label="1"
-                value="1"
-              />
-              <Picker.Item
-                style={{ fontWeight: "bold", color: "orange" }}
-                label="2"
-                value="2"
-              />
-              <Picker.Item
-                style={{ fontWeight: "bold", color: "#09CBD0" }}
-                label="3"
-                value="3"
-              />
-            </Picker>
-          </View>
+            <Picker.Item style={{ fontSize: 18 }} label="Không" value="Không" />
+            <Picker.Item
+              style={{ fontSize: 18 }}
+              label="Mỗi ngày"
+              value="Mỗi ngày"
+            />
+            <Picker.Item
+              style={{ fontSize: 18 }}
+              label="Mỗi tuần"
+              value="Mỗi tuần"
+            />
+            <Picker.Item
+              style={{ fontSize: 18 }}
+              label="Mỗi tháng"
+              value="Mỗi tháng"
+            />
+            <Picker.Item
+              style={{ fontSize: 18 }}
+              label="Mỗi năm"
+              value="Mỗi năm"
+            />
+          </Picker>
         </View>
 
         {/* lời nhắc */}
@@ -749,7 +735,7 @@ export default function CreateTaskScreen() {
         >
           <Text style={{ color: "#09CBD0" }}>Đặt lời nhắc:</Text>
           <Picker
-            style={{ width: "70%", backgroundColor: "#BCF4F5" }}
+            style={{ width: "75.5%", backgroundColor: "#BCF4F5" }}
             selectedValue={reminderTime}
             onValueChange={(itemValue, itemIndex) => setReminderTime(itemValue)}
           >
@@ -893,14 +879,12 @@ export default function CreateTaskScreen() {
                   } else {
                     setFlag(value);
                     if (value === false || flag === false) {
-                      setHeightScrollView("130%");
                       setDisplayEndDate("... / ... / ....");
                       setDisplayEndTime("... giờ ... phút");
                       setEndDateTime("");
                       // console.log(endDateTime);
                     }
                     if (value === true || flag === true) {
-                      setHeightScrollView(heightScreen * 1.4);
                       setMarginTopSize(0);
                     }
                   }
