@@ -54,6 +54,8 @@ export default function StatisticScreen() {
 
   /////load all data tasks
   const [events, setEvents] = useState([]);
+  const [filteredDay, setFilteredDay] = useState([])
+  const [filteredWeek, setFilteredWeekk] = useState([])
   async function loadListNotFinishTasks(id) {
     try {
       const res = await axios.get(`${url}/api/task/notFinishTasks/${id}`, {
@@ -63,6 +65,10 @@ export default function StatisticScreen() {
       if (res.data.length > 0) {
         // console.log(res.data);
         setEvents(res.data);
+        const resultDay = filterDataDay(showEventItem)
+        const resultWeek = filterDataWeek(showEventItem)
+        setFilteredDay(resultDay)
+        setFilteredWeekk(resultWeek)
         // console.log(events)
       }
     } catch (error) {
@@ -104,26 +110,26 @@ export default function StatisticScreen() {
   // console.log('data la')
   // console.log(showEventItem)
   /////
+
+  async function filterDataDay(data){
+    const filterDay = await setDayRenderOrders(data)
+    return filterDay
+  }
+  async function filterDataWeek(data){
+    const filterWeek = await setWeekRenderOrders(data)
+    return filterWeek
+  }
   const [showLabels, setShowLabels] = useState(true);
   const [prevNumLabels, setPrevNumLabels] = useState(0);
 
-  // const [taskDoneForDay, setTaskDoneForDay] = useState(0);
-  // const [taskDoneForWeek, setTaskDoneForWeek] = useState(0);
-  // const [taskDoneForMonth, setTaskDoneForMonth] = useState(0);
-  
-  // const [taskUnDoneForDay, setTaskUnDoneForDay] = useState(0);
-  // const [taskUnDoneForWeek, setTaskUnDoneForWeek] = useState(0);
-  // const [taskUnDoneForMonth, setTaskUnDoneForMonth] = useState(0);
-  
-  // const completedTasksByDay = showEventItem.reduce((result, task) => {
-  //   if (task.status === 'Đã hoàn thành') {
-  //     const date = task.initialDate.slice(0, 10); // Lấy ngày từ thuộc tính initialDate
-  //     result[date] = (result[date] || 0) + 1; // Tăng số công việc hoàn thành của ngày đó lên 1
-  //   }
-  //   return result;
-  // }, {});
+  const [total, setTotal] = useState([])
+  const [totalW, setTotalW] = useState([]);
+
+  const [ filteredDataDay ,setFilteredData] = useState([])
+  const [ filteredDataWeek ,setFilteredWeek] = useState([])
+
   const setDayRenderOrders = (tasks) => {
-    const newDate = new Date('2023-06-04T04:50:00.000Z');
+    const newDate = new Date('2023-05-10T04:50:00.000Z');
     newDate.setHours(0, 0, 0, 0);
 
     const result = tasks.reduce((result, task) => {
@@ -134,13 +140,46 @@ export default function StatisticScreen() {
       }
       return result;
     }, []);
+    console.log('ket qua task trong ngay la')
     console.log(result)
+    return result
     // setDataCsv(result);
   };
+  // useEffect(() => {
+  //  const result = setDayRenderOrders(showEventItem)
+  //  setTotal(result.length);
+  // //  console.log('total la')
+  // //  console.log(total)
+  // },[])
 
-  useEffect(() => {
-    setDayRenderOrders(showEventItem)
-  },[])
+  const setWeekRenderOrders = (tasks) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+  
+    const result = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+      const dateTasks = tasks.filter((task) => {
+        const taskDate = new Date(task.start);
+        taskDate.setHours(0, 0, 0, 0);
+        return taskDate.getTime() === date.getTime();
+      });
+      result.push(dateTasks.length);
+    }
+    console.log('ket qua 7 ngay lien tiep la');
+    console.log(result);
+    // setDataCsv(result);
+    return result
+  };
+
+  
+
+  // useEffect(() => {
+  //   const result = setWeekRenderOrders(showEventItem);
+  //   setTotalW(result)
+  //   console.log('list cac cong viec la  ')
+  //   console.log(totalW)
+  // }, []);
 
   function BarChartScreen() {
     const moment = require('moment')
@@ -248,10 +287,7 @@ export default function StatisticScreen() {
               datasets: [
                 {
                   // data: dataTaskWeek,
-                  data: 
-                  [
-                    5,6,1,0,2,1,0,7
-                  ],
+                  data: [0,1,6,5,2,5],
                   color: (opacity = 1) => `rgba(0, 150, 214, ${opacity})`, // Màu đường
                   strokeWidth: 3, // Độ dày đường
                   gradient: {
@@ -313,22 +349,10 @@ export default function StatisticScreen() {
           </LineChart>
     )
   }
-  const [dataTaskWeek, setDataTaskWeek] = useState([]);
-
   // useEffect(() => {
-  //   const today = moment().startOf('day')
-  //   const taskCountByDay = showEventItem.reduce((result, task) =>{
-  //     const taskDate = moment(task.start)
-  //     if(taskDate.isAfter(today.subtract(1, 'week'))){
-  //       const day = taskDate.format('ddd');
-  //       result[day] = result[day] ? result[day] + 1 : 1;
-  //     }
-  //     return result
-  //   }, {});
-  //   setDataTaskWeek(Object.values(taskCountByDay));
+  //   loadListNotFinishTasks(loginUserId) 
   // }, [])
-
-  // console.log(dataTaskWeek)
+  
   return (
     <SafeAreaView style={styles.container}>
     <View style={{flex: 1}}>
