@@ -20,6 +20,7 @@ import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { url } from "../../redux/createInstance";
+import UpdateTaskScreen from "./UpdateTaskScreen";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -33,6 +34,7 @@ import FontAwesomeicons from "react-native-vector-icons/FontAwesome";
 import FontAwesome5icons from "react-native-vector-icons/FontAwesome5";
 import Feather from "react-native-vector-icons/Feather";
 import Materialicons from "react-native-vector-icons/MaterialIcons";
+import MaterialCommunityicons from "react-native-vector-icons/MaterialCommunityIcons";
 
 //link doc react-native-big-calendar: https://github.com/acro5piano/react-native-big-calendar
 import { Calendar } from "react-native-big-calendar";
@@ -522,6 +524,10 @@ export default function ListScreen() {
   }
   /////
 
+  /////handle update task
+  const [modalUpdateTask, setModalUpdateTask] = useState(false);
+  /////
+
   return (
     <SafeAreaView style={styles.container}>
       <RefreshControl
@@ -764,12 +770,13 @@ export default function ListScreen() {
                 </View>
                 <View
                   style={{
-                    justifyContent: "space-around",
+                    width: "100%",
+                    justifyContent: "space-between",
                     flexDirection: "row",
                   }}
                 >
                   <TouchableOpacity
-                    style={styles.btnHandle}
+                    style={[styles.btnHandle, { width: "30%" }]}
                     onPress={() => {
                       Alert.alert(
                         "Xác nhận",
@@ -804,11 +811,25 @@ export default function ListScreen() {
                       size={25}
                       color="#fff"
                     />
-                    <Text style={{ color: "#fff", fontSize: 16 }}>Xóa</Text>
+                    <Text style={{ color: "#fff", fontSize: 15 }}>Xóa</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.btnHandle}>
+                  <TouchableOpacity
+                    style={[styles.btnHandle, { width: "30%" }]}
+                    onPress={() => {
+                      setModalUpdateTask(true);
+                      setIsModalVisible(false);
+                    }}
+                  >
+                    <Ionicons name="md-create-outline" size={25} color="#fff" />
+                    <Text style={{ color: "#fff", fontSize: 15 }}>
+                      Cập nhật
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.btnHandle, { width: "30%" }]}
+                  >
                     <Materialicons name="done" size={25} color="#fff" />
-                    <Text style={{ color: "#fff", fontSize: 16 }}>
+                    <Text style={{ color: "#fff", fontSize: 15 }}>
                       Hoàn thành
                     </Text>
                   </TouchableOpacity>
@@ -956,7 +977,7 @@ export default function ListScreen() {
       {/* modal filter */}
       <Modal
         visible={modalFilter}
-        onRequestClose={closeModal}
+        // onRequestClose={closeModal}
         animationType="slide"
         transparent
       >
@@ -1197,6 +1218,35 @@ export default function ListScreen() {
             </View>
           </View>
         </View>
+      </Modal>
+      {/* modal update info task */}
+      <Modal
+        visible={modalUpdateTask}
+        animationType="slide"
+        onRequestClose={() => setModalUpdateTask(false)}
+        transparent
+      >
+        <SafeAreaView
+          style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+        >
+          <View
+            style={{
+              width: "100%",
+              height: "10%",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <TouchableOpacity onPress={() => setModalUpdateTask(false)}>
+              <MaterialCommunityicons
+                name="close-octagon-outline"
+                size={60}
+                color="#09CBD0"
+              />
+            </TouchableOpacity>
+          </View>
+          <UpdateTaskScreen />
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );
