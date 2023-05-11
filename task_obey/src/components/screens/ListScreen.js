@@ -108,6 +108,8 @@ export default function ListScreen() {
   const onRefresh = async () => {
     setRefreshing(true);
 
+    loadTaskTypeData();
+
     try {
       const res = await axios.get(`${url}/api/task/notFinishTasks/${userId}`, {
         timeout: 4000,
@@ -370,6 +372,7 @@ export default function ListScreen() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   function handlePressEvent(event) {
     setSelectedEvent(event);
+    console.log(event);
     setIsModalVisible(true);
   }
   function closeModal() {
@@ -389,7 +392,7 @@ export default function ListScreen() {
     "Công ty",
     "Du lịch",
   ]);
-  useEffect(() => {
+  function loadTaskTypeData() {
     AsyncStorage.getItem("taskTypeData")
       .then((value) => {
         if (value) setTaskTypeData(JSON.parse(value));
@@ -397,8 +400,10 @@ export default function ListScreen() {
       .catch((err) => {
         console.log("lỗi khôi phục:", err);
       });
+  }
+  useEffect(() => {
+    loadTaskTypeData();
   }, []);
-  // useEffect(() => console.log(taskTypeData), [taskTypeData]);
 
   const [filterTaskType, setFilterTaskType] = useState("");
   const [filterRepeat, setFilterRepeat] = useState("");
@@ -846,6 +851,37 @@ export default function ListScreen() {
             </View>
           </Modal>
         )}
+        {/* modal update info task */}
+        {selectedEvent && (
+          <Modal
+            visible={modalUpdateTask}
+            animationType="slide"
+            onRequestClose={() => setModalUpdateTask(false)}
+            transparent
+          >
+            <SafeAreaView
+              style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+            >
+              <View
+                style={{
+                  width: "100%",
+                  height: "10%",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <TouchableOpacity onPress={() => setModalUpdateTask(false)}>
+                  <MaterialCommunityicons
+                    name="close-octagon-outline"
+                    size={60}
+                    color="#FF4500"
+                  />
+                </TouchableOpacity>
+              </View>
+              <UpdateTaskScreen props={selectedEvent} />
+            </SafeAreaView>
+          </Modal>
+        )}
       </RefreshControl>
       {/* mode view, refresh, filter, prev-next */}
       <View
@@ -1218,35 +1254,6 @@ export default function ListScreen() {
             </View>
           </View>
         </View>
-      </Modal>
-      {/* modal update info task */}
-      <Modal
-        visible={modalUpdateTask}
-        animationType="slide"
-        onRequestClose={() => setModalUpdateTask(false)}
-        transparent
-      >
-        <SafeAreaView
-          style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.6)" }}
-        >
-          <View
-            style={{
-              width: "100%",
-              height: "10%",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <TouchableOpacity onPress={() => setModalUpdateTask(false)}>
-              <MaterialCommunityicons
-                name="close-octagon-outline"
-                size={60}
-                color="#09CBD0"
-              />
-            </TouchableOpacity>
-          </View>
-          <UpdateTaskScreen />
-        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );

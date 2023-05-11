@@ -41,6 +41,7 @@
     "react-native-chart-kit": "^6.12.0",
     "react-native-flexi-radio-button": "^0.2.2",
     "react-native-gesture-handler": "~2.8.0",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-paper": "^5.3.1",
     "react-native-phone-number-input": "^2.1.0",
     "react-native-push-notification": "^8.1.1",

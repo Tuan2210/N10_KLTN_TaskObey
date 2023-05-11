@@ -13,6 +13,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  RefreshControl,
 } from "react-native";
 import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -70,6 +71,34 @@ export default function CreateTaskScreen() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [marginTopSize, setMarginTopSize] = useState("-10%");
+
+  //////handle refresh task-type data
+  const [refreshing, setRefreshing] = useState(false);
+  const wait = (timeout) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeout);
+    });
+  };
+  const onRefresh = async () => {
+    setRefreshing(true);
+
+    loadTaskTypeData();
+
+    wait(2000).then(() => setRefreshing(false));
+  };
+  function loadTaskTypeData() {
+    AsyncStorage.getItem("taskTypeData")
+      .then((value) => {
+        if (value) setTaskTypeData(JSON.parse(value));
+      })
+      .catch((err) => {
+        console.log("lỗi khôi phục:", err);
+      });
+  }
+  useEffect(() => {
+    loadTaskTypeData();
+  }, []);
+  //////
 
   //////handle read all data tasks
   const [events, setEvents] = useState([]);
@@ -568,6 +597,9 @@ export default function CreateTaskScreen() {
     <ScrollView
       style={styles.container}
       contentContainerStyle={{ height: flag ? "155%" : "125%" }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       <View
         style={{ width: "100%", height: flag ? "95%" : "90%", padding: "3%" }}

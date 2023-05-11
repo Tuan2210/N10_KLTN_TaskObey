@@ -42,11 +42,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 import PushNotification from "react-native-push-notification";
+
+//doc: https://github.com/APSL/react-native-keyboard-aware-scroll-view
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
 
 export default function UpdateTaskScreen(props) {
-  const { infoTaskBeforeUpdate } = props;
+  const infoTaskBeforeUpdate = props;
 
   const currentLoginUser = useSelector(
     (state) => state.auth.login?.currentUser
@@ -62,11 +66,9 @@ export default function UpdateTaskScreen(props) {
   useEffect(() => {
     if (currentRegisterUser && !currentLoginUser) {
       setUserId(registerUserId);
-      loadListNotFinishTasks(registerUserId);
     }
     if (!currentRegisterUser && currentLoginUser) {
       setUserId(loginUserId);
-      loadListNotFinishTasks(loginUserId);
     }
   }, [currentRegisterUser, currentLoginUser]);
 
@@ -227,6 +229,12 @@ export default function UpdateTaskScreen(props) {
   };
   //////
 
+  // const [txtInputTask, setTxtInputTask] = useState(
+  //   infoTaskBeforeUpdate.props.title
+  // );
+  // const [txtInputDesc, setTxtInputDesc] = useState(
+  //   infoTaskBeforeUpdate.props.description
+  // );
   const [txtInputTask, setTxtInputTask] = useState("");
   const [txtInputDesc, setTxtInputDesc] = useState("");
 
@@ -312,15 +320,10 @@ export default function UpdateTaskScreen(props) {
       newestDate = newestCurrentDateTime.getDate(),
       newestMonth = newestCurrentDateTime.getMonth(),
       newestYear = newestCurrentDateTime.getFullYear();
-    // const displayStartDateTime = displayStartDate + ", " + displayStartTime;
     if (txtInputTask === "")
       Alert.alert("Thông báo", "Vui lòng nhập công việc!");
-    // else if (txtInputDesc === "")
-    //   Alert.alert("Thông báo", "Vui lòng nhập mô tả!");
     else if (displayStartTime === "... giờ ... phút")
       Alert.alert("Thông báo", "Vui lòng chọn khoảng thời gian bắt đầu!");
-    // else if(endDate===undefined || endTime===undefined)
-    //   Alert.alert('Thông báo', 'Vui lòng chọn khoảng thời gian bắt đầu!');
     else if (
       startDate.getDate() === newestDate &&
       startDate.getMonth() === newestMonth &&
@@ -332,14 +335,7 @@ export default function UpdateTaskScreen(props) {
         "Thông báo",
         "Vui lòng đặt thời gian bắt đầu sau thời gian hiện tại!"
       );
-    }
-    // else if (displayStartDateTime === evtStart) {
-    //   Alert.alert(
-    //     "Thông báo",
-    //     "Thời gian này đã được đặt, vui lòng đặt thời gian bắt đầu khác!"
-    //   );
-    // }
-    else if (
+    } else if (
       flag === true &&
       endDate.getDate() === newestDate &&
       endDate.getMonth() === newestMonth &&
@@ -377,17 +373,18 @@ export default function UpdateTaskScreen(props) {
         "Vui lòng đặt thời gian kết thúc sau thời gian bắt đầu!"
       );
     } else {
-      setIsLoading(true);
-
+      // setIsLoading(true);
       if (
         flag === false ||
         (displayEndDate === "... / ... / ...." &&
           displayEndTime === "... giờ ... phút")
       ) {
-        // setDuration('');
-        apiCreateTask("");
+        apiUpdateTask("");
         setDeadline("");
+        Alert.alert("Thông báo", "Cập nhật công việc thành công!");
       } else {
+        Alert.alert("Thông báo", "Cập nhật công việc thành công!");
+
         //detail duration
         const durationSeconds = Math.abs(
           (endDate.getTime() - startDate.getTime()) / 1000
@@ -398,7 +395,7 @@ export default function UpdateTaskScreen(props) {
 
         if (durationSeconds >= 60 && durationSeconds < 3600) {
           //phút
-          apiCreateTask(Math.round(durationSeconds / 60).toString() + " phút");
+          apiUpdateTask(Math.round(durationSeconds / 60).toString() + " phút");
         } else if (durationSeconds >= 3600 && durationSeconds < 86400) {
           //giờ: 60x60
           const durationHours = durationSeconds / 3600;
@@ -407,11 +404,9 @@ export default function UpdateTaskScreen(props) {
             Math.abs((durationHours - integerPartH) * 60)
           );
           if (remainderPartM === 0)
-            apiCreateTask(integerPartH.toString() + " giờ");
-          // else if(remainderPartM<0)
-          //   apiCreateTask(integerPartH.toString() +' giờ, ' +(remainderPartM*(-1)).toString() +' phút');
+            apiUpdateTask(integerPartH.toString() + " giờ");
           else
-            apiCreateTask(
+            apiUpdateTask(
               integerPartH.toString() +
                 " giờ, " +
                 remainderPartM.toString() +
@@ -423,31 +418,13 @@ export default function UpdateTaskScreen(props) {
           integerPartDay = Math.round(durationDays);
           remainderPartH = Math.abs((durationDays - integerPartDay) * 24);
 
-          // if(remainderPartH<0) {
-          //   remainderPartH = ((durationDays - integerPartDay)*24)*(-1);
-          //   integerPartH = Math.round(remainderPartH);
-          //   remainderPartM = Math.round((remainderPartH - integerPartH)*60);
-          //   if(remainderPartH===0 && remainderPartM===0)
-          //     apiCreateTask(integerPartDay.toString() +' ngày');
-          //   // if(integerPartH<0)
-          //   //   apiCreateTask(integerPartDay.toString() +' ngày, ' +(integerPartH*(-1)).toString() +' giờ, ' +remainderPartM.toString() +' phút');
-          //   // if(remainderPartM<0)
-          //   //   apiCreateTask(integerPartDay.toString() +' ngày, ' +integerPartH.toString() +' giờ, ' +(remainderPartM*(-1)).toString() +' phút');
-          //   // if(integerPartH>0 || remainderPartM>0)
-          //   apiCreateTask(integerPartDay.toString() +' ngày, ' +integerPartH.toString() +' giờ, ' +remainderPartM.toString() +' phút');
-          // } else {
           integerPartH = Math.round(remainderPartH);
           remainderPartM = Math.round(
             Math.abs((remainderPartH - integerPartH) * 60)
           );
           if (remainderPartH === 0 && remainderPartM === 0)
-            apiCreateTask(integerPartDay.toString() + " ngày");
-          // if(integerPartH<0)
-          //   apiCreateTask(integerPartDay.toString() +' ngày, ' +(integerPartH*(-1)).toString() +' giờ, ' +remainderPartM.toString() +' phút');
-          // if(remainderPartM<0)
-          //   apiCreateTask(integerPartDay.toString() +' ngày, ' +integerPartH.toString() +' giờ, ' +(remainderPartM*(-1)).toString() +' phút');
-          // if(integerPartH>0 || remainderPartM>0)
-          apiCreateTask(
+            apiUpdateTask(integerPartDay.toString() + " ngày");
+          apiUpdateTask(
             integerPartDay.toString() +
               " ngày, " +
               integerPartH.toString() +
@@ -463,7 +440,7 @@ export default function UpdateTaskScreen(props) {
           remainderPartDay = Math.abs((durationWeeks - integerPartW) * 7);
 
           if (remainderPartDay === 0)
-            apiCreateTask(integerPartW.toString() + " tuần");
+            apiUpdateTask(integerPartW.toString() + " tuần");
           else {
             remainderPartDay = Math.abs((durationWeeks - integerPartW) * 7);
             integerPartDay = Math.round(remainderPartDay);
@@ -474,7 +451,7 @@ export default function UpdateTaskScreen(props) {
               Math.abs((remainderPartH - integerPartH) * 60)
             );
 
-            apiCreateTask(
+            apiUpdateTask(
               integerPartW.toString() +
                 " tuần, " +
                 integerPartDay.toString() +
@@ -484,85 +461,45 @@ export default function UpdateTaskScreen(props) {
                 remainderPartM.toString() +
                 " phút"
             );
+
+            // setIsLoading(false);
+            // setTxtInputTask("");
+            // setTxtInputDesc("");
+            // setDisplayStartDate(formatCurrentDateVN);
+            // setDisplayStartTime("... giờ ... phút");
+            // setDisplayEndDate("... / ... / ....");
+            // setDisplayEndTime("... giờ ... phút");
           }
-
-          // if(remainderPartDay<0) {
-          //   remainderPartDay = ((durationWeeks - integerPartW)*7)*(-1);
-          //   integerPartDay = Math.round(remainderPartDay);
-          //   remainderPartH = (remainderPartDay - integerPartDay)*24;
-
-          //   if(remainderPartH<0) {
-          //     remainderPartH = ((remainderPartDay - integerPartDay)*24)*(-1);
-          //     integerPartH = Math.round(remainderPartH);
-          //     remainderPartM = Math.round((remainderPartH - integerPartH)*60);
-          //     if(remainderPartH===0 && remainderPartM===0)
-          //       apiCreateTask(integerPartW.toString() +' tuần, ' +integerPartDay.toString() +' ngày');
-          //     else apiCreateTask(integerPartW.toString() +' tuần, ' +integerPartDay.toString() +' ngày, ' +integerPartH.toString() +' giờ, ' +remainderPartM.toString() +' phút');
-          //   } else {
-          //     if(remainderPartH===0)
-          //       apiCreateTask(integerPartW.toString() +' tuần, ' +integerPartDay.toString() +' ngày');
-          //     else apiCreateTask(integerPartW.toString() +' tuần, ' +integerPartDay.toString() +' ngày, ' +integerPartH.toString() +' giờ');
-          //   }
-          // }
-
-          // else {
-          // remainderPartDay = (durationWeeks - integerPartW)*7;
-
-          // remainderPartH = (remainderPartDay - integerPartDay)*24;
-
-          // if(remainderPartH<0) {
-          //   remainderPartH = ((remainderPartDay - integerPartDay)*24)*(-1);
-          //   integerPartH = Math.round(remainderPartH);
-          //   remainderPartM = Math.round((remainderPartH - integerPartH)*60);
-          //   if(remainderPartH===0 && remainderPartM===0)
-          //     apiCreateTask(integerPartW.toString() +' tuần, ' +integerPartDay.toString() +' ngày');
-          //   else apiCreateTask(integerPartW.toString() +' tuần, ' +integerPartDay.toString() +' ngày, ' +integerPartH.toString() +' giờ, ' +remainderPartM.toString() +' phút');
-          // } else {
-          //   if(remainderPartH===0)
-          //     apiCreateTask(integerPartW.toString() +' tuần, ' +integerPartDay.toString() +' ngày');
-          //   else apiCreateTask(integerPartW.toString() +' tuần, ' +integerPartDay.toString() +' ngày, ' +integerPartH.toString() +' giờ');
-          // }
-          // }
-
-          // if(durationWeeks%2==0)
-          //   apiCreateTask(durationWeeks.toString());
-          // else
-          //   apiCreateTask((Math.round(durationWeeks)).toString() +' tuần, ' +(Math.round(durationSeconds/86400)).toString() +' ngày, ' +(Math.round(durationSeconds/3600)).toString() +' giờ, ' +(Math.round(durationSeconds/60)).toString() +' phút, ' +Math.round(durationSeconds) +' giây');
         }
       }
     }
   }
 
-  async function apiCreateTask(duration) {
-    //handle create newTask
-    const newTask = {
+  //handle update-task
+  async function apiUpdateTask(duration) {
+    const updateTask = {
       taskName: txtInputTask,
-      userId: userId,
-      taskType: taskType,
       description: txtInputDesc,
+      taskType: taskType,
       priority: priority,
+      reminderTime: reminderTime,
+      repeat: repeat,
       startTime: displayStartDate + ", " + displayStartTime,
       endTime: displayEndDate + ", " + displayEndTime,
-      reminderTime: reminderTime,
-      duration: duration,
-      deadline: deadline,
-      repeat: repeat,
+      // duration: duration,
+      // deadline: deadline,
     };
-    await axios
-      .post(`${url}/api/task/addTask`, newTask, { timeout: 5000 })
-      .then((task) => {
-        window.setTimeout(function () {
-          console.log(task.data);
-          setIsLoading(false);
-          setTxtInputTask("");
-          setTxtInputDesc("");
-          setDisplayStartDate(formatCurrentDateVN);
-          setDisplayStartTime("... giờ ... phút");
-          setDisplayEndDate("... / ... / ....");
-          setDisplayEndTime("... giờ ... phút");
-          Alert.alert("Thông báo", "Thêm công việc thành công!");
-        }, 2000);
-      });
+    await axios.put(
+      `${url}/api/task/updateNotFinishTask/${infoTaskBeforeUpdate.props.id}/${infoTaskBeforeUpdate.props.taskDetail_id}/${infoTaskBeforeUpdate.props.schedule_id}`,
+      updateTask,
+      { timeout: 4000 }
+    );
+    // .then((task) => {
+    // window.setTimeout(function () {
+    // console.log(task.data);
+
+    // }, 2000);
+    // });
   }
   /////
 
@@ -1099,7 +1036,7 @@ export default function UpdateTaskScreen(props) {
           />
         )}
 
-        {isLoading ? (
+        {/* {isLoading ? (
           <View
             style={{
               flexDirection: "row",
@@ -1118,19 +1055,19 @@ export default function UpdateTaskScreen(props) {
               }}
             />
           </View>
-        ) : (
-          <View
-            style={{
-              flexDirection: "row",
-              width: "100%",
-              justifyContent: "space-around",
-              marginTop: "-5%",
-            }}
-          >
-            <TouchableOpacity style={styles.btn} onPress={handleCreateTask}>
-              <Text style={{ fontSize: 20, color: "#fff" }}>Cập nhật</Text>
-            </TouchableOpacity>
-            {/* <TouchableOpacity
+        ) : ( */}
+        <View
+          style={{
+            flexDirection: "row",
+            width: "100%",
+            justifyContent: "space-around",
+            marginTop: "-5%",
+          }}
+        >
+          <TouchableOpacity style={styles.btn} onPress={handleCreateTask}>
+            <Text style={{ fontSize: 20, color: "#fff" }}>Cập nhật</Text>
+          </TouchableOpacity>
+          {/* <TouchableOpacity
               style={styles.btn}
               onPress={() => {
                 setTxtInputTask("");
@@ -1147,8 +1084,8 @@ export default function UpdateTaskScreen(props) {
             >
               <Text style={{ fontSize: 20, color: "#fff" }}>Hủy</Text>
             </TouchableOpacity> */}
-          </View>
-        )}
+        </View>
+        {/* )} */}
       </View>
     </ScrollView>
   );
