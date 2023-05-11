@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Dimensions, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -45,30 +45,26 @@ export default function StatisticScreen() {
       setUserId(loginUserId);
       loadListNotFinishTasks(loginUserId);
     }
+    const result = setDayRenderOrders(showEventItem)
+     setTotal(result);
   }, [currentRegisterUser, currentLoginUser]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   
-  const [viewModelStatic, setViewModelStatic] = useState("Line")
+  const [viewModelStatic, setViewModelStatic] = useState("Chart")
 
   /////load all data tasks
   const [events, setEvents] = useState([]);
-  const [filteredDay, setFilteredDay] = useState([])
-  const [filteredWeek, setFilteredWeekk] = useState([])
   async function loadListNotFinishTasks(id) {
     try {
       const res = await axios.get(`${url}/api/task/notFinishTasks/${id}`, {
-        timeout: 4000,
+        timeout: 1000,
       });
       if (res.data.length === 0) console.log("no data task in list");
       if (res.data.length > 0) {
         // console.log(res.data);
         setEvents(res.data);
-        const resultDay = filterDataDay(showEventItem)
-        const resultWeek = filterDataWeek(showEventItem)
-        setFilteredDay(resultDay)
-        setFilteredWeekk(resultWeek)
         // console.log(events)
       }
     } catch (error) {
@@ -111,27 +107,18 @@ export default function StatisticScreen() {
   // console.log(showEventItem)
   /////
 
-  async function filterDataDay(data){
-    const filterDay = await setDayRenderOrders(data)
-    return filterDay
-  }
-  async function filterDataWeek(data){
-    const filterWeek = await setWeekRenderOrders(data)
-    return filterWeek
-  }
   const [showLabels, setShowLabels] = useState(true);
   const [prevNumLabels, setPrevNumLabels] = useState(0);
 
   const [total, setTotal] = useState([])
   const [totalW, setTotalW] = useState([]);
-
-  const [ filteredDataDay ,setFilteredData] = useState([])
-  const [ filteredDataWeek ,setFilteredWeek] = useState([])
-
   const setDayRenderOrders = (tasks) => {
-    const newDate = new Date('2023-05-10T04:50:00.000Z');
+    const newDate = new Date(); 
     newDate.setHours(0, 0, 0, 0);
-
+  
+    let doneCount = 0;
+    let undoneCount = 0;
+  
     const result = tasks.reduce((result, task) => {
       const timeTask = new Date(task.start);
       timeTask.setHours(0, 0, 0, 0);
@@ -140,18 +127,18 @@ export default function StatisticScreen() {
       }
       return result;
     }, []);
-    console.log('ket qua task trong ngay la')
-    console.log(result)
-    return result
-    // setDataCsv(result);
+  
+    result.forEach((task) => {
+      if (task.status === "Hoàn thành") {
+        doneCount++;
+      } else {
+        undoneCount++;
+      }
+    });
+  
+    return [doneCount, undoneCount];
   };
-  // useEffect(() => {
-  //  const result = setDayRenderOrders(showEventItem)
-  //  setTotal(result.length);
-  // //  console.log('total la')
-  // //  console.log(total)
-  // },[])
-
+  
   const setWeekRenderOrders = (tasks) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -166,21 +153,37 @@ export default function StatisticScreen() {
       });
       result.push(dateTasks.length);
     }
-    console.log('ket qua 7 ngay lien tiep la');
-    console.log(result);
+    // console.log('ket qua 7 ngay lien tiep la');
+    // console.log(result);
     // setDataCsv(result);
     return result
   };
-
-  
-
+  // const filterData = async () => {
+  //   const resultDay = await setDayRenderOrders(showEventItem);
+  //   const resultWeek = setWeekRenderOrders(showEventItem);
+  //   total(resultDay);
+  //   totalW(resultWeek);
+  // };
   // useEffect(() => {
+  //   filterData();
+  // }, []);
+  // useEffect(() => {
+  
+  //   },[])  
+  // useEffect(() => { 
   //   const result = setWeekRenderOrders(showEventItem);
   //   setTotalW(result)
-  //   console.log('list cac cong viec la  ')
+  //   console.log('list cac cong viec la  ') 
   //   console.log(totalW)
-  // }, []);
-
+  // }, []);  
+  const data = useMemo(() => ({
+    labels: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+    datasets: [
+      {
+        data: total,
+      },
+    ],
+  }), [total]);  
   function BarChartScreen() {
     const moment = require('moment')
     console.log(showEventItem)
@@ -221,22 +224,7 @@ export default function StatisticScreen() {
 
     return(
       <BarChart
-      data={{
-        labels: uniqueMonths,
-        datasets: [
-          {
-            data: [
-              5,6,1,
-              // Math.random() * 100,
-              // Math.random() * 100,
-              // Math.random() * 100,
-              // Math.random() * 100,
-              // Math.random() * 100,
-              // Math.random() * 100
-            ]
-          }
-        ]
-      }}
+      data={data}
       width={400}
       height={420}
       // yAxisInterval={1}
@@ -244,7 +232,7 @@ export default function StatisticScreen() {
         backgroundColor: '#09CBD0',
         backgroundGradientFrom: '#09CBD0',
         backgroundGradientTo: '#09CBD0',
-        decimalPlaces: 2,
+        decimalPlaces: 0,
         color: (opacity = 0.0) => `rgba(255, 255, 255, ${opacity})`,
         labelColor: (opacity = 0.0) => `rgba(255, 255, 255, ${opacity})`,
         style: {
@@ -287,7 +275,8 @@ export default function StatisticScreen() {
               datasets: [
                 {
                   // data: dataTaskWeek,
-                  data: [0,1,6,5,2,5],
+                  data: 
+                  [0,1,6,5,2,5],
                   color: (opacity = 1) => `rgba(0, 150, 214, ${opacity})`, // Màu đường
                   strokeWidth: 3, // Độ dày đường
                   gradient: {
@@ -356,7 +345,7 @@ export default function StatisticScreen() {
   return (
     <SafeAreaView style={styles.container}>
     <View style={{flex: 1}}>
-    <View
+    {/* <View
         style={{
           flex: 0.3,
           flexDirection: 'row',
@@ -388,7 +377,7 @@ export default function StatisticScreen() {
                     value={"Month"}/>  
             </Picker>
           </View>
-      </View>
+      </View> */}
       <View
         style={{
           flex: 0.3,
@@ -449,8 +438,10 @@ export default function StatisticScreen() {
             </Picker>
           </View>
       </View> */}
-      {viewModelStatic === "Line" && <LineChartScreen />}
-      {viewModelStatic === "Chart" && <BarChartScreen />}
+      <View style={{alignSelf: 'center'}}>
+        {viewModelStatic === "Line" && <LineChartScreen />}
+        {viewModelStatic === "Chart" && <BarChartScreen />}
+      </View>
     </View>  
     </SafeAreaView>
   );
@@ -461,6 +452,7 @@ const styles = StyleSheet.create({
     width: '98%',
     height: '100%',
     alignSelf: "center",  
+    justifyContent: 'center',
     backgroundColor: 'white'
   },
   btnPrevNext: {
