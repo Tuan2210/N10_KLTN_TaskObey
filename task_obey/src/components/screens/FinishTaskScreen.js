@@ -1,4 +1,12 @@
-import { View, Text, TouchableOpacity, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,29 +16,35 @@ import { url } from "../../redux/createInstance";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function FinishTaskScreen() {
-  const currentLoginUser = useSelector((state) => state.auth.login?.currentUser);
+  const currentLoginUser = useSelector(
+    (state) => state.auth.login?.currentUser
+  );
   const loginUserId = currentLoginUser?._id;
 
-  const currentRegisterUser = useSelector((state) => state.auth.register?.currentUserRegister);
+  const currentRegisterUser = useSelector(
+    (state) => state.auth.register?.currentUserRegister
+  );
   const registerUserId = currentRegisterUser?._id;
-  
+
   const [userId, setUserId] = useState();
   useEffect(() => {
-    if(currentRegisterUser && !currentLoginUser)
+    if (currentRegisterUser && !currentLoginUser) {
       setUserId(registerUserId);
-    if(!currentRegisterUser && currentLoginUser)
-      setUserId(loginUserId)
+      loadListNotFinishTasks(registerUserId);
+    }
+    if (!currentRegisterUser && currentLoginUser) {
+      setUserId(loginUserId);
+      loadListNotFinishTasks(loginUserId);
+    }
   }, [currentRegisterUser, currentLoginUser]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [dataList, setDataList] = useState([]);
-  // const [dataTaskName, setDataTaskName] = useState();
-  // const [dataDayTime, setDataDayTime] = useState();
-  useEffect(() => {
-    loadListNotFinishTasks(userId);
-  }, [userId]);
+  // useEffect(() => {
+  //   loadListNotFinishTasks(userId);
+  // }, [userId]);
 
   async function loadListNotFinishTasks(userId) {
     await axios.get(`${url}/api/task/finishTasks/${userId}`).then((res) => {
@@ -45,6 +59,29 @@ export default function FinishTaskScreen() {
         setDataList(res.data);
       }
     });
+  }
+
+  const [refreshing, setRefreshing] = useState(false);
+  const wait = (timeout) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeout);
+    });
+  };
+  async function onRefresh() {
+    setRefreshing(true);
+    try {
+      const res = await axios.get(`${url}/api/task/finishTasks/${userId}`, {
+        timeout: 4000,
+      });
+      if (res.data.length === 0) console.log("no data finish-task in list");
+      if (res.data.length > 0) {
+        setDataList(res.data);
+        setRefreshing(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    wait(4000).then(() => setRefreshing(false));
   }
 
   let sliceDay, sliceTime;
@@ -69,16 +106,17 @@ export default function FinishTaskScreen() {
         },
       ]}
     >
-      <View style={{ padding: '5%' }}>
-        <Text 
+      <View style={{ padding: "5%" }}>
+        <Text
           style={[
-            activeItemFont, 
-            { 
-              fontSize: 20, 
-              // backgroundColor:"red", 
-              width: '100%',
-              height: '85%'
-            }]}
+            activeItemFont,
+            {
+              fontSize: 20,
+              // backgroundColor:"red",
+              width: "100%",
+              height: "85%",
+            },
+          ]}
         >
           {item.taskName}
         </Text>
@@ -87,23 +125,26 @@ export default function FinishTaskScreen() {
             color: "#D4A055",
             fontSize: 16,
             fontWeight: "bold",
-            alignSelf: "flex-end"
+            alignSelf: "flex-end",
           }}
         >
-          {
-            [
-              sliceDay = (new Date(item.dayTime)).toLocaleDateString(),', ',
-              sliceTime = (new Date(item.dayTime)).toLocaleTimeString()
-            ]
-          }
+          {[
+            (sliceDay = new Date(item.dayTime).toLocaleDateString()),
+            ", ",
+            (sliceTime = new Date(item.dayTime).toLocaleTimeString()),
+          ]}
         </Text>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView>
-      <View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {/* <Text>{dataTaskName}</Text>
         <Text>{dataDayTime}</Text> */}
         <FlatList
@@ -130,7 +171,14 @@ export default function FinishTaskScreen() {
             padding: "5%",
           }}
         />
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+});

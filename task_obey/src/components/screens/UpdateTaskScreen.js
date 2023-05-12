@@ -66,9 +66,11 @@ export default function UpdateTaskScreen(props) {
   useEffect(() => {
     if (currentRegisterUser && !currentLoginUser) {
       setUserId(registerUserId);
+      loadListNotFinishTasks(registerUserId);
     }
     if (!currentRegisterUser && currentLoginUser) {
       setUserId(loginUserId);
+      loadListNotFinishTasks(loginUserId);
     }
   }, [currentRegisterUser, currentLoginUser]);
 

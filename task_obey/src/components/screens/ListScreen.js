@@ -531,6 +531,24 @@ export default function ListScreen() {
 
   /////handle update task
   const [modalUpdateTask, setModalUpdateTask] = useState(false);
+
+  /////handle update status task
+  async function handleUpdateStatusTask(task_id) {
+    try {
+      const res = await axios.get(
+        `${url}/api/task/updateStatusTask/${task_id}`, { timeout: 4000 }
+      );
+      if (res.data.length === 0) console.log("no data finish task");
+      if (res.data.length > 0) {
+        console.log(res.data);
+        onRefresh();
+        setIsModalVisible(false);
+        Alert.alert("Thông báo 🎉", "Chức mừng bạn đã hoàn thành công việc này!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   /////
 
   return (
@@ -832,6 +850,7 @@ export default function ListScreen() {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.btnHandle, { width: "30%" }]}
+                    onPress={() => handleUpdateStatusTask(selectedEvent.id)}
                   >
                     <Materialicons name="done" size={25} color="#fff" />
                     <Text style={{ color: "#fff", fontSize: 15 }}>
