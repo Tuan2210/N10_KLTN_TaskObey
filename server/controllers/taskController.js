@@ -22,7 +22,9 @@ const taskController = {
     } = req.body;
 
     if (!taskName || !userId)
-      return res.status(400).json({ success: false, message: "Missing this task" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing this task" });
 
     try {
       //task
@@ -31,14 +33,16 @@ const taskController = {
         initialDate,
         status: "Chưa hoàn thành",
         userId,
-        taskDetailId: new mongoose.Types.ObjectId(),        
+        taskDetailId: new mongoose.Types.ObjectId(),
       });
       await newTask.save();
       // res.json(newTask);
 
       //details task
-      if(!newTask._id)
-        return res.status(400).json({ success: false, message: "Missing taskId in taskDetail" });
+      if (!newTask._id)
+        return res
+          .status(400)
+          .json({ success: false, message: "Missing taskId in taskDetail" });
       const newTaskDetail = new TaskDetail({
         _id: newTask.taskDetailId,
         taskId: newTask._id,
@@ -55,7 +59,9 @@ const taskController = {
 
       //schedule
       if (!newTask._id || !newTaskDetail._id)
-        return res.status(400).json({ success: false, message: "Missing taskId or taskDetailId" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Missing taskId or taskDetailId" });
       const newSchedule = new Schedule({
         _id: newTaskDetail.scheduleId,
         taskId: newTask._id,
@@ -74,23 +80,23 @@ const taskController = {
     }
   },
 
-    //GET ALL TASKS NOT FINISH BY USERID
-    getNotFinishTasksByUserId: async (req, res) => {
-      try {
-        await Task.find({
-          userId: req.params.userId,
-          // initialDate: req.params.initialDate,
-          status: "Chưa hoàn thành",
-        })
-          .populate({ path: 'taskDetailId', populate: {path: 'scheduleId'}})
-          .exec(function(err, tasks) {
-            if(err) res.status(500).json(err);
-            res.status(200).json(tasks);
-          });
-      } catch (error) {
-        res.status(500).json(error);
-      }
-    },
+  //GET ALL TASKS NOT FINISH BY USERID
+  getNotFinishTasksByUserId: async (req, res) => {
+    try {
+      await Task.find({
+        userId: req.params.userId,
+        // initialDate: req.params.initialDate,
+        status: "Chưa hoàn thành",
+      })
+        .populate({ path: "taskDetailId", populate: { path: "scheduleId" } })
+        .exec(function (err, tasks) {
+          if (err) res.status(500).json(err);
+          res.status(200).json(tasks);
+        });
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
 
   //GET ALL TASKS NOT FINISH BY USERID AND INITIAL DATE
   getNotFinishTasksByUserIdAndInittialDate: async (req, res) => {
@@ -106,9 +112,9 @@ const taskController = {
         initialDate: req.params.initialDate,
         status: "Chưa hoàn thành",
       })
-        .populate({ path: 'taskDetailId', populate: {path: 'scheduleId'}})
-        .exec(function(err, tasks) {
-          if(err) res.status(500).json(err);
+        .populate({ path: "taskDetailId", populate: { path: "scheduleId" } })
+        .exec(function (err, tasks) {
+          if (err) res.status(500).json(err);
           res.status(200).json(tasks);
         });
 
@@ -145,11 +151,9 @@ const taskController = {
       //   if(err) res.status(500).json(err);
       //   res.status(200).json(taskDetails.taskId)
       // })
-
     } catch (error) {
       res.status(500).json(error);
     }
-
 
     // TaskDetail.find().populate('taskId').exec(function(err, tasks) {
     //   if(err) throw err;
@@ -162,8 +166,6 @@ const taskController = {
     //   });
     //   res.json(specificTask);
     // });
-
-
   },
 
   //GET ALL DETAIL-TASKS NOT FINISH BY USERID
@@ -180,52 +182,46 @@ const taskController = {
     }
   },
 
-  //GET ALL TASKS FINISH BY USERID
-  getFinishTasksByUserId: async (req, res) => {
-    try {
-      await Task.find({
-        userId: req.params.userId,
-        status: "Hoàn thành",
-      }).then((data) => res.status(200).json(data));
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  },
-
   //DELETE A NOT FINISH TASK
   deleteNotFinishTask: async (req, res) => {
     try {
-      await Task.find({ _id: req.params.taskId })
-                .then((data) => {
-                  {data.map((item, index) => {
-                    Task.deleteOne({ _id: item._id })
-                      .then(console.log('deleted taskId:', item._id))
-                  })}
-                });
+      await Task.find({ _id: req.params.taskId }).then((data) => {
+        {
+          data.map((item, index) => {
+            Task.deleteOne({ _id: item._id }).then(
+              console.log("deleted taskId:", item._id)
+            );
+          });
+        }
+      });
     } catch (error) {
       res.status(500).json(error);
     }
 
     try {
-      await TaskDetail.find({ _id: req.params.taskDetailId })
-                .then((data) => {
-                  {data.map((item, index) => {
-                    TaskDetail.deleteOne({ _id: item._id })
-                      .then(console.log('deleted taskDetailId:', item._id))
-                  })}
-                });
+      await TaskDetail.find({ _id: req.params.taskDetailId }).then((data) => {
+        {
+          data.map((item, index) => {
+            TaskDetail.deleteOne({ _id: item._id }).then(
+              console.log("deleted taskDetailId:", item._id)
+            );
+          });
+        }
+      });
     } catch (error) {
       res.status(500).json(error);
     }
 
     try {
-      await Schedule.find({ _id: req.params.scheduleId })
-                .then((data) => {
-                  {data.map((item, index) => {
-                    Schedule.deleteOne({ _id: item._id })
-                      .then(console.log('deleted scheduleId:', item._id))
-                  })}
-                });
+      await Schedule.find({ _id: req.params.scheduleId }).then((data) => {
+        {
+          data.map((item, index) => {
+            Schedule.deleteOne({ _id: item._id }).then(
+              console.log("deleted scheduleId:", item._id)
+            );
+          });
+        }
+      });
     } catch (error) {
       res.status(500).json(error);
     }
@@ -244,8 +240,12 @@ const taskController = {
       endTime,
     } = req.body;
     try {
-      Task.findOneAndUpdate({ _id: req.params.taskId }, {taskName: taskName}, {new: true}).then((updated) => console.log(updated));
-      TaskDetail.findOneAndUpdate(
+      await Task.findOneAndUpdate(
+        { _id: req.params.taskId },
+        { taskName: taskName },
+        { new: true }
+      ).then((updated) => console.log(updated));
+      await TaskDetail.findOneAndUpdate(
         { _id: req.params.taskDetailId },
         {
           taskType: taskType,
@@ -253,15 +253,53 @@ const taskController = {
           priority: priority,
           startTime: startTime,
           endTime: endTime,
-          reminderTime: reminderTime
+          reminderTime: reminderTime,
         },
-        {new: true}
+        { new: true }
       ).then((updated) => console.log(updated));
-      Schedule.findOneAndUpdate({ _id: req.params.scheduleId }, {repeat: repeat}, {new: true}).then((updated) => console.log(updated));
+      await Schedule.findOneAndUpdate(
+        { _id: req.params.scheduleId },
+        { repeat: repeat },
+        { new: true }
+      ).then((updated) => console.log(updated));
     } catch (error) {
       res.status(500).json(error);
     }
-  }
+  },
+
+  //UPDATE STATUS TASK
+  updateStatusTask: async (req, res) => {
+    try {
+      await Task.findOneAndUpdate(
+        { _id: req.params.taskId },
+        { status: "Hoàn thành" },
+        { new: true }
+      ).then(async (updated) => {
+        await Task.find({ _id: updated._id }).then((data) => {
+          res.status(200).json(data);
+        });
+      });
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+
+  //GET ALL TASKS FINISH BY USERID
+  getFinishTasksByUserId: async (req, res) => {
+    try {
+      await Task.find({
+        userId: req.params.userId,
+        status: "Hoàn thành",
+      })
+        .populate({ path: "taskDetailId", populate: { path: "scheduleId" } })
+        .exec(function (err, tasks) {
+          if (err) res.status(500).json(err);
+          res.status(200).json(tasks);
+        });
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
 };
 
 module.exports = taskController;
