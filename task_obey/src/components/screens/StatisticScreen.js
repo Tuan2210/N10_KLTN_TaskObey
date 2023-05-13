@@ -14,7 +14,7 @@ import {Avatar, Drawer} from 'react-native-paper'
 //link how to code animation: https://blog.bitsrc.io/top-5-animation-libraries-in-react-native-d00ec8ddfc8d
 import * as Animatable from "react-native-animatable";
 
-import {BarChart, LineChart, PieChart} from "react-native-chart-kit";
+import {BarChart, LineChart, PieChart, ProgressChart} from "react-native-chart-kit";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import moment from "moment";
@@ -52,7 +52,7 @@ export default function StatisticScreen() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   
-  const [viewModelStatic, setViewModelStatic] = useState("Chart")
+  const [viewModelStatic, setViewModelStatic] = useState("")
 
   /////load all data tasks
   const [events, setEvents] = useState([]);
@@ -113,26 +113,24 @@ export default function StatisticScreen() {
   const [total, setTotal] = useState([])
   const [totalW, setTotalW] = useState([]);
   const setDayRenderOrders = (tasks) => {
-    const newDate = new Date(); 
-    newDate.setHours(0, 0, 0, 0);
+    const currentDate = new Date();
+    const threeMonthsAgo = new Date(currentDate.setMonth(currentDate.getMonth() - 2));
+    threeMonthsAgo.setDate(1);
+    threeMonthsAgo.setHours(0, 0, 0, 0);
   
     let doneCount = 0;
     let undoneCount = 0;
   
-    const result = tasks.reduce((result, task) => {
-      const timeTask = new Date(task.start);
-      timeTask.setHours(0, 0, 0, 0);
-      if (newDate.getTime() === timeTask.getTime()) {
-        return [...result, task];
-      }
-      return result;
-    }, []);
+    tasks.forEach((task) => {
+      const taskDate = new Date(task.start);
+      taskDate.setHours(0, 0, 0, 0);
   
-    result.forEach((task) => {
-      if (task.status === "Hoàn thành") {
-        doneCount++;
-      } else {
-        undoneCount++;
+      if (taskDate >= threeMonthsAgo && taskDate.getMonth() <= 4) {
+        if (task.status === "Hoàn thành") {
+          doneCount++;
+        } else {
+          undoneCount++;
+        }
       }
     });
   
@@ -157,8 +155,7 @@ export default function StatisticScreen() {
     // console.log(result);
     // setDataCsv(result);
     return result
-  };
-  // const filterData = async () => {
+  }; // const filterData = async () => {
   //   const resultDay = await setDayRenderOrders(showEventItem);
   //   const resultWeek = setWeekRenderOrders(showEventItem);
   //   total(resultDay);
@@ -177,7 +174,7 @@ export default function StatisticScreen() {
   //   console.log(totalW)
   // }, []);  
   const data = useMemo(() => ({
-    labels: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+    labels: ['Hoàn thành', 'Chưa hoàn thành',],
     datasets: [
       {
         data: total,
@@ -226,15 +223,15 @@ export default function StatisticScreen() {
       <BarChart
       data={data}
       width={400}
-      height={420}
+      height={500}
       // yAxisInterval={1}
       chartConfig={{
-        backgroundColor: '#09CBD0',
-        backgroundGradientFrom: '#09CBD0',
+        backgroundColor: '#8009CBD0',
+        backgroundGradientFrom: '#8009CBD0',
         backgroundGradientTo: '#09CBD0',
         decimalPlaces: 0,
         color: (opacity = 0.0) => `rgba(255, 255, 255, ${opacity})`,
-        labelColor: (opacity = 0.0) => `rgba(255, 255, 255, ${opacity})`,
+        labelColor: (opacity = 0.2) => `rgba(255, 255, 255, ${opacity})`,
         style: {
           borderRadius: 50,
         }
@@ -267,81 +264,51 @@ export default function StatisticScreen() {
       </BarChart>
     )
   }
-  function LineChartScreen() {
+  const dataPie = [
+    {
+    name: "Hoàn thành",
+    population: total[0],
+    color: "#09CBD0",
+    legendFontColor: "#7F7F7F",
+    legendFontSize: 15
+  },
+  {
+    name: "Chưa hoàn thành",
+    population: total[1], 
+    color: "#8009CBD0",
+    legendFontColor: "#7F7F7F",
+    legendFontSize: 15
+  }]
+  const chartConfig = {
+    backgroundGradientFrom: "#1E2923",
+    backgroundGradientFromOpacity: 0,
+    backgroundGradientTo: "#08130D",
+    backgroundGradientToOpacity: 0.5,
+    color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+    strokeWidth: 2, // optional, default 3
+    barPercentage: 0.5,
+    useShadowColorFromDataset: false // optional
+  };
+  function PieChartScreen() {
     return(  
-      <LineChart 
-            data={{
-              // labels: ["January", "February", "March", "April", "May", "June"],
-              datasets: [
-                {
-                  // data: dataTaskWeek,
-                  data: 
-                  [0,1,6,5,2,5],
-                  color: (opacity = 1) => `rgba(0, 150, 214, ${opacity})`, // Màu đường
-                  strokeWidth: 3, // Độ dày đường
-                  gradient: {
-                    colors: ["#09CBD0", "#09CBD0"], // Màu gradient từ đường xuống trục x
-                    start: { x: 1, y: 1 },
-                    end: { x: 1, y: 1 },
-                  },
-                }
-              ]
-            }}
-            fromZero={true}
-            showBarTops={false}
-            // yAxisLabel="Số công việc hòa"
-            width={400}
-            height={420}
-            yAxisInterval={1}
-            chartConfig={{
-              yAxis: {
-                drawAxisLine: false,
-                drawGridLines: false,
-                drawLabels: false,
-                zeroLine: false,
-              },
-              xAxis: {
-                drawAxisLine: false,
-                drawGridLines: false,
-                drawLabels: false,
-                zeroLine: false,
-              },
-              backgroundColor: '#FFFFFF',
-              backgroundGradientFrom: '#FFFFFF',
-              backgroundGradientTo: '#FFFFFF',
-              decimalPlaces: 0,
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              style: {
-                borderRadius: 20,
-              },
-              propsForDots:{
-                stroke: '#09CBD0',
-                r: 0,
-                strokeWidth: 0
-              }
-            }}
-            bezier
-            style={{
-              marginVertical: 5, borderRadius: 5,
-            }}
-            yAxis={{
-              color: "transparent", // Loại bỏ lưới trục y
-              labelColor: "rgba(0, 0, 0, 0)", // Ẩn nhãn trục y
-            }}
-            xAxis={{
-              color: "transparent", // Loại bỏ lưới trục x
-              labelColor: "rgba(0, 0, 0, 0)", // Ẩn nhãn trục x
-            }}
+    <View style ={{width: '100%', height: 300, flexDirection:'row' }}>
+      <View>
+      <PieChart 
+            data={dataPie}
+            width={480}
+  height={180}
+  chartConfig={chartConfig}
+  accessor={"population"}
+  backgroundColor={"transparent"}
+  paddingLeft={"15"}
+  center={[0, 5]}
+  absolute
             >
   
-          </LineChart>
+          </PieChart></View></View>
     )
   }
-  // useEffect(() => {
-  //   loadListNotFinishTasks(loginUserId) 
-  // }, [])
-  
+
   return (
     <SafeAreaView style={styles.container}>
     <View style={{flex: 1}}>
@@ -395,13 +362,15 @@ export default function StatisticScreen() {
                 backgroundColor: "#BCF4F5",
                 marginLeft: "3%",
               }}
-              selectedValue={viewModelStatic}
+              placeholder="Chọn loại biểu đồ"
+              selectedValue={viewModelStatic || "Chọn loại biểu đồ"}
               onValueChange={(itemValue, itemIndex) => 
                 setViewModelStatic(itemValue)
                 }>
+                  <Picker.Item label="Chọn loại biểu đồ" value=""/>
                   <Picker.Item style={{fontSize: 18}}
-                    label="Đường"
-                    value={"Line"}/>
+                    label="Tròn"
+                    value={"Pie"}/>
                   <Picker.Item style={{fontSize: 18}} 
                     label="Cột"
                     value={"Chart"}/>  
@@ -439,7 +408,7 @@ export default function StatisticScreen() {
           </View>
       </View> */}
       <View style={{alignSelf: 'center'}}>
-        {viewModelStatic === "Line" && <LineChartScreen />}
+        {viewModelStatic === "Pie" && <PieChartScreen />}
         {viewModelStatic === "Chart" && <BarChartScreen />}
       </View>
     </View>  
