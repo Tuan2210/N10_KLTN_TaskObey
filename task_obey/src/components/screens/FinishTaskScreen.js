@@ -17,6 +17,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import moment from "moment";
 
+import { Picker } from "@react-native-picker/picker";
+
 export default function FinishTaskScreen() {
   const currentLoginUser = useSelector(
     (state) => state.auth.login?.currentUser
@@ -64,6 +66,7 @@ export default function FinishTaskScreen() {
   }
   // useEffect(() => console.log(dataList));
 
+  //////handle refresh
   const [refreshing, setRefreshing] = useState(false);
   const wait = (timeout) => {
     return new Promise((resolve) => {
@@ -86,14 +89,25 @@ export default function FinishTaskScreen() {
     }
     wait(4000).then(() => setRefreshing(false));
   }
+  //////
 
-  /////handle sort newest finishDateTime
-  const sortNewestFinishDateTime = dataList.sort((a, b) => {
-    const dateA = moment(a.finishDateTime, "D/M/YYYY, HH [giờ] mm [phút]");
-    const dateB = moment(b.finishDateTime, "D/M/YYYY, HH [giờ] mm [phút]");
-    return dateB - dateA;
-  });
-  /////
+  //////handle sort
+  const [sortNewOld, setSortNewOld] = useState("Gần đây nhất");
+  const sortedData =
+    sortNewOld === "Gần đây nhất"
+      ? dataList.sort((a, b) => {
+          //handle sort newest DESC finishDateTime
+          const dateA = moment(a.finishDateTime, "D/M/YYYY, HH [giờ] mm [phút]");
+          const dateB = moment(b.finishDateTime, "D/M/YYYY, HH [giờ] mm [phút]");
+          return dateB - dateA;
+        })
+      : dataList.sort((a, b) => {
+          //handle sort oldest ASC finishDateTime
+          const dateA = moment(a.finishDateTime, "D/M/YYYY, HH [giờ] mm [phút]");
+          const dateB = moment(b.finishDateTime, "D/M/YYYY, HH [giờ] mm [phút]");
+          return dateA - dateB;
+        });
+  //////
 
   let sliceDay, sliceTime;
   const [time, setTime] = useState();
@@ -106,41 +120,51 @@ export default function FinishTaskScreen() {
         {
           width: "100%",
           height: 200,
-          alignSelf: "center",
           justifyContent: "space-around",
-          // marginLeft: "3%",
-          marginTop: "4%",
+          marginTop: "3%",
+          marginBottom: "3%",
           borderRadius: 20,
-          borderColor: "#09CBD0",
-          borderWidth: 1.2,
+          // borderColor: "#AEEEEE",
+          // borderWidth: 2,
           borderStyle: "solid",
           backgroundColor: "#fff",
         },
       ]}
     >
-      <View style={{ padding: "5%" }}>
-        <Text
-          style={[
-            activeItemFont,
-            {
-              fontSize: 20,
-              // backgroundColor:"red",
-              width: "100%",
-              height: "85%",
-            },
-          ]}
-        >
-          {item.taskName}
-        </Text>
+      <View style={{ padding: "5%", paddingBottom: 0 }}>
+        <View style={{ width: "100%", height: "80%" }}>
+          <Text
+            style={[
+              activeItemFont,
+              {
+                fontSize: 18,
+                width: "100%",
+              },
+            ]}
+          >
+            {item.taskName}
+          </Text>
+          <Text
+            style={[
+              activeItemFont,
+              {
+                fontSize: 15,
+                width: "100%",
+              },
+            ]}
+          >
+            {item.taskDetailId.description}
+          </Text>
+        </View>
         <Text
           style={{
             color: "#D4A055",
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: "bold",
             alignSelf: "flex-end",
           }}
         >
-          Ngày hoàn thành:{"\u00A0"}
+          Thời gian hoàn thành:{"\u00A0"}
           {item.finishDateTime}
         </Text>
       </View>
@@ -149,12 +173,44 @@ export default function FinishTaskScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* <Text>{dataTaskName}</Text>
-        <Text>{dataDayTime}</Text> */}
+      <View
+        style={{
+          width: "100%",
+          height: "15%",
+          backgroundColor: "#fff",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-around",
+          borderBottomColor: "#09CBD0",
+          borderBottomWidth: 2,
+          borderBottomStyle: "solid",
+        }}
+      >
+        <Text>Lọc công việc hoàn thành theo:</Text>
+        <Picker
+          style={{
+            width: "55%",
+            backgroundColor: "#BCF4F5",
+          }}
+          selectedValue={sortNewOld}
+          onValueChange={(itemValue, itemIndex) => setSortNewOld(itemValue)}
+        >
+          <Picker.Item
+            style={{ fontSize: 15 }}
+            label="Gần đây nhất"
+            value="Gần đây nhất"
+          />
+          <Picker.Item
+            style={{ fontSize: 15 }}
+            label="Cũ nhất"
+            value="Cũ nhất"
+          />
+        </Picker>
+      </View>
       <FlatList
         key={"#"}
         // numColumns={2}
-        data={sortNewestFinishDateTime}
+        data={sortedData}
         renderItem={({ item }) => {
           // const backgroundColor =
           //   item.id === selectedIdItemData ? "#fff" : "black";
@@ -171,9 +227,8 @@ export default function FinishTaskScreen() {
         }}
         style={{
           width: "100%",
-          padding: "5%",
-          paddingTop: 0,
-          marginBottom: "4%",
+          paddingLeft: "5%",
+          paddingRight: "5%",
         }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
