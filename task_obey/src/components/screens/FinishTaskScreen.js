@@ -15,6 +15,8 @@ import { url } from "../../redux/createInstance";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import moment from "moment";
+
 export default function FinishTaskScreen() {
   const currentLoginUser = useSelector(
     (state) => state.auth.login?.currentUser
@@ -60,6 +62,7 @@ export default function FinishTaskScreen() {
       }
     });
   }
+  // useEffect(() => console.log(dataList));
 
   const [refreshing, setRefreshing] = useState(false);
   const wait = (timeout) => {
@@ -84,6 +87,14 @@ export default function FinishTaskScreen() {
     wait(4000).then(() => setRefreshing(false));
   }
 
+  /////handle sort newest finishDateTime
+  const sortNewestFinishDateTime = dataList.sort((a, b) => {
+    const dateA = moment(a.finishDateTime, "D/M/YYYY, HH [giờ] mm [phút]");
+    const dateB = moment(b.finishDateTime, "D/M/YYYY, HH [giờ] mm [phút]");
+    return dateB - dateA;
+  });
+  /////
+
   let sliceDay, sliceTime;
   const [time, setTime] = useState();
   const [selectedIdItemData, setSelectedIdItemData] = useState(null);
@@ -103,6 +114,7 @@ export default function FinishTaskScreen() {
           borderColor: "#09CBD0",
           borderWidth: 1.2,
           borderStyle: "solid",
+          backgroundColor: "#fff",
         },
       ]}
     >
@@ -128,11 +140,8 @@ export default function FinishTaskScreen() {
             alignSelf: "flex-end",
           }}
         >
-          {[
-            (sliceDay = new Date(item.dayTime).toLocaleDateString()),
-            ", ",
-            (sliceTime = new Date(item.dayTime).toLocaleTimeString()),
-          ]}
+          Ngày hoàn thành:{"\u00A0"}
+          {item.finishDateTime}
         </Text>
       </View>
     </TouchableOpacity>
@@ -140,38 +149,36 @@ export default function FinishTaskScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView
+      {/* <Text>{dataTaskName}</Text>
+        <Text>{dataDayTime}</Text> */}
+      <FlatList
+        key={"#"}
+        // numColumns={2}
+        data={sortNewestFinishDateTime}
+        renderItem={({ item }) => {
+          // const backgroundColor =
+          //   item.id === selectedIdItemData ? "#fff" : "black";
+          // const color = item.id === selectedIdItemData ? "black" : "#fff";
+          return (
+            <ItemData
+              item={item}
+              onPress={() => setSelectedIdItemData(item.id)}
+              activeItemBg={{}}
+              activeItemFont={{}}
+              // viewImgItem={{ width: "auto", height: 100 }}
+            />
+          );
+        }}
+        style={{
+          width: "100%",
+          padding: "5%",
+          paddingTop: 0,
+          marginBottom: "4%",
+        }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-      >
-        {/* <Text>{dataTaskName}</Text>
-        <Text>{dataDayTime}</Text> */}
-        <FlatList
-          key={"#"}
-          // numColumns={2}
-          data={dataList}
-          renderItem={({ item }) => {
-            // const backgroundColor =
-            //   item.id === selectedIdItemData ? "#fff" : "black";
-            // const color = item.id === selectedIdItemData ? "black" : "#fff";
-            return (
-              <ItemData
-                item={item}
-                onPress={() => setSelectedIdItemData(item.id)}
-                activeItemBg={{}}
-                activeItemFont={{}}
-                // viewImgItem={{ width: "auto", height: 100 }}
-              />
-            );
-          }}
-          style={{
-            width: "100%",
-            height: "100%",
-            padding: "5%",
-          }}
-        />
-      </ScrollView>
+      />
     </SafeAreaView>
   );
 }
@@ -179,6 +186,6 @@ export default function FinishTaskScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#BCF4F5",
   },
 });

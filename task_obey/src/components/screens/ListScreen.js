@@ -244,6 +244,7 @@ export default function ListScreen() {
       end: end,
       initialDate: evt.initialDate,
       status: evt.status,
+      finishDateTime: evt.finishDateTime,
       priority: evt.taskDetailId.priority,
       reminderTime: evt.taskDetailId.reminderTime,
       taskType: evt.taskDetailId.taskType,
@@ -535,8 +536,9 @@ export default function ListScreen() {
   /////handle update status task
   async function handleUpdateStatusTask(task_id) {
     try {
-      const res = await axios.get(
-        `${url}/api/task/updateStatusTask/${task_id}`, { timeout: 4000 }
+      const currentFinishDateTime = moment().utcOffset(7).format("D/M/YYYY, HH [giờ] mm [phút]");
+      const res = await axios.put(
+        `${url}/api/task/updateStatusTask/${task_id}`, {finishDateTime: currentFinishDateTime}, { timeout: 4000 }
       );
       if (res.data.length === 0) console.log("no data finish task");
       if (res.data.length > 0) {
