@@ -12,6 +12,9 @@ const taskSchema = new mongoose.Schema({
   status: {
     type: String,
   },
+  finishDateTime: {
+    type: String,    
+  },
   userId: {
     // type: String,
     type: mongoose.Schema.Types.ObjectId,

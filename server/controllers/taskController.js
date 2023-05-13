@@ -32,6 +32,7 @@ const taskController = {
         taskName,
         initialDate,
         status: "Chưa hoàn thành",
+        finishDateTime: "",
         userId,
         taskDetailId: new mongoose.Types.ObjectId(),
       });
@@ -269,11 +270,11 @@ const taskController = {
 
   //UPDATE STATUS TASK
   updateStatusTask: async (req, res) => {
-    const { endTime } = req.body;
+    const { finishDateTime } = req.body;
     try {
       const resTask = await Task.findOneAndUpdate(
         { _id: req.params.taskId },
-        { status: "Hoàn thành" },
+        { status: "Hoàn thành", finishDateTime: finishDateTime },
         { new: true }
       );
       // .then(async (updated) => {
@@ -281,11 +282,8 @@ const taskController = {
       //   //   res.status(200).json(data);
       //   // });
       // });
-      const resTaskDetail = await TaskDetail.findOneAndUpdate(
-        { taskId: req.params.taskId },
-        { endTime: endTime },
-        { new: true }
-      );
+
+      const resTaskDetail = await TaskDetail.find({ taskId: req.params.taskId });
       res.status(200).json([resTask, resTaskDetail]);
     } catch (error) {
       res.status(500).json(error);
