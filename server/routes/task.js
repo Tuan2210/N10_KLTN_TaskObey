@@ -18,7 +18,7 @@ router.get("/deleteNotFinishTask/:taskId/:taskDetailId/:scheduleId", taskControl
 router.put("/updateNotFinishTask/:taskId/:taskDetailId/:scheduleId", taskController.updateNotFinishTask);
 
 //UPDATE STATUS TASK
-router.get("/updateStatusTask/:taskId", taskController.updateStatusTask);
+router.put("/updateStatusTask/:taskId", taskController.updateStatusTask);
 
 //GET ALL TASKS FINISH BY USERID
 router.get("/finishTasks/:userId", taskController.getFinishTasksByUserId);

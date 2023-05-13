@@ -269,16 +269,24 @@ const taskController = {
 
   //UPDATE STATUS TASK
   updateStatusTask: async (req, res) => {
+    const { endTime } = req.body;
     try {
-      await Task.findOneAndUpdate(
+      const resTask = await Task.findOneAndUpdate(
         { _id: req.params.taskId },
         { status: "Hoàn thành" },
         { new: true }
-      ).then(async (updated) => {
-        await Task.find({ _id: updated._id }).then((data) => {
-          res.status(200).json(data);
-        });
-      });
+      );
+      // .then(async (updated) => {
+      //   // await Task.find({ _id: updated._id }).then((data) => {
+      //   //   res.status(200).json(data);
+      //   // });
+      // });
+      const resTaskDetail = await TaskDetail.findOneAndUpdate(
+        { taskId: req.params.taskId },
+        { endTime: endTime },
+        { new: true }
+      );
+      res.status(200).json([resTask, resTaskDetail]);
     } catch (error) {
       res.status(500).json(error);
     }
