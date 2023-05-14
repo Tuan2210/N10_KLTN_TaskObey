@@ -126,9 +126,9 @@ export default function StatisticScreen() {
       taskDate.setHours(0, 0, 0, 0);
   
       if (taskDate >= threeMonthsAgo && taskDate.getMonth() <= 4) {
-        if (task.status === "Hoàn thành") {
+        if (task.status.toString() === "Hoàn thành") {
           doneCount++;
-        } else {
+        } else { 
           undoneCount++;
         }
       }
@@ -155,24 +155,7 @@ export default function StatisticScreen() {
     // console.log(result);
     // setDataCsv(result);
     return result
-  }; // const filterData = async () => {
-  //   const resultDay = await setDayRenderOrders(showEventItem);
-  //   const resultWeek = setWeekRenderOrders(showEventItem);
-  //   total(resultDay);
-  //   totalW(resultWeek);
-  // };
-  // useEffect(() => {
-  //   filterData();
-  // }, []);
-  // useEffect(() => {
-  
-  //   },[])  
-  // useEffect(() => { 
-  //   const result = setWeekRenderOrders(showEventItem);
-  //   setTotalW(result)
-  //   console.log('list cac cong viec la  ') 
-  //   console.log(totalW)
-  // }, []);  
+  };
   const data = useMemo(() => ({
     labels: ['Hoàn thành', 'Chưa hoàn thành',],
     datasets: [
@@ -224,7 +207,6 @@ export default function StatisticScreen() {
       data={data}
       width={400}
       height={500}
-      // yAxisInterval={1}
       chartConfig={{
         backgroundColor: '#8009CBD0',
         backgroundGradientFrom: '#8009CBD0',
@@ -235,7 +217,7 @@ export default function StatisticScreen() {
         style: {
           borderRadius: 50,
         }
-      }}
+      }} 
       verticalLabelRotation={50}
       showValues={true}
       showBarTops={true}
@@ -296,13 +278,13 @@ export default function StatisticScreen() {
       <PieChart 
             data={dataPie}
             width={480}
-  height={180}
-  chartConfig={chartConfig}
-  accessor={"population"}
-  backgroundColor={"transparent"}
-  paddingLeft={"15"}
-  center={[0, 5]}
-  absolute
+            height={180}
+            chartConfig={chartConfig}
+            accessor={"population"}
+            backgroundColor={"transparent"}
+            paddingLeft={"15"}
+            center={[0, 5]}
+            absolute
             >
   
           </PieChart></View></View>
