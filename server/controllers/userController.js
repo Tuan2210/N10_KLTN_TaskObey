@@ -117,6 +117,7 @@ const userController = {
   //   }
   // },
 
+  //CHANGE PW WITH PHONE
   changePasswordWithPhoneNumber: async (req, res) => {
     const {phoneNumber, password} = req.body
 
@@ -126,6 +127,22 @@ const userController = {
       
       const hashedNewPW = await argon2.hash(password);
       await User.updateOne({phoneNumber: user.phoneNumber}, {password: hashedNewPW}, {upsert: false}); //filter, update, option
+      
+      res.status(200).json(await User.findOne({phoneNumber}));
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+
+  //CHANGE USERNAME WITH PHONE - phone get from userId
+  changeUsernameWithPhoneNumber: async (req, res) => {
+    const {phoneNumber, userName} = req.body
+
+    try {
+      const user = await User.findOne({phoneNumber});
+      if(!user) return res.status(400).json({success: false, message: "This phone number isn't registered"});
+      
+      await User.updateOne({phoneNumber: user.phoneNumber}, {userName: userName}, {upsert: false}); //filter, update, option
       
       res.status(200).json(await User.findOne({phoneNumber}));
     } catch (error) {

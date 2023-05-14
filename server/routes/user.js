@@ -20,4 +20,7 @@ router.get("/userPwByPhone/:phone/:password", userController.getUserPwByPhone);
 //CHANGE USER PW
 router.post("/changePassword", userController.changePasswordWithPhoneNumber);
 
+//CHANTE USERNAME
+router.post("/changeUsername", userController.changeUsernameWithPhoneNumber);
+
 module.exports = router;
