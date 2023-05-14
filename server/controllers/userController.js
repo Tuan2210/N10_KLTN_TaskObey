@@ -82,16 +82,19 @@ const userController = {
       res.status(500).json(error);
     }
   },
-  // getUserEmail: async (req, res) => {
-  //   try {
-  //     await User.find({
-  //       email: req.params.email,
-  //     }).then((findUserEmail) => res.status(200).json(findUserEmail));
-  //   } catch (error) {
-  //     res.status(500).json(error);
-  //   }
-  // },
 
+  //GET USER BY ID
+  getUserById: async (req, res) => {
+    try {
+      await User.find({
+        _id: req.params.userId,
+      }).then((u) => res.status(200).json(u));
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+
+  //GET USER PW BY PHONE
   getUserPwByPhone: async (req, res) => {
     try {
       const userPhone = await User.findOne({ phoneNumber: req.params.phone });

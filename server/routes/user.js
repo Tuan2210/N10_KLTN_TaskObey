@@ -10,6 +10,9 @@ router.get("/userName/:name", userController.getUserName);
 //GET USER PHONE-NUMBER
 router.get("/userPhone/:phone", userController.getUserPhone);
 
+//GET USER BY ID
+router.get("/userInfo/:userId", userController.getUserById);
+
 //GET USER PW
 router.get("/userPwByPhone/:phone/:password", userController.getUserPwByPhone);
 // router.get("/userPwByEmail/:email/:password", userController.getUserPwByEmail);
