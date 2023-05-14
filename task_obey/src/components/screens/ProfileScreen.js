@@ -14,8 +14,6 @@ import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import { url } from "../../redux/createInstance";
-import { logoutSuccess } from "../../redux/authSlice";
-import { logOut, logOutRegsiter } from "../../redux/apiRequest/authApiRequest";
 import { changeUsername } from "../../redux/apiRequest/userApiRequest";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -27,6 +25,9 @@ import { Avatar, Drawer } from "react-native-paper";
 import * as Animatable from "react-native-animatable";
 
 import axios from "axios";
+
+//link all icons react-native: https://oblador.github.io/react-native-vector-icons/
+import Icon from "react-native-vector-icons/Ionicons";
 
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
@@ -47,12 +48,15 @@ export default function ProfileScreen() {
   const registerUserNameAcc = currentRegisterUser?.userName;
 
   useEffect(() => {
-    if (currentRegisterUser && !currentLoginUser) {
-      loadUserInfoById(registerUserId);
-    }
-    if (!currentRegisterUser && currentLoginUser) {
-      loadUserInfoById(loginUserId);
-    }
+    const interval = setInterval(() => {
+      if (currentRegisterUser && !currentLoginUser) {
+        loadUserInfoById(registerUserId);
+      }
+      if (!currentRegisterUser && currentLoginUser) {
+        loadUserInfoById(loginUserId);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
   }, [currentRegisterUser, currentLoginUser]);
 
   const navigate = useNavigate();
@@ -76,8 +80,8 @@ export default function ProfileScreen() {
   // useEffect(() => console.log(userInfo));
   //////
 
+  //////handle update userName
   const [isLoading, setIsLoading] = useState(false);
-  //////handle update userName or pw
   const [txtUsername, setTxtUsername] = useState("");
   function checkUsername() {
     setIsLoading(true);
@@ -104,6 +108,36 @@ export default function ProfileScreen() {
     Alert.alert("Thông báo", "Hệ thống đã đổi tên tài khoản thành công!");
   }
   //////
+
+  //////handle update userName
+  const [isLoadingPW, setIsLoadingPW] = useState(false);
+  const [txtPW, setTxtPW] = useState("");
+  function checkPW() {
+    setIsLoadingPW(true);
+    window.setTimeout(async function () {
+      const account = {
+        phoneNumber: userInfo.phoneNumber,
+        password: txtPW,
+      };
+      await axios.post(`${url}/api/user/changePassword`, account, {
+        withCredentials: true,
+      });
+      setIsLoadingPW(false);
+      Alert.alert("Thông báo", "Hệ thống đã đổi mật khẩu thành công!");
+    }, 3000);
+  }
+  //////
+
+  //////////show-hide-pw
+  const [isSecureTextEntry, setIsSecureTextEntry] = useState(true);
+  const togglePassword = () => {
+    if (isSecureTextEntry) {
+      setIsSecureTextEntry(false);
+      return;
+    }
+    setIsSecureTextEntry(true);
+  };
+  //////////
 
   return (
     <SafeAreaView style={styles.container}>
@@ -148,10 +182,34 @@ export default function ProfileScreen() {
         <View style={styles.infoRow}>
           <TextInput
             placeholder="Mật khẩu"
-            style={styles.StyleTextInput}
+            style={[styles.StyleTextInput, { marginLeft: "-3.3%" }]}
             numberOfLines={1}
-            // onChangeText={(txt) => }
+            onChangeText={(txt) => setTxtPW(txt.trim())}
+            value={txtPW}
+            secureTextEntry={isSecureTextEntry}
           />
+          <TouchableOpacity
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              alignSelf: "center",
+              // borderColor: "cyan",
+              // borderWidth: 1,
+              // borderStyle: "solid",
+              backgroundColor: "#BCF4F5",
+              height: 35,
+              paddingLeft: 5,
+              paddingRight: 5,
+              marginLeft: "-35%",
+            }}
+            onPress={togglePassword}
+          >
+            {isSecureTextEntry ? (
+              <Icon name="eye-sharp" size={30} color="black" />
+            ) : (
+              <Icon name="eye-off-sharp" size={30} color="black" />
+            )}
+          </TouchableOpacity>
         </View>
         <View style={styles.columnButton}>
           {isLoading ? (
@@ -165,12 +223,7 @@ export default function ProfileScreen() {
               <Text style={{ alignSelf: "center" }}>Hệ thống đang xử lý</Text>
               <Image
                 source={require("../../../assets/loading-dots.gif")}
-                style={{
-                  resizeMode: "contain",
-                  width: 50,
-                  height: 50,
-                  marginLeft: "3%",
-                }}
+                style={styles.imgLoading}
               />
             </View>
           ) : (
@@ -197,7 +250,7 @@ export default function ProfileScreen() {
                         },
                         {
                           text: "Hủy",
-                          onPress: () => console.log("Hủy xóa"),
+                          onPress: () => console.log("Hủy đổi username"),
                           style: "cancel",
                         },
                       ],
@@ -210,9 +263,59 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             </View>
           )}
-          {/* <TouchableOpacity style={styles.btns}>
-            <Text style={styles.titleLabel}>Đổi mật khẩu</Text>
-          </TouchableOpacity> */}
+          {isLoadingPW ? (
+            <View
+              style={{
+                flexDirection: "row",
+                alignSelf: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ alignSelf: "center" }}>Hệ thống đang xử lý</Text>
+              <Image
+                source={require("../../../assets/loading-dots.gif")}
+                style={styles.imgLoading}
+              />
+            </View>
+          ) : (
+            <View style={{ height: "40%" }}>
+              <TouchableOpacity
+                style={styles.btns}
+                onPress={() => {
+                  if (txtPW.length === 0 || txtPW === "" || txtPW === null)
+                    Alert.alert("Thông báo", "Vui lòng nhập mật khẩu!");
+                  else if (txtPW.length < 6) {
+                    setIsLoadingPW(false);
+                    Alert.alert(
+                      "Thông báo",
+                      "Mật khẩu phải tối thiểu 6 ký tự!"
+                    );
+                  } else {
+                    Alert.alert(
+                      "Xác nhận",
+                      "Bạn có muốn đổi mật khẩu?",
+                      [
+                        {
+                          text: "Đổi",
+                          onPress: () => {
+                            checkPW();
+                          },
+                        },
+                        {
+                          text: "Hủy",
+                          onPress: () => console.log("Hủy đổi mk"),
+                          style: "cancel",
+                        },
+                      ],
+                      { cancelable: false }
+                    );
+                  }
+                }}
+              >
+                <Text style={styles.titleLabel}>Đổi mật khẩu</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
     </SafeAreaView>
@@ -271,6 +374,8 @@ const styles = StyleSheet.create({
     flex: 0.4,
     flexDirection: "column",
     marginTop: "5%",
+    height: "60%",
+    justifyContent: "space-between",
   },
   StyleTextInput: {
     backgroundColor: "#BCF4F5",
@@ -291,5 +396,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "#fff",
+  },
+  imgLoading: {
+    resizeMode: "contain",
+    width: 50,
+    height: 50,
+    marginLeft: "3%",
   },
 });
