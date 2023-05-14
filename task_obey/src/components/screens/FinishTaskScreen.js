@@ -4,8 +4,8 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
-  ScrollView,
   RefreshControl,
+  Modal,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-native";
@@ -51,18 +51,20 @@ export default function FinishTaskScreen() {
   // }, [userId]);
 
   async function loadListNotFinishTasks(userId) {
-    await axios.get(`${url}/api/task/finishTasks/${userId}`).then((res) => {
-      if (res.data.length > 0) {
-        // {
-        //   res.data.map((taskData, index) => {
-        //     console.log(taskData);
-        //     setDataTaskName(taskData.taskName);
-        //     setDataDayTime(taskData.dayTime);
-        //   });
-        // }
-        setDataList(res.data);
-      }
-    });
+    await axios
+      .get(`${url}/api/task/finishTasks/${userId}`, { timeout: 1000 })
+      .then((res) => {
+        if (res.data.length > 0) {
+          // {
+          //   res.data.map((taskData, index) => {
+          //     console.log(taskData);
+          //     setDataTaskName(taskData.taskName);
+          //     setDataDayTime(taskData.dayTime);
+          //   });
+          // }
+          setDataList(res.data);
+        }
+      });
   }
   // useEffect(() => console.log(dataList));
 
@@ -77,7 +79,7 @@ export default function FinishTaskScreen() {
     setRefreshing(true);
     try {
       const res = await axios.get(`${url}/api/task/finishTasks/${userId}`, {
-        timeout: 4000,
+        timeout: 2000,
       });
       if (res.data.length === 0) console.log("no data finish-task in list");
       if (res.data.length > 0) {
@@ -87,7 +89,7 @@ export default function FinishTaskScreen() {
     } catch (error) {
       console.log(error);
     }
-    wait(4000).then(() => setRefreshing(false));
+    wait(2500).then(() => setRefreshing(false));
   }
   //////
 
@@ -97,21 +99,38 @@ export default function FinishTaskScreen() {
     sortNewOld === "Gần đây nhất"
       ? dataList.sort((a, b) => {
           //handle sort newest DESC finishDateTime
-          const dateA = moment(a.finishDateTime, "D/M/YYYY, HH [giờ] mm [phút]");
-          const dateB = moment(b.finishDateTime, "D/M/YYYY, HH [giờ] mm [phút]");
+          const dateA = moment(
+            a.finishDateTime,
+            "D/M/YYYY, HH [giờ] mm [phút]"
+          );
+          const dateB = moment(
+            b.finishDateTime,
+            "D/M/YYYY, HH [giờ] mm [phút]"
+          );
           return dateB - dateA;
         })
       : dataList.sort((a, b) => {
           //handle sort oldest ASC finishDateTime
-          const dateA = moment(a.finishDateTime, "D/M/YYYY, HH [giờ] mm [phút]");
-          const dateB = moment(b.finishDateTime, "D/M/YYYY, HH [giờ] mm [phút]");
+          const dateA = moment(
+            a.finishDateTime,
+            "D/M/YYYY, HH [giờ] mm [phút]"
+          );
+          const dateB = moment(
+            b.finishDateTime,
+            "D/M/YYYY, HH [giờ] mm [phút]"
+          );
           return dateA - dateB;
         });
   //////
 
   let sliceDay, sliceTime;
   const [time, setTime] = useState();
-  const [selectedIdItemData, setSelectedIdItemData] = useState(null);
+  const [selectedItemData, setSelectedItemData] = useState();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  function closeModal() {
+    setSelectedItemData(null);
+    setIsModalVisible(false);
+  }
   const ItemData = ({ item, onPress, activeItemBg, activeItemFont }) => (
     <TouchableOpacity
       onPress={onPress}
@@ -139,6 +158,7 @@ export default function FinishTaskScreen() {
               {
                 fontSize: 18,
                 width: "100%",
+                fontWeight: "bold",
               },
             ]}
           >
@@ -150,6 +170,7 @@ export default function FinishTaskScreen() {
               {
                 fontSize: 15,
                 width: "100%",
+                color: "#444444",
               },
             ]}
           >
@@ -189,7 +210,7 @@ export default function FinishTaskScreen() {
         <Text>Lọc công việc hoàn thành theo:</Text>
         <Picker
           style={{
-            width: "55%",
+            width: "45%",
             backgroundColor: "#BCF4F5",
           }}
           selectedValue={sortNewOld}
@@ -218,7 +239,11 @@ export default function FinishTaskScreen() {
           return (
             <ItemData
               item={item}
-              onPress={() => setSelectedIdItemData(item.id)}
+              onPress={() => {
+                setSelectedItemData(item);
+                console.log(item);
+                setIsModalVisible(true);
+              }}
               activeItemBg={{}}
               activeItemFont={{}}
               // viewImgItem={{ width: "auto", height: 100 }}
@@ -234,6 +259,89 @@ export default function FinishTaskScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
+      {selectedItemData && (
+        <Modal
+          visible={isModalVisible}
+          onRequestClose={closeModal}
+          animationType="slide"
+          transparent
+        >
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0, 0, 0, 0.6)",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View style={styles.styleModal}>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text style={styles.txtModal}>
+                  Ưu tiên:{"\t"}
+                  <Text style={{ fontSize: 15, color: "black" }}>
+                    {selectedItemData.taskDetailId.priority}
+                  </Text>
+                </Text>
+                <Text style={styles.txtModal}>
+                  Loại công việc:{"\t"}
+                  <Text style={{ fontSize: 15, color: "black" }}>
+                    {selectedItemData.taskDetailId.taskType}
+                  </Text>
+                </Text>
+              </View>
+              <Text style={styles.txtModal}>
+                Thời gian bắt đầu:{"\t"}
+                <Text style={{ fontSize: 15, color: "black" }}>
+                  {selectedItemData.taskDetailId.startTime}
+                </Text>
+              </Text>
+              <Text style={styles.txtModal}>
+                Thời gian kêt thúc:{"\t"}
+                <Text style={{ fontSize: 15, color: "black" }}>
+                  {selectedItemData.taskDetailId.endTime ===
+                  "... / ... / ...., ... giờ ... phút"
+                    ? "Không"
+                    : selectedItemData.taskDetailId.endTime}
+                </Text>
+              </Text>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text style={styles.txtModal}>
+                  Ngày tạo:{"\t"}
+                  <Text style={{ fontSize: 15, color: "black" }}>
+                    {selectedItemData.initialDate}
+                  </Text>
+                </Text>
+                <Text style={styles.txtModal}>
+                  Trạng thái:{"\t"}
+                  <Text style={{ fontSize: 15, color: "black" }}>
+                    {selectedItemData.status}
+                  </Text>
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={closeModal}
+                style={{ alignItems: "center" }}
+              >
+                <Text style={{ color: "red", fontWeight: "bold" }}>
+                  [ Đóng ]
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
     </SafeAreaView>
   );
 }
@@ -242,5 +350,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#BCF4F5",
+  },
+  styleModal: {
+    backgroundColor: "white",
+    borderColor: "#09CBD0",
+    borderStyle: "solid",
+    borderWidth: 3,
+    width: "90%",
+    height: "50%",
+    padding: 20,
+    borderRadius: 20,
+    justifyContent: "space-around",
+  },
+  txtModal: {
+    fontSize: 14,
+    color: "#09CBD0",
   },
 });
