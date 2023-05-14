@@ -34,11 +34,11 @@ export default function FinishTaskScreen() {
   useEffect(() => {
     if (currentRegisterUser && !currentLoginUser) {
       setUserId(registerUserId);
-      loadListNotFinishTasks(registerUserId);
+      loadListFinishTasks(registerUserId);
     }
     if (!currentRegisterUser && currentLoginUser) {
       setUserId(loginUserId);
-      loadListNotFinishTasks(loginUserId);
+      loadListFinishTasks(loginUserId);
     }
   }, [currentRegisterUser, currentLoginUser]);
 
@@ -46,11 +46,8 @@ export default function FinishTaskScreen() {
   const dispatch = useDispatch();
 
   const [dataList, setDataList] = useState([]);
-  // useEffect(() => {
-  //   loadListNotFinishTasks(userId);
-  // }, [userId]);
 
-  async function loadListNotFinishTasks(userId) {
+  async function loadListFinishTasks(userId) {
     await axios
       .get(`${url}/api/task/finishTasks/${userId}`, { timeout: 1000 })
       .then((res) => {
