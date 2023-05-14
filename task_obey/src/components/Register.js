@@ -375,7 +375,7 @@ export default function Register() {
                 style={styles.styleInput}
                 placeholder="Tên tài khoản"
                 numberOfLines={1}
-                onChangeText={(txt) => setTxtInputUserName(txt.trim())}
+                onChangeText={(txt) => setTxtInputUserName(txt)}
               />
               <Text style={styles.errMess}>{errMessUserName}</Text>
               <TextInput

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
 
-import { createAxios } from "../../../redux/createInstance";
+import { createAxios, url } from "../../../redux/createInstance";
 import { logoutSuccess } from "../../../redux/authSlice";
 import { logOut, logOutRegsiter } from "../../../redux/apiRequest/authApiRequest";
 
@@ -23,23 +23,30 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesomeicons from "react-native-vector-icons/FontAwesome";
 import MaterialCommunityicons from "react-native-vector-icons/MaterialCommunityIcons";
 
+import axios from "axios";
+
 export default function DrawerContent(props) {
   const currentLoginUser = useSelector((state) => state.auth.login?.currentUser);
   const loginUserId = currentLoginUser?._id;
   const refreshToken = currentLoginUser?.refreshToken;
-  const loginUserNameAcc = currentLoginUser?.userName;
+  // const loginUserNameAcc = currentLoginUser?.userName;
 
   const currentRegisterUser = useSelector((state) => state.auth.register?.currentUserRegister);
   const registerUserId = currentRegisterUser?._id;
   const accessToken = currentRegisterUser?.token;
-  const registerUserNameAcc = currentRegisterUser?.userName;
+  // const registerUserNameAcc = currentRegisterUser?.userName;
 
   const [userNameAcc, setUserNameAcc] = useState();
   useEffect(() => {
-    if(currentRegisterUser && !currentLoginUser)
-      setUserNameAcc(registerUserNameAcc);
-    if(!currentRegisterUser && currentLoginUser)
-      setUserNameAcc(loginUserNameAcc);
+    const interval = setInterval(() => {
+      if(currentRegisterUser && !currentLoginUser) {
+        loadUserInfoById(registerUserId);
+      }
+      if(!currentRegisterUser && currentLoginUser) {
+        loadUserInfoById(loginUserId);
+      }
+    }, 3000);
+    return () => clearInterval(interval);
   }, [currentRegisterUser, currentLoginUser]);
 
   // useEffect(() => {
@@ -115,6 +122,24 @@ export default function DrawerContent(props) {
     setActiveFontStatisticTabDrawer('black');
   }
   
+  //////handle load user-info by id
+  const [userInfo, setUserInfo] = useState("");
+  async function loadUserInfoById(userId) {
+    try {
+      const res = await axios.get(`${url}/api/user/userInfo/${userId}`, {
+        timeout: 1000,
+      });
+      if (res.data.length === 0) console.log("no user data");
+      if (res.data.length > 0) {
+        setUserInfo(res.data[0]);
+        setUserNameAcc(res.data[0].userName);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  // useEffect(() => console.log(userInfo));
+  //////
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

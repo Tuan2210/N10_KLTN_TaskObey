@@ -39,3 +39,16 @@ export const changePassword = async (account, navigate, setSystemLine) => {
         console.log(error);
     }
 };
+
+export const changeUsername = async (account) => {
+    // dispatch(changePassStart());
+    try {
+        await axios.post(`${url}/api/user/changeUsername`, account, {
+            withCredentials: true,
+        });
+        // dispatch(changePassSuccess());
+    } catch (error) {
+        // dispatch(changePassFailed());
+        console.log(error);
+    }
+};
