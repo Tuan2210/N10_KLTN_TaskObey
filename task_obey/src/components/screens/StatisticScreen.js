@@ -40,13 +40,19 @@ export default function StatisticScreen() {
     if (currentRegisterUser && !currentLoginUser) {
       setUserId(registerUserId);
       loadListNotFinishTasks(registerUserId);
+      loadListFinishTasks(registerUserId)
     }
     if (!currentRegisterUser && currentLoginUser) {
       setUserId(loginUserId);
       loadListNotFinishTasks(loginUserId);
+      loadListFinishTasks(loginUserId)
     }
-    const result = setDayRenderOrders(showEventItem)
+    console.log(showEventFinishItem)
+    setDataTask([...showEventItem, ...showEventFinishItem])
+    const result = setDayRenderOrders(dataTask) 
      setTotal(result);
+    const resultP1 = task3MonthsPriority(dataTask, 1)
+      setTaskPriority1(resultP1)
   }, [currentRegisterUser, currentLoginUser]);
 
   const navigate = useNavigate();
@@ -54,8 +60,8 @@ export default function StatisticScreen() {
   
   const [viewModelStatic, setViewModelStatic] = useState("")
 
-  /////load all data tasks
-  const [events, setEvents] = useState([]);
+  /////load all not finish tasks data
+  const [eventsNotFinish, setEventsNotFinish] = useState([]);
   async function loadListNotFinishTasks(id) {
     try {
       const res = await axios.get(`${url}/api/task/notFinishTasks/${id}`, {
@@ -64,8 +70,8 @@ export default function StatisticScreen() {
       if (res.data.length === 0) console.log("no data task in list");
       if (res.data.length > 0) {
         // console.log(res.data);
-        setEvents(res.data);
-        // console.log(events)
+        setEventsNotFinish(res.data);
+        // console.log(eventsNotFinish)
       }
     } catch (error) {
       console.log(error);
@@ -73,7 +79,7 @@ export default function StatisticScreen() {
   }
 
   const showEventItem = [];
-  events.forEach((evt) => {
+  eventsNotFinish.forEach((evt) => {
     const start = moment(
       evt.taskDetailId.startTime,
       "D/M/YYYY, HH [giờ] mm [phút]"
@@ -107,6 +113,51 @@ export default function StatisticScreen() {
   // console.log(showEventItem)
   /////
 
+  /////load all finish tasks data
+  const [eventsFinish, setEventsFinish] = useState([]);
+  async function loadListFinishTasks(userId) {
+    await axios
+      .get(`${url}/api/task/finishTasks/${userId}`, { timeout: 1000 })
+      .then((res) => {
+        if (res.data.length > 0) {
+          // console.log(res.data)
+          setEventsFinish(res.data);
+        }
+      });
+  }
+  const showEventFinishItem = [];
+  eventsFinish.forEach((evt) => {
+    const start = moment(
+      evt.taskDetailId.startTime,
+      "D/M/YYYY, HH [giờ] mm [phút]"
+    ).toDate();
+    const end =
+      evt.taskDetailId.endTime !== "... / ... / ...., ... giờ ... phút"
+        ? moment(
+            evt.taskDetailId.endTime,
+            "D/M/YYYY, HH [giờ] mm [phút]"
+          ).toDate()
+        : null;
+
+    showEventFinishItem.push({
+      id: evt._id,
+      title: evt.taskName,
+      description: evt.taskDetailId.description,
+      start: start,
+      end: end,
+      initialDate: evt.initialDate,
+      status: evt.status,
+      priority: evt.taskDetailId.priority,
+      reminderTime: evt.taskDetailId.reminderTime,
+      taskType: evt.taskDetailId.taskType,
+      deadline: evt.taskDetailId.scheduleId.deadline,
+      duration: evt.taskDetailId.scheduleId.duration,
+      repeat: evt.taskDetailId.scheduleId.repeat,
+    });
+  });
+  
+  const [dataTask, setDataTask] = useState([])
+
   const [showLabels, setShowLabels] = useState(true);
   const [prevNumLabels, setPrevNumLabels] = useState(0);
 
@@ -136,7 +187,35 @@ export default function StatisticScreen() {
   
     return [doneCount, undoneCount];
   };
+  /////
+  const [taskPriority1, setTaskPriority1] = useState([])
+  const task3MonthsPriority = (tasks, importanceLevel) => {
+    const currentDate = new Date();
+    const threeMonthsAgo = new Date(currentDate.setMonth(currentDate.getMonth() - 2));
+    threeMonthsAgo.setDate(1);
+    threeMonthsAgo.setHours(0, 0, 0, 0);
   
+    let doneCount = 0;
+    let undoneCount = 0;
+  
+    tasks.forEach((task) => {
+      const taskDate = new Date(task.start);
+      taskDate.setHours(0, 0, 0, 0);
+  
+      if (taskDate >= threeMonthsAgo && taskDate.getMonth() <= 4) {
+        if (task.priority.toString() === importanceLevel.toString()) {
+          if (task.status.toString() === "Hoàn thành") {
+            doneCount++;
+          } else { 
+            undoneCount++;
+          }
+        }
+      }
+    });
+  
+    return [doneCount, undoneCount];
+  };
+  /////
   const setWeekRenderOrders = (tasks) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -151,9 +230,6 @@ export default function StatisticScreen() {
       });
       result.push(dateTasks.length);
     }
-    // console.log('ket qua 7 ngay lien tiep la');
-    // console.log(result);
-    // setDataCsv(result);
     return result
   };
   const data = useMemo(() => ({
@@ -167,6 +243,8 @@ export default function StatisticScreen() {
   function BarChartScreen() {
     const moment = require('moment')
     console.log(showEventItem)
+    console.log("ngang chan")
+    console.log(showEventFinishItem)
     const months = showEventItem.map((item) => moment(item.initialDate).format('MMMM'))
 
     const uniqueMonths = months.filter((month, index, self) => {
@@ -212,8 +290,8 @@ export default function StatisticScreen() {
         backgroundGradientFrom: '#8009CBD0',
         backgroundGradientTo: '#09CBD0',
         decimalPlaces: 0,
-        color: (opacity = 0.0) => `rgba(255, 255, 255, ${opacity})`,
-        labelColor: (opacity = 0.2) => `rgba(255, 255, 255, ${opacity})`,
+        color: (opacity = 0.5) => `rgba(255, 255, 255, ${opacity})`,
+        labelColor: (opacity = 0.5) => `rgba(255, 255, 255, ${opacity})`,
         style: {
           borderRadius: 50,
         }
@@ -248,16 +326,16 @@ export default function StatisticScreen() {
   }
   const dataPie = [
     {
-    name: "Hoàn thành",
+    name: "Hoàn thành", 
     population: total[0],
     color: "#09CBD0",
     legendFontColor: "#7F7F7F",
     legendFontSize: 15
-  },
+  }, 
   {
     name: "Chưa hoàn thành",
     population: total[1], 
-    color: "#8009CBD0",
+    color: "#FF4040",
     legendFontColor: "#7F7F7F",
     legendFontSize: 15
   }]
@@ -271,11 +349,28 @@ export default function StatisticScreen() {
     barPercentage: 0.5,
     useShadowColorFromDataset: false // optional
   };
+  const dataPiePriority1 = [
+    {
+    name: "Hoàn thành", 
+    population: taskPriority1[0],
+    color: "#09CBD0",
+    legendFontColor: "#7F7F7F",
+    legendFontSize: 15
+  }, 
+  {
+    name: "Chưa hoàn thành",
+    population: taskPriority1[1], 
+    color: "#FF4040",
+    legendFontColor: "#7F7F7F",
+    legendFontSize: 15
+  }]
+  
   function PieChartScreen() {
     return(  
-    <View style ={{width: '100%', height: 300, flexDirection:'row' }}>
+    <View style ={{width: '100%', height: 300, flexDirection:'column' }}>
+      <Text style={{ marginLeft: '10%',color: "#09CBD0" }}>Tổng công việc trong 3 tháng gần nhất:</Text>
       <View>
-      <PieChart 
+        <PieChart 
             data={dataPie}
             width={480}
             height={180}
@@ -287,52 +382,38 @@ export default function StatisticScreen() {
             absolute
             >
   
-          </PieChart></View></View>
+          </PieChart></View>
+      
+            
+      <Text style={{ marginLeft: '10%',color: "#09CBD0" }}>Theo mức độ ưu tiên 1:</Text>
+      <View> 
+        <PieChart 
+            data={dataPiePriority1}
+            width={480}
+            height={180}
+            chartConfig={chartConfig}
+            accessor={"population"}
+            backgroundColor={"transparent"}
+            paddingLeft={"15"}
+            center={[0, 5]}
+            absolute
+            >
+  
+          </PieChart></View>    
+      </View>
     )
   }
 
   return (
     <SafeAreaView style={styles.container}>
     <View style={{flex: 1}}>
-    {/* <View
-        style={{
-          flex: 0.3,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-around'
-        }}>
-          <View style={{flex: 0.4}}>
-            <Text style={{ color: "#09CBD0" }}>Loại biểu đồ:</Text>
-          </View>
-          <View style={{flex: 0.6,flexDirection: 'row', alignSelf:'center', justifyContent:'flex-start'}}>
-            <Picker
-              style={{
-                width: "98%",
-                backgroundColor: "#BCF4F5",
-                marginLeft: "3%",
-              }}
-              selectedValue={viewModelStatic}
-              onValueChange={(itemValue, itemIndex) => 
-                setViewModelStatic(itemValue)
-                }>
-                  <Picker.Item style={{fontSize: 18}}
-                    label="Ngày"
-                    value={"Day"}/>
-                  <Picker.Item style={{fontSize: 18}} 
-                    label="Tuần"
-                    value={"Week"}/>
-                  <Picker.Item style={{fontSize: 18}} 
-                    label="Tháng"
-                    value={"Month"}/>  
-            </Picker>
-          </View>
-      </View> */}
       <View
         style={{
-          flex: 0.3,
+          flex: 0.15,
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'space-around'
+          justifyContent: 'space-around',
+          marginTop: "10%"
         }}>
           <View style={{flex: 0.4}}>
             <Text style={{ color: "#09CBD0" }}>Loại biểu đồ:</Text>
@@ -361,13 +442,13 @@ export default function StatisticScreen() {
       </View>
       {/* <View
         style={{
-          flex: 0.3,
+          flex: 0.15,
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-around'
         }}>
-          <View style={{flex: 0.4}}>  
-            <Text style={{ color: "#09CBD0" }}>Mức độ hoàn thành:</Text>
+          <View style={{flex: 0.4}}>
+            <Text style={{ color: "#09CBD0" }}>Mức độ quan trọng:</Text>
           </View>
           <View style={{flex: 0.6,flexDirection: 'row', alignSelf:'center', justifyContent:'flex-start'}}>
             <Picker
@@ -381,15 +462,18 @@ export default function StatisticScreen() {
                 setViewModelStatic(itemValue)
                 }>
                   <Picker.Item style={{fontSize: 18}}
-                    label="Hoàn thành"
-                    value={"Finish"}/>
+                    label="1"
+                    value={"1"}/>
                   <Picker.Item style={{fontSize: 18}} 
-                    label="Chưa hoàn thành"
-                    value={"Unfinish"}/>  
+                    label="2"
+                    value={"2"}/>
+                  <Picker.Item style={{fontSize: 18}} 
+                    label="3"
+                    value={"3"}/>  
             </Picker>
           </View>
       </View> */}
-      <View style={{alignSelf: 'center'}}>
+      <View style={{alignSelf: 'center', marginTop: 30}}>
         {viewModelStatic === "Pie" && <PieChartScreen />}
         {viewModelStatic === "Chart" && <BarChartScreen />}
       </View>
