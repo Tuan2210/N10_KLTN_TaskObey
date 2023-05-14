@@ -545,7 +545,7 @@ export default function ListScreen() {
         console.log(res.data);
         onRefresh();
         setIsModalVisible(false);
-        Alert.alert("Thông báo 🎉", "Chức mừng bạn đã hoàn thành công việc này!");
+        Alert.alert("Thông báo 🎉", "Chúc mừng bạn đã hoàn thành công việc này!");
       }
     } catch (error) {
       console.log(error);
