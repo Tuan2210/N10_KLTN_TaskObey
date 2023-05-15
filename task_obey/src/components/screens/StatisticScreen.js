@@ -47,7 +47,7 @@ export default function StatisticScreen() {
       loadListNotFinishTasks(loginUserId);
       loadListFinishTasks(loginUserId)
     }
-    console.log(showEventFinishItem)
+    // console.log(showEventFinishItem)
     setDataTask([...showEventItem, ...showEventFinishItem])
     const result = setDayRenderOrders(dataTask) 
      setTotal(result);
@@ -60,6 +60,29 @@ export default function StatisticScreen() {
   
   const [viewModelStatic, setViewModelStatic] = useState("")
 
+  const [refreshing, setRefreshing] = useState(false);
+  const wait = (timeout) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeout);
+    });
+  };
+  const onRefresh = async () => {
+    setRefreshing(true);
+
+    try {
+      const res = await axios.get(`${url}/api/task/notFinishTasks/${id}`, {
+        timeout: 1000,
+      });
+      if (res.data.length === 0) console.log("no data task in list");
+      if (res.data.length > 0) {
+        // console.log(res.data);
+        setEventsNotFinish(res.data);
+        // console.log(eventsNotFinish)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   /////load all not finish tasks data
   const [eventsNotFinish, setEventsNotFinish] = useState([]);
   async function loadListNotFinishTasks(id) {
@@ -76,8 +99,22 @@ export default function StatisticScreen() {
     } catch (error) {
       console.log(error);
     }
+    await axios
+      .get(`${url}/api/task/finishTasks/${userId}`, { timeout: 1000 })
+      .then((res) => {
+        if (res.data.length > 0) {
+          // console.log(res.data)
+          setEventsFinish(res.data);
+        }
+      });
+    setDataTask([...showEventItem, ...showEventFinishItem])
+    const result = setDayRenderOrders(dataTask) 
+     setTotal(result);
+    const resultP1 = task3MonthsPriority(dataTask, 1)
+      setTaskPriority1(resultP1)   
+    wait(4000).then(() => setRefreshing(false));
   }
-
+ 
   const showEventItem = [];
   eventsNotFinish.forEach((evt) => {
     const start = moment(
