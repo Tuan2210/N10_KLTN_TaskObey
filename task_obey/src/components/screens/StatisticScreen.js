@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Animated, Dimensions, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Animated, Dimensions, Image, Platform, RefreshControl, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -46,7 +46,7 @@ export default function StatisticScreen() {
       setUserId(loginUserId);
       loadListNotFinishTasks(loginUserId);
       loadListFinishTasks(loginUserId)
-    }
+    }  
     // console.log(showEventFinishItem)
     setDataTask([...showEventItem, ...showEventFinishItem])
     const result = setDayRenderOrders(dataTask) 
@@ -70,7 +70,7 @@ export default function StatisticScreen() {
     setRefreshing(true);
 
     try {
-      const res = await axios.get(`${url}/api/task/notFinishTasks/${id}`, {
+      const res = await axios.get(`${url}/api/task/notFinishTasks/${userId}`, {
         timeout: 1000,
       });
       if (res.data.length === 0) console.log("no data task in list");
@@ -79,9 +79,19 @@ export default function StatisticScreen() {
         setEventsNotFinish(res.data);
         // console.log(eventsNotFinish)
       }
+      await axios
+      .get(`${url}/api/task/finishTasks/${userId}`, { timeout: 1000 })
+      .then((res) => {
+        if (res.data.length > 0) {
+          // console.log(res.data)
+          setEventsFinish(res.data);
+          setRefreshing(false);
+        }
+      });
     } catch (error) {
       console.log(error);
     }
+    wait(1000).then(() => setRefreshing(false))
   };
   /////load all not finish tasks data
   const [eventsNotFinish, setEventsNotFinish] = useState([]);
@@ -99,20 +109,6 @@ export default function StatisticScreen() {
     } catch (error) {
       console.log(error);
     }
-    await axios
-      .get(`${url}/api/task/finishTasks/${userId}`, { timeout: 1000 })
-      .then((res) => {
-        if (res.data.length > 0) {
-          // console.log(res.data)
-          setEventsFinish(res.data);
-        }
-      });
-    setDataTask([...showEventItem, ...showEventFinishItem])
-    const result = setDayRenderOrders(dataTask) 
-     setTotal(result);
-    const resultP1 = task3MonthsPriority(dataTask, 1)
-      setTaskPriority1(resultP1)   
-    wait(4000).then(() => setRefreshing(false));
   }
  
   const showEventItem = [];
@@ -443,6 +439,11 @@ export default function StatisticScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <RefreshControl
+        style={{ width: widthScreen, height: "80%" }}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+      >
     <View style={{flex: 1}}>
       <View
         style={{
@@ -514,7 +515,7 @@ export default function StatisticScreen() {
         {viewModelStatic === "Pie" && <PieChartScreen />}
         {viewModelStatic === "Chart" && <BarChartScreen />}
       </View>
-    </View>  
+    </View></RefreshControl>
     </SafeAreaView>
   );
 };
