@@ -48,11 +48,8 @@ export default function StatisticScreen() {
       loadListFinishTasks(loginUserId)
     }  
     // console.log(showEventFinishItem)
-    setDataTask([...showEventItem, ...showEventFinishItem])
-    const result = setDayRenderOrders(dataTask) 
-     setTotal(result);
-    const resultP1 = task3MonthsPriority(dataTask, 1)
-      setTaskPriority1(resultP1)
+    // setDataTask([...showEventItem, ...showEventFinishItem])
+    
   }, [currentRegisterUser, currentLoginUser]);
 
   const navigate = useNavigate();
@@ -189,7 +186,19 @@ export default function StatisticScreen() {
     });
   });
   
-  const [dataTask, setDataTask] = useState([])
+  // const [dataTask, setDataTask] = useState([])
+  const dataTask = [];
+  dataTask.push([showEventItem, showEventFinishItem]) //dataTask includes: [ arr[0]:showEventItem, arr[1]:showEventFinishItem ]
+  useEffect(() => {
+    // console.log(dataTask)
+
+    const result = setDayRenderOrders(dataTask) 
+    console.log(result)
+    //    setTotal(result);
+
+    //   const resultP1 = task3MonthsPriority(dataTask, 1)
+    //     setTaskPriority1(resultP1)
+  }, [dataTask])
 
   const [showLabels, setShowLabels] = useState(true);
   const [prevNumLabels, setPrevNumLabels] = useState(0);
@@ -197,6 +206,17 @@ export default function StatisticScreen() {
   const [total, setTotal] = useState([])
   const [totalW, setTotalW] = useState([]);
   const setDayRenderOrders = (tasks) => {
+    //check all data here
+    // tasks.forEach((task) => {
+    //   // console.log(task[0]) //list not finish
+      
+    //   // console.log(task[1]) //list finish
+    //   // console.log(task[1].status) //undefined
+    //   // task[1].forEach((t1) => {
+    //   //   console.log(t1.status) //status finish
+    //   // })
+    // })
+
     const currentDate = new Date();
     const threeMonthsAgo = new Date(currentDate.setMonth(currentDate.getMonth() - 2));
     threeMonthsAgo.setDate(1);
@@ -210,15 +230,22 @@ export default function StatisticScreen() {
       taskDate.setHours(0, 0, 0, 0);
   
       if (taskDate >= threeMonthsAgo && taskDate.getMonth() <= 4) {
-        if (task.status.toString() === "Hoàn thành") {
-          doneCount++;
-        } else { 
-          undoneCount++;
-        }
+        task[1].forEach((t1) => {
+          if (t1.status === "Hoàn thành") {
+            doneCount++;
+            // console.log(t1.status) //without condition if, it's console log output: status hoàn thành, ok
+          } 
+        })
+        task[0].forEach((t0) => {
+          if (t0.status === "Chưa hoàn thành") {
+            undoneCount++;
+            // console.log(undoneCount)
+          } 
+        })
       }
     });
   
-    return [doneCount, undoneCount];
+    return [doneCount, undoneCount]; // [0, 0]
   };
   /////
   const [taskPriority1, setTaskPriority1] = useState([])
