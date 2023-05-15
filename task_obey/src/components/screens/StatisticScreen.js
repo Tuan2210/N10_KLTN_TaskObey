@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Animated, Dimensions, Image, Platform, RefreshControl, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Animated, Dimensions, Image, Platform, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -189,22 +189,23 @@ export default function StatisticScreen() {
   // const [dataTask, setDataTask] = useState([])
   const dataTask = [];
   dataTask.push([showEventItem, showEventFinishItem]) //dataTask includes: [ arr[0]:showEventItem, arr[1]:showEventFinishItem ]
+  const [countTask, setCountTask] = useState([])
   useEffect(() => {
-    // console.log(dataTask)
+    const interval = setInterval(() => {
+      const result = setDayRenderOrders(dataTask) 
+      setCountTask(result) 
+    }, 3000);
+    return () => clearInterval(interval);
+    
+    // // console.log(dataTask)
 
-    const result = setDayRenderOrders(dataTask) 
-    console.log(result)
-    //    setTotal(result);
+    // console.log(result)
+    // //    setTotal(result);
+    
+    // //   const resultP1 = task3MonthsPriority(dataTask, 1)
+    // //     setTaskPriority1(resultP1)
+  }, [])
 
-    //   const resultP1 = task3MonthsPriority(dataTask, 1)
-    //     setTaskPriority1(resultP1)
-  }, [dataTask])
-
-  const [showLabels, setShowLabels] = useState(true);
-  const [prevNumLabels, setPrevNumLabels] = useState(0);
-
-  const [total, setTotal] = useState([])
-  const [totalW, setTotalW] = useState([]);
   const setDayRenderOrders = (tasks) => {
     //check all data here
     // tasks.forEach((task) => {
@@ -229,8 +230,7 @@ export default function StatisticScreen() {
       const taskDate = new Date(task.start);
       taskDate.setHours(0, 0, 0, 0);
   
-      if (taskDate >= threeMonthsAgo && taskDate.getMonth() <= 4) {
-        task[1].forEach((t1) => {
+      task[1].forEach((t1) => {
           if (t1.status === "Hoàn thành") {
             doneCount++;
             // console.log(t1.status) //without condition if, it's console log output: status hoàn thành, ok
@@ -242,7 +242,6 @@ export default function StatisticScreen() {
             // console.log(undoneCount)
           } 
         })
-      }
     });
   
     return [doneCount, undoneCount]; // [0, 0]
@@ -293,58 +292,94 @@ export default function StatisticScreen() {
     return result
   };
   const data = useMemo(() => ({
-    labels: ['Hoàn thành', 'Chưa hoàn thành',],
-    datasets: [
-      {
-        data: total,
-      },
-    ],
-  }), [total]);  
+    labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'],
+    datasets: [{
+      data: [20, 45, 28, 80, 99, 43, 22, 55, 67, 77, 35, 65, 88, 45, 22, 90, 33, 27, 52, 67, 38, 55, 77, 29, 12, 53, 67, 88, 99, 25, 48]
+    }]
+    // datasets: [
+    //   {
+    //     data: dataTask,
+    //   },
+    // ],
+  }), []);  
   function BarChartScreen() {
-    const moment = require('moment')
-    console.log(showEventItem)
-    console.log("ngang chan")
-    console.log(showEventFinishItem)
-    const months = showEventItem.map((item) => moment(item.initialDate).format('MMMM'))
+    // const moment = require('moment')
+    // console.log(showEventItem)
+    // console.log("ngang chan")
+    // console.log(showEventFinishItem)
+    // const months = showEventItem.map((item) => moment(item.initialDate).format('MMMM'))
 
-    const uniqueMonths = months.filter((month, index, self) => {
-      const currentMonth = moment().month(month);
-      const previousMonth = currentMonth.clone().subtract(2, 'months');
-      const nextMonth = currentMonth.clone().add(2, 'months');
+    // const uniqueMonths = months.filter((month, index, self) => {
+    //   const currentMonth = moment().month(month);
+    //   const previousMonth = currentMonth.clone().subtract(2, 'months');
+    //   const nextMonth = currentMonth.clone().add(2, 'months');
     
-      return (
-        index === self.indexOf(month) &&
-        !self.some((m, i) => {
-          if (i !== index) {
-            const otherMonth = moment().month(m);
-            return (
-              otherMonth.isBetween(previousMonth, nextMonth, 'month', '[]') ||
-              otherMonth.isSame(currentMonth, 'month')
-            );
-          }
-          return false;
-        })
-      );
-    });
+    //   return (
+    //     index === self.indexOf(month) &&
+    //     !self.some((m, i) => {
+    //       if (i !== index) {
+    //         const otherMonth = moment().month(m);
+    //         return (
+    //           otherMonth.isBetween(previousMonth, nextMonth, 'month', '[]') ||
+    //           otherMonth.isSame(currentMonth, 'month')
+    //         );
+    //       }
+    //       return false;
+    //     })
+    //   );
+    // });
   
-    uniqueMonths.sort((a, b) => moment().month(a) - moment().month(b));
-    console.log(uniqueMonths);
+    // uniqueMonths.sort((a, b) => moment().month(a) - moment().month(b));
+    // console.log(uniqueMonths);
 
-    useEffect(() => {
-      if (uniqueMonths.length === 1) {
-        setShowLabels(false);
-      } else if (prevNumLabels === 1 && uniqueMonths.length > 1) {
-        setShowLabels(true);
-      }
-      setPrevNumLabels(uniqueMonths.length);
-    }, [uniqueMonths]);
+    // useEffect(() => {
+    //   if (uniqueMonths.length === 1) {
+    //     setShowLabels(false);
+    //   } else if (prevNumLabels === 1 && uniqueMonths.length > 1) {
+    //     setShowLabels(true);
+    //   }
+    //   setPrevNumLabels(uniqueMonths.length);
+    // }, [uniqueMonths]);
   
-
     return(
+    <View style ={{width: '95%', flexDirection:'column' }}>
+      <View style={styles.infoRow}>
+        <View style={{flex:0.5, justifyContent: 'center'}}>
+          <Text style={styles.titleLabel}>Tháng:</Text>
+        </View>
+        <Picker
+          style={{
+            width: "30%",
+            backgroundColor: "#BCF4F5",
+            // marginLeft: "3%",
+          }}
+          selectedValue={selectedMonth}
+          onValueChange={handleMonthChange}>
+          {months.map((month) => (
+            <Picker.Item key={month} label={month} value={month} />
+          ))}
+        </Picker>
+        <View style={{flex:0.5, justifyContent: 'center'}}>
+          <Text style={styles.titleLabel}>Năm:</Text>
+        </View>
+        <Picker
+          style={{
+            width: "35%",
+            backgroundColor: "#BCF4F5",
+            // marginLeft: "3%",
+          }}
+          selectedValue={selectedYear}
+          onValueChange={handleYearChange}>
+          {years.map((year) => (
+            <Picker.Item key={year} label={year} value={year} />
+          ))}
+        </Picker>
+      </View>
+      <ScrollView horizontal={true}>
       <BarChart
       data={data}
-      width={400}
-      height={500}
+      width={800}
+      height={450}
       chartConfig={{
         backgroundColor: '#8009CBD0',
         backgroundGradientFrom: '#8009CBD0',
@@ -356,45 +391,49 @@ export default function StatisticScreen() {
           borderRadius: 50,
         }
       }} 
-      verticalLabelRotation={50}
+      verticalLabelRotation={0}
       showValues={true}
       showBarTops={true}
       fromZero={true}
-      axis={{
-        fromZero: true,
-        inverted: true,
-        showAxis: false,
-        showGrid: false,
-        showLabels: false,
-        paddingRight: 0
-      }}
-      axisRight={{
-        showAxis: true,
-        showGrid: false,
-        showLabels: true,
-        renderTicks: () => <View />,
-        label: uniqueMonths,
-        labelStyle: {
-          color: 'black',
-          fontWeight: 'bold'
-        }
-      }}
-      withVerticalLabels={showLabels} 
+      // axis={{
+      //   fromZero: true,
+      //   inverted: true,
+      //   showAxis: false,
+      //   showGrid: false,
+      //   showLabels: false,
+      //   paddingRight: 0
+      // }}
+      // axisRight={{
+      //   showAxis: true,
+      //   showGrid: false,
+      //   showLabels: true,
+      //   renderTicks: () => <View />,
+      //   // label: uniqueMonths,
+      //   labelStyle: {
+      //     color: 'black',
+      //     fontWeight: 'bold'
+      //   }
+      // }}
+      // withVerticalLabels={showLabels} 
       >
-      </BarChart>
+      </BarChart></ScrollView></View>
     )
   }
   const dataPie = [
     {
     name: "Hoàn thành", 
-    population: total[0],
+    population: 
+    // 10,
+    countTask[0],
     color: "#09CBD0",
     legendFontColor: "#7F7F7F",
     legendFontSize: 15
   }, 
   {
     name: "Chưa hoàn thành",
-    population: total[1], 
+    population: 
+    // 11,
+    countTask[1], 
     color: "#FF4040",
     legendFontColor: "#7F7F7F",
     legendFontSize: 15
@@ -424,12 +463,69 @@ export default function StatisticScreen() {
     legendFontColor: "#7F7F7F",
     legendFontSize: 15
   }]
+
+  const months = ["T1","T2","T3","T4","T5","T7","T8","T9","T10","T11","T12", ]
+  const years = ["2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030", ]
   
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedYear, setSelectedYear] = useState('2023');
+
+  const handleMonthChange = (month) => {
+    setSelectedMonth(month);
+  };
+  const handleYearChange = (year) => {
+    setSelectedYear(year);
+  };
   function PieChartScreen() {
     return(  
-    <View style ={{width: '100%', height: 300, flexDirection:'column' }}>
-      <Text style={{ marginLeft: '10%',color: "#09CBD0" }}>Tổng công việc trong 3 tháng gần nhất:</Text>
-      <View>
+    <View style ={{width: '100%', height: '50%', flexDirection:'column' }}>
+      <View style={styles.infoRow}>
+        <View style={{flex:0.45, justifyContent: 'center'}}>
+          <Text style={styles.titleLabel}>Tháng:</Text>
+        </View>
+        <Picker
+          style={{
+            width: "30%",
+            backgroundColor: "#BCF4F5",
+            // marginLeft: "3%",
+          }}
+          selectedValue={selectedMonth}
+          onValueChange={handleMonthChange}>
+          {months.map((month) => (
+            <Picker.Item key={month} label={month} value={month} />
+          ))}
+        </Picker>
+        <View style={{flex:0.38, justifyContent: 'center'}}>
+          <Text style={styles.titleLabel}>Năm:</Text>
+        </View>
+        <Picker
+          style={{
+            width: "30%",
+            backgroundColor: "#BCF4F5",
+            // marginLeft: "3%",
+          }}
+          selectedValue={selectedYear}
+          onValueChange={handleYearChange}>
+          {years.map((year) => (
+            <Picker.Item key={year} label={year} value={year} />
+          ))}
+        </Picker>
+      </View>
+      {/* <View
+        style={{
+          flex: 0.1,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+          marginTop: "10%"
+        }}
+      >
+        <View style={{flex: 0.2}}>
+              <Text style={{ color: "#09CBD0" }}>Chọn loại thống kê:</Text>
+        </View>
+        
+      </View> */}
+      <View style={{flex: 0.5}}>
         <PieChart 
             data={dataPie}
             width={480}
@@ -438,14 +534,11 @@ export default function StatisticScreen() {
             accessor={"population"}
             backgroundColor={"transparent"}
             paddingLeft={"15"}
-            center={[0, 5]}
+            center={[25, 0]}
             absolute
             >
-  
           </PieChart></View>
-      
-            
-      <Text style={{ marginLeft: '10%',color: "#09CBD0" }}>Theo mức độ ưu tiên 1:</Text>
+      {/* <Text style={{ marginLeft: '10%',color: "#09CBD0" }}>Theo mức độ ưu tiên 1:</Text>
       <View> 
         <PieChart 
             data={dataPiePriority1}
@@ -459,100 +552,70 @@ export default function StatisticScreen() {
             absolute
             >
   
-          </PieChart></View>    
+          </PieChart></View>     */}
       </View>
     )
   }
+  const [showCharts, setShowCharts] = useState(false);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setShowCharts(true);
+    }, 2000);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <RefreshControl
         style={{ width: widthScreen, height: "80%" }}
         refreshing={refreshing}
-        onRefresh={onRefresh}
-      >
-    <View style={{flex: 1}}>
-      <View
-        style={{
-          flex: 0.15,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-          marginTop: "10%"
-        }}>
-          <View style={{flex: 0.4}}>
-            <Text style={{ color: "#09CBD0" }}>Loại biểu đồ:</Text>
+        onRefresh={onRefresh}>
+          <View style={styles.form}>
+            <Text style={styles.tittle}>Thống kê công việc</Text>  
+            <View style={styles.infoRow}>
+              <Picker
+                style={{
+                  width: "95%",
+                  backgroundColor: "#BCF4F5",
+                  marginLeft: "3%",
+                }}
+                placeholder="Chọn loại biểu đồ"
+                selectedValue={viewModelStatic || "Chọn loại biểu đồ"}
+                onValueChange={(itemValue, itemIndex) => 
+                  setViewModelStatic(itemValue)
+                  }>
+                    <Picker.Item label="Chọn loại biểu đồ" value=""/>
+                    <Picker.Item style={{fontSize: 18}}
+                      label="Tổng số công việc theo tháng"
+                      value={"Pie"}/>
+                    <Picker.Item style={{fontSize: 18}} 
+                      label="Số ngày trong tháng"
+                      value={"Chart"}/>  
+              </Picker>
+            </View>
+            <View style={styles.form}>
+              {showCharts && (
+              <>
+                {viewModelStatic === "Pie" && <PieChartScreen />}
+                {viewModelStatic === "Chart" && <BarChartScreen />}
+              </>
+            )}
+            </View>
           </View>
-          <View style={{flex: 0.6,flexDirection: 'row', alignSelf:'center', justifyContent:'flex-start'}}>
-            <Picker
-              style={{
-                width: "98%",
-                backgroundColor: "#BCF4F5",
-                marginLeft: "3%",
-              }}
-              placeholder="Chọn loại biểu đồ"
-              selectedValue={viewModelStatic || "Chọn loại biểu đồ"}
-              onValueChange={(itemValue, itemIndex) => 
-                setViewModelStatic(itemValue)
-                }>
-                  <Picker.Item label="Chọn loại biểu đồ" value=""/>
-                  <Picker.Item style={{fontSize: 18}}
-                    label="Tròn"
-                    value={"Pie"}/>
-                  <Picker.Item style={{fontSize: 18}} 
-                    label="Cột"
-                    value={"Chart"}/>  
-            </Picker>
-          </View>
-      </View>
-      {/* <View
-        style={{
-          flex: 0.15,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-around'
-        }}>
-          <View style={{flex: 0.4}}>
-            <Text style={{ color: "#09CBD0" }}>Mức độ quan trọng:</Text>
-          </View>
-          <View style={{flex: 0.6,flexDirection: 'row', alignSelf:'center', justifyContent:'flex-start'}}>
-            <Picker
-              style={{
-                width: "98%",
-                backgroundColor: "#BCF4F5",
-                marginLeft: "3%",
-              }}
-              selectedValue={viewModelStatic}
-              onValueChange={(itemValue, itemIndex) => 
-                setViewModelStatic(itemValue)
-                }>
-                  <Picker.Item style={{fontSize: 18}}
-                    label="1"
-                    value={"1"}/>
-                  <Picker.Item style={{fontSize: 18}} 
-                    label="2"
-                    value={"2"}/>
-                  <Picker.Item style={{fontSize: 18}} 
-                    label="3"
-                    value={"3"}/>  
-            </Picker>
-          </View>
-      </View> */}
-      <View style={{alignSelf: 'center', marginTop: 30}}>
-        {viewModelStatic === "Pie" && <PieChartScreen />}
-        {viewModelStatic === "Chart" && <BarChartScreen />}
-      </View>
-    </View></RefreshControl>
+      </RefreshControl>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    width: '98%',
-    height: '100%',
-    alignSelf: "center",  
-    justifyContent: 'center',
+    flex: 1,
+    // alignSelf: "center",  
+    // justifyContent: 'space-evenly',
     backgroundColor: 'white'
   },
   btnPrevNext: {
@@ -562,5 +625,29 @@ const styles = StyleSheet.create({
     width: "15%",
     backgroundColor: "#09CBD0",
     borderRadius: 10,
+  },
+  tittle: {
+    fontSize: 20,
+    margin: "2%",
+    fontWeight: "700",
+    textAlign: "center",
+    color: "#09CBD0",
+  },
+  titleLabel: {
+    // fontSize: 20,
+    margin: 10,
+    fontWeight: "bold",
+    color: "#09CBD0",
+  },
+  form: {
+    flex: 0.99,
+    alignSelf: "center",
+  },
+  infoRow: {
+    // flex: 0.1099,
+    flexDirection: "row",
+    // justifyContent: "space-around",
+    margin: "4.8%",
+    // height: "35%",
   },
 });
