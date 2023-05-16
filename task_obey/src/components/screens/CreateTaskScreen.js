@@ -622,6 +622,7 @@ export default function CreateTaskScreen() {
               textAlignVertical: "top",
               height: "15%",
               marginTop: "3%",
+              marginBottom: '3%',
               borderRadius: 10,
               borderColor: "gray",
             },
@@ -640,6 +641,7 @@ export default function CreateTaskScreen() {
             width: "100%",
             height: "8.5%",
             justifyContent: "space-between",
+            marginBottom: heightScreen*0.01,
           }}
         >
           <View
@@ -694,7 +696,8 @@ export default function CreateTaskScreen() {
         <View
           style={[
             styles.viewTwoColumns,
-            { height: "8.5%", alignItems: "center" },
+            { height: "8.5%", alignItems: "center",
+            marginBottom: heightScreen*0.015, },
           ]}
         >
           <Text style={{ color: "#09CBD0" }}>Ưu tiên:</Text>
@@ -725,7 +728,8 @@ export default function CreateTaskScreen() {
         <View
           style={[
             styles.viewTwoColumns,
-            { height: "8.5%", alignItems: "center" },
+            { height: "8.5%", alignItems: "center",
+            marginBottom: heightScreen*0.015, },
           ]}
         >
           <Text style={{ color: "#09CBD0" }}>Đặt lặp lại:</Text>
@@ -762,7 +766,8 @@ export default function CreateTaskScreen() {
         <View
           style={[
             styles.viewTwoColumns,
-            { height: "8.5%", alignItems: "center" },
+            { height: "8.5%", alignItems: "center",
+            marginBottom: heightScreen*0.015, },
           ]}
         >
           <Text style={{ color: "#09CBD0" }}>Đặt lời nhắc:</Text>
@@ -826,7 +831,7 @@ export default function CreateTaskScreen() {
               marginTop: "-15%",
             }}
           >
-            <View style={[styles.viewTwoColumns, { alignSelf: "center" }]}>
+            <View style={[styles.viewTwoColumns, { alignSelf: "center", marginBottom: heightScreen*0.015, }]}>
               {/* <View style={{flexDirection: 'row', width: '46%', justifyContent: "space-between", alignItems: "center"}}> */}
               <View style={styles.displayDateTime}>
                 <Text style={{ fontSize: 18 }}>{displayStartDate}</Text>

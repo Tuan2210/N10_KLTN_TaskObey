@@ -191,11 +191,11 @@ export default function StatisticScreen() {
   dataTask.push([showEventItem, showEventFinishItem]) //dataTask includes: [ arr[0]:showEventItem, arr[1]:showEventFinishItem ]
   const [countTask, setCountTask] = useState([])
   useEffect(() => {
-    const interval = setInterval(() => {
+    // const interval = setInterval(() => {
       const result = setDayRenderOrders(dataTask) 
       setCountTask(result) 
-    }, 3000);
-    return () => clearInterval(interval);
+    // }, 3000);
+    // return () => clearInterval(interval);
     
     // // console.log(dataTask)
 
@@ -343,7 +343,7 @@ export default function StatisticScreen() {
   
     return(
     <View style ={{width: '95%', flexDirection:'column' }}>
-      <View style={styles.infoRow}>
+      <View style={[styles.infoRow, {width: widthScreen * 0.85}]}>
         <View style={{flex:0.5, justifyContent: 'center'}}>
           <Text style={styles.titleLabel}>Tháng:</Text>
         </View>
@@ -379,7 +379,7 @@ export default function StatisticScreen() {
       <BarChart
       data={data}
       width={800}
-      height={450}
+      height={heightScreen * 0.5}
       chartConfig={{
         backgroundColor: '#8009CBD0',
         backgroundGradientFrom: '#8009CBD0',
@@ -464,7 +464,7 @@ export default function StatisticScreen() {
     legendFontSize: 15
   }]
 
-  const months = ["T1","T2","T3","T4","T5","T7","T8","T9","T10","T11","T12", ]
+  const months = ["1","2","3","4","5", "6", "7","8","9","10","11","12", ]
   const years = ["2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030", ]
   
   const [selectedMonth, setSelectedMonth] = useState('');
@@ -479,7 +479,7 @@ export default function StatisticScreen() {
   function PieChartScreen() {
     return(  
     <View style ={{width: '100%', height: '50%', flexDirection:'column' }}>
-      <View style={styles.infoRow}>
+      <View style={[styles.infoRow, {width: widthScreen * 0.85, alignSelf: 'center'}]}>
         <View style={{flex:0.45, justifyContent: 'center'}}>
           <Text style={styles.titleLabel}>Tháng:</Text>
         </View>
@@ -576,12 +576,11 @@ export default function StatisticScreen() {
         onRefresh={onRefresh}>
           <View style={styles.form}>
             <Text style={styles.tittle}>Thống kê công việc</Text>  
-            <View style={styles.infoRow}>
+            <View style={[styles.infoRow, {width: widthScreen * 0.9, alignSelf: 'center'}]}>
               <Picker
                 style={{
-                  width: "95%",
+                  width: '100%',
                   backgroundColor: "#BCF4F5",
-                  marginLeft: "3%",
                 }}
                 placeholder="Chọn loại biểu đồ"
                 selectedValue={viewModelStatic || "Chọn loại biểu đồ"}
@@ -635,7 +634,7 @@ const styles = StyleSheet.create({
   },
   titleLabel: {
     // fontSize: 20,
-    margin: 10,
+    margin: 5,
     fontWeight: "bold",
     color: "#09CBD0",
   },

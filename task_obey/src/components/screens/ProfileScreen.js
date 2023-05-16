@@ -167,13 +167,13 @@ export default function ProfileScreen() {
             editable={false}
             // placeholder="Số điện thoại"
             value={userInfo.phoneNumber}
-            style={styles.StyleTextInput}
+            style={[styles.StyleTextInput, {height: heightScreen* 0.07}]}
           />
         </View>
         <View style={styles.infoRow}>
           <TextInput
             placeholder="Tên tài khoản"
-            style={styles.StyleTextInput}
+            style={[styles.StyleTextInput, {height: heightScreen* 0.07}]}
             numberOfLines={1}
             onChangeText={(txt) => setTxtUsername(txt)}
             value={txtUsername}
@@ -182,7 +182,7 @@ export default function ProfileScreen() {
         <View style={styles.infoRow}>
           <TextInput
             placeholder="Mật khẩu"
-            style={[styles.StyleTextInput, { marginLeft: "-3.3%" }]}
+            style={[styles.StyleTextInput, { marginLeft: "-3.3%", height: heightScreen* 0.07 }]}
             numberOfLines={1}
             onChangeText={(txt) => setTxtPW(txt.trim())}
             value={txtPW}
@@ -229,7 +229,7 @@ export default function ProfileScreen() {
           ) : (
             <View style={{ height: "40%" }}>
               <TouchableOpacity
-                style={styles.btns}
+                style={[styles.btns, {height: heightScreen * 0.1, width: widthScreen * 0.65}]}
                 onPress={() => {
                   if (
                     txtUsername.length === 0 ||
@@ -278,9 +278,9 @@ export default function ProfileScreen() {
               />
             </View>
           ) : (
-            <View style={{ height: "40%" }}>
+            <View style={{ height: "40%", marginTop: heightScreen * 0.05 }}>
               <TouchableOpacity
-                style={styles.btns}
+                style={[styles.btns, {height: heightScreen * 0.1, width: widthScreen * 0.65}]}
                 onPress={() => {
                   if (txtPW.length === 0 || txtPW === "" || txtPW === null)
                     Alert.alert("Thông báo", "Vui lòng nhập mật khẩu!");
