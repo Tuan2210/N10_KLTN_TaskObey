@@ -112,7 +112,7 @@ export default function ListScreen() {
 
     try {
       const res = await axios.get(`${url}/api/task/notFinishTasks/${userId}`, {
-        timeout: 4000,
+        timeout: 2500,
       });
       if (res.data.length === 0) console.log("no data task in list");
       if (res.data.length > 0) {
@@ -202,7 +202,7 @@ export default function ListScreen() {
   async function loadListNotFinishTasks(id) {
     try {
       const res = await axios.get(`${url}/api/task/notFinishTasks/${id}`, {
-        timeout: 4000,
+        timeout: 2000,
       });
       if (res.data.length === 0) console.log("no data task in list");
       if (res.data.length > 0) {
@@ -536,16 +536,23 @@ export default function ListScreen() {
   /////handle update status task
   async function handleUpdateStatusTask(task_id) {
     try {
-      const currentFinishDateTime = moment().utcOffset(7).format("D/M/YYYY, HH [giờ] mm [phút]");
+      const currentFinishDateTime = moment()
+        .utcOffset(7)
+        .format("D/M/YYYY, HH [giờ] mm [phút]");
       const res = await axios.put(
-        `${url}/api/task/updateStatusTask/${task_id}`, {finishDateTime: currentFinishDateTime}, { timeout: 4000 }
+        `${url}/api/task/updateStatusTask/${task_id}`,
+        { finishDateTime: currentFinishDateTime },
+        { timeout: 4000 }
       );
       if (res.data.length === 0) console.log("no data finish task");
       if (res.data.length > 0) {
         console.log(res.data);
         onRefresh();
         setIsModalVisible(false);
-        Alert.alert("Thông báo 🎉", "Chúc mừng bạn đã hoàn thành công việc này!");
+        Alert.alert(
+          "Thông báo 🎉",
+          "Chúc mừng bạn đã hoàn thành công việc này!"
+        );
       }
     } catch (error) {
       console.log(error);
