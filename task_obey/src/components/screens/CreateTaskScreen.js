@@ -1137,7 +1137,7 @@ export default function CreateTaskScreen() {
               justifyContent: "center",
             }}
           >
-            <Text style={{ alignSelf: "center" }}>Đang khởi tạo</Text>
+            <Text style={{ alignSelf: "center" }}>Hệ thống đang khởi tạo</Text>
             <Image
               source={require("../../../assets/loading-dots.gif")}
               style={{
