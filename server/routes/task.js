@@ -23,4 +23,6 @@ router.put("/updateStatusTask/:taskId", taskController.updateStatusTask);
 //GET ALL TASKS FINISH BY USERID
 router.get("/finishTasks/:userId", taskController.getFinishTasksByUserId);
 
+router.get("/countTaskByTheDay/:userId", taskController.countTaskByTheDay);
+
 module.exports = router;

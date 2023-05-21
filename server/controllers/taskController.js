@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const { Task, TaskDetail, Schedule } = require("../models");
 
+const moment = require("moment");
+
 const taskController = {
   //ADD TASK
   addTask: async (req, res) => {
@@ -283,7 +285,9 @@ const taskController = {
       //   // });
       // });
 
-      const resTaskDetail = await TaskDetail.find({ taskId: req.params.taskId });
+      const resTaskDetail = await TaskDetail.find({
+        taskId: req.params.taskId,
+      });
       res.status(200).json([resTask, resTaskDetail]);
     } catch (error) {
       res.status(500).json(error);
@@ -301,6 +305,82 @@ const taskController = {
         .exec(function (err, tasks) {
           if (err) res.status(500).json(err);
           res.status(200).json(tasks);
+        });
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+
+  //COUNT NOT-FINISH + FINISH TASK BY THE DAY
+  countTaskByTheDay: async (req, res) => {
+    try {
+      await Task.find({ userId: req.params.userId })
+        .populate({ path: "taskDetailId", populate: { path: "scheduleId" } })
+        .exec(async function (err, tasks) {
+          if (err) res.status(500).json(err);
+          // res.status(200).json(tasks);
+
+          const arrNotFinishByDate = [];
+          const arrFinishByDate = [];
+          tasks.forEach((task) => {
+            ////not finish
+            if (task.status === "Chưa hoàn thành") {
+              const startDate = moment(
+                task.taskDetailId.startTime,
+                "D/M/YYYY, HH [giờ] mm [phút]"
+              );
+              const formattedDate = startDate.format("D/M/YYYY");
+
+              if (arrNotFinishByDate[formattedDate]) {
+                arrNotFinishByDate[formattedDate]++;
+              } else {
+                arrNotFinishByDate[formattedDate] = 1;
+              }
+            }
+
+            ////finish
+            if (task.status === "Hoàn thành") {
+              const startDate = moment(
+                task.taskDetailId.startTime,
+                "D/M/YYYY, HH [giờ] mm [phút]"
+              );
+              const formattedDate = startDate.format("D/M/YYYY");
+
+              if (arrFinishByDate[formattedDate]) {
+                arrFinishByDate[formattedDate]++;
+              } else {
+                arrFinishByDate[formattedDate] = 1;
+              }
+            }
+          });
+          const countNotFinishByDate = Object.values(arrNotFinishByDate);
+          const countFinishByDate = Object.values(arrFinishByDate);
+          // console.log("CHT theo ngày", countNotFinishByDate);
+          // console.log("HT theo ngày", countFinishByDate);
+
+          const resultArray = [];
+          const dates = Object.keys(countNotFinishByDate);
+          if (
+            countNotFinishByDate.every((key) => countFinishByDate.includes(key))
+          ) {
+            // console.log("same key");
+            dates.forEach((date) => {
+              //   console.log(countFinishByDate[date]); //show values
+              if (countNotFinishByDate[date] !== undefined) {
+                resultArray.push(countNotFinishByDate[date]);
+              } else {
+                resultArray.push(0);
+              }
+
+              if (countFinishByDate[date] !== undefined) {
+                resultArray.push(countFinishByDate[date]);
+              } else {
+                resultArray.push(0);
+              }
+            });
+          }
+          // console.log(resultArray);
+          res.status(200).json(resultArray);
         });
     } catch (error) {
       res.status(500).json(error);
