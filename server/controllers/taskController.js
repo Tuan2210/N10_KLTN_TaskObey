@@ -323,23 +323,32 @@ const taskController = {
           const arrNotFinishByDate = [];
           const arrFinishByDate = [];
           tasks.forEach((task) => {
-            ////not finish
-            if (task.status === "Chưa hoàn thành") {
-              const startDate = moment(task.taskDetailId.startTime, "D/M/YYYY");
-              if (arrNotFinishByDate[startDate]) {
-                arrNotFinishByDate[startDate]++;
-              } else {
-                arrNotFinishByDate[startDate] = 1;
+            const startDate = moment(task.taskDetailId.startTime, "D/M/YYYY");
+            const dayMonthYear = startDate.format("D/M/YYYY");
+            if (
+              dayMonthYear ===
+              req.params.numberOfDay +
+                "/" +
+                req.params.numberOfMonth +
+                "/" +
+                req.params.numberOfYear
+            ) {
+              ////not finish
+              if (task.status === "Chưa hoàn thành") {
+                if (arrNotFinishByDate[startDate]) {
+                  arrNotFinishByDate[startDate]++;
+                } else {
+                  arrNotFinishByDate[startDate] = 1;
+                }
               }
-            }
 
-            ////finish
-            if (task.status === "Hoàn thành") {
-              const startDate = moment(task.taskDetailId.startTime, "D/M/YYYY");
-              if (arrFinishByDate[startDate]) {
-                arrFinishByDate[startDate]++;
-              } else {
-                arrFinishByDate[startDate] = 1;
+              ////finish
+              if (task.status === "Hoàn thành") {
+                if (arrFinishByDate[startDate]) {
+                  arrFinishByDate[startDate]++;
+                } else {
+                  arrFinishByDate[startDate] = 1;
+                }
               }
             }
           });
@@ -350,25 +359,25 @@ const taskController = {
 
           const resultArray = [];
           const dates = Object.keys(countNotFinishByDate);
-          if (
-            countNotFinishByDate.every((key) => countFinishByDate.includes(key))
-          ) {
-            // console.log("same key");
-            dates.forEach((date) => {
-              //   console.log(countFinishByDate[date]); //show values
-              if (countNotFinishByDate[date] !== undefined) {
-                resultArray.push(countNotFinishByDate[date]);
-              } else {
-                resultArray.push(0);
-              }
+          // if (
+          //   countNotFinishByDate.every((key) => countFinishByDate.includes(key))
+          // ) {
+          // console.log("same key");
+          dates.forEach((date) => {
+            //   console.log(countFinishByDate[date]); //show values
+            if (countNotFinishByDate[date] !== undefined) {
+              resultArray.push(countNotFinishByDate[date]);
+            } else {
+              resultArray.push(0);
+            }
 
-              if (countFinishByDate[date] !== undefined) {
-                resultArray.push(countFinishByDate[date]);
-              } else {
-                resultArray.push(0);
-              }
-            });
-          }
+            if (countFinishByDate[date] !== undefined) {
+              resultArray.push(countFinishByDate[date]);
+            } else {
+              resultArray.push(0);
+            }
+          });
+          // }
           // console.log(resultArray);
           res.status(200).json(resultArray);
         });
@@ -376,6 +385,117 @@ const taskController = {
       res.status(500).json(error);
     }
   },
+
+  //COUNT NOT-FINISH + FINISH TASK BY THE MONTH
+  countTaskByTheMonth: async (req, res) => {
+    try {
+      await Task.find({ userId: req.params.userId })
+        .populate({ path: "taskDetailId", populate: { path: "scheduleId" } })
+        .exec(async function (err, tasks) {
+          if (err) res.status(500).json(err);
+
+          const countNotFinishByMonth = [];
+          const countFinishByMonth = [];
+
+          tasks.forEach((task) => {
+            const startDate = moment(task.taskDetailId.startTime, "D/M/YYYY");
+            const monthAndYear = startDate.format("M/YYYY");
+            const monthKey = startDate.format("M");
+            // console.log(monthKey);
+            if (
+              monthAndYear ===
+              req.params.numberOfMonth + "/" + req.params.numberOfYear
+            ) {
+              if (task.status === "Chưa hoàn thành") {
+                if (countNotFinishByMonth[monthKey]) {
+                  countNotFinishByMonth[monthKey]++;
+                } else {
+                  countNotFinishByMonth[monthKey] = 1;
+                }
+              }
+              if (task.status === "Hoàn thành") {
+                if (countFinishByMonth[monthKey]) {
+                  countFinishByMonth[monthKey]++;
+                } else {
+                  countFinishByMonth[monthKey] = 1;
+                }
+              }
+            }
+          });
+          // const countNotFinish = Object.values(countNotFinishByMonth);
+          // const countFinish = Object.values(countFinishByMonth);
+          // console.log("CHT theo tháng", countNotFinish);
+          // console.log("HT theo tháng", countFinish);
+
+          const resultArray = [];
+          const months = Object.keys(countNotFinishByMonth);
+
+          months.forEach((month) => {
+            const notFinishCount = countNotFinishByMonth[month] || 0;
+            const finishCount = countFinishByMonth[month] || 0;
+            resultArray.push(notFinishCount);
+            resultArray.push(finishCount);
+          });
+
+          res.status(200).json(resultArray);
+        });
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+
+  //COUNT NOT-FINISH + FINISH TASK BY THE MONTH
+  // countTaskByTheYear: async (req, res) => {
+  //   try {
+  //     await Task.find({ userId: req.params.userId })
+  //       .populate({ path: "taskDetailId", populate: { path: "scheduleId" } })
+  //       .exec(async function (err, tasks) {
+  //         if (err) res.status(500).json(err);
+
+  //         const countNotFinishByYear = [];
+  //         const countFinishByYear = [];
+
+  //         tasks.forEach((task) => {
+  //           const startDate = moment(task.taskDetailId.startTime, "D/M/YYYY");
+  //           const yearKey = startDate.format("YYYY");
+
+  //           if (task.status === "Chưa hoàn thành") {
+  //             if (countNotFinishByYear[yearKey]) {
+  //               countNotFinishByYear[yearKey]++;
+  //             } else {
+  //               countNotFinishByYear[yearKey] = 1;
+  //             }
+  //           }
+
+  //           if (task.status === "Hoàn thành") {
+  //             if (countFinishByYear[yearKey]) {
+  //               countFinishByYear[yearKey]++;
+  //             } else {
+  //               countFinishByYear[yearKey] = 1;
+  //             }
+  //           }
+  //         });
+  //         // const countNotFinish = Object.values(countNotFinishByYear);
+  //         // const countFinish = Object.values(countFinishByYear);
+  //         // console.log("CHT theo năm", countNotFinish);
+  //         // console.log("HT theo năm", countFinish);
+
+  //         const resultArray = [];
+  //         const years = Object.keys(countNotFinishByYear);
+
+  //         years.forEach((year) => {
+  //           const notFinishCount = countNotFinishByYear[year] || 0;
+  //           const finishCount = countFinishByYear[year] || 0;
+  //           resultArray.push(notFinishCount);
+  //           resultArray.push(finishCount);
+  //         });
+
+  //         res.status(200).json(resultArray);
+  //       });
+  //   } catch (error) {
+  //     res.status(500).json(error);
+  //   }
+  // },
 };
 
 module.exports = taskController;

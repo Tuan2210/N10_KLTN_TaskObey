@@ -23,6 +23,13 @@ router.put("/updateStatusTask/:taskId", taskController.updateStatusTask);
 //GET ALL TASKS FINISH BY USERID
 router.get("/finishTasks/:userId", taskController.getFinishTasksByUserId);
 
-router.get("/countTaskByTheDay/:userId", taskController.countTaskByTheDay);
+//COUNT NOT-FINISH + FINISH TASK BY THE DAY
+router.get("/countTaskByTheDay/:userId/:numberOfDay/:numberOfMonth/:numberOfYear", taskController.countTaskByTheDay);
+
+//COUNT NOT-FINISH + FINISH TASK BY THE MONTH
+router.get("/countTaskByTheMonth/:userId/:numberOfMonth/:numberOfYear", taskController.countTaskByTheMonth);
+
+//COUNT NOT-FINISH + FINISH TASK BY THE YEAR
+// router.get("/countTaskByTheYear/:userId", taskController.countTaskByTheYear);
 
 module.exports = router;

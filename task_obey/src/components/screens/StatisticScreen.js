@@ -42,12 +42,14 @@ export default function StatisticScreen() {
       loadListNotFinishTasks(registerUserId);
       loadListFinishTasks(registerUserId)
       loadDataCountTasksByDay(registerUserId);
+      loadDataCountTasksByMonth(registerUserId);
     }
     if (!currentRegisterUser && currentLoginUser) {
       setUserId(loginUserId);
       loadListNotFinishTasks(loginUserId);
       loadListFinishTasks(loginUserId)
       loadDataCountTasksByDay(loginUserId);
+      loadDataCountTasksByMonth(loginUserId);
     }  
     // console.log(showEventFinishItem)
     // setDataTask([...showEventItem, ...showEventFinishItem])
@@ -97,7 +99,7 @@ export default function StatisticScreen() {
   const [dataCountTasksByDay, setDataCountTasksByDay] = useState([]);
   async function loadDataCountTasksByDay(user_id) {
     try {
-      const res = await axios.get(`${url}/api/task/countTaskByTheDay/${user_id}`, {
+      const res = await axios.get(`${url}/api/task/countTaskByTheDay/${user_id}/${numberOfDay}/${numberOfMonth}/${numberOfYear}`, {
         timeout: 2000,
       });
       if (res.data.length === 0) console.log("empty data");
@@ -109,6 +111,24 @@ export default function StatisticScreen() {
     }
   }
   // useEffect(() => console.log('dataCountTasksByDay', dataCountTasksByDay));
+  //////
+
+  //////data count not-finish + finish tasks by the month
+  const [dataCountTasksByMonth, setDataCountTasksByMonth] = useState([]);
+  async function loadDataCountTasksByMonth(user_id) {
+    try {
+      const res = await axios.get(`${url}/api/task/countTaskByTheMonth/${user_id}/${numberOfMonth}/${numberOfYear}`, {
+        timeout: 2000,
+      });
+      if (res.data.length === 0) console.log("empty data");
+      if (res.data.length > 0) {
+        setDataCountTasksByMonth(res.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  // useEffect(() => console.log('dataCountTasksByMonth', dataCountTasksByMonth));
   //////
 
   /////load all not finish tasks data
