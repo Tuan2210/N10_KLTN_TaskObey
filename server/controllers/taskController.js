@@ -325,31 +325,21 @@ const taskController = {
           tasks.forEach((task) => {
             ////not finish
             if (task.status === "Chưa hoàn thành") {
-              const startDate = moment(
-                task.taskDetailId.startTime,
-                "D/M/YYYY, HH [giờ] mm [phút]"
-              );
-              const formattedDate = startDate.format("D/M/YYYY");
-
-              if (arrNotFinishByDate[formattedDate]) {
-                arrNotFinishByDate[formattedDate]++;
+              const startDate = moment(task.taskDetailId.startTime, "D/M/YYYY");
+              if (arrNotFinishByDate[startDate]) {
+                arrNotFinishByDate[startDate]++;
               } else {
-                arrNotFinishByDate[formattedDate] = 1;
+                arrNotFinishByDate[startDate] = 1;
               }
             }
 
             ////finish
             if (task.status === "Hoàn thành") {
-              const startDate = moment(
-                task.taskDetailId.startTime,
-                "D/M/YYYY, HH [giờ] mm [phút]"
-              );
-              const formattedDate = startDate.format("D/M/YYYY");
-
-              if (arrFinishByDate[formattedDate]) {
-                arrFinishByDate[formattedDate]++;
+              const startDate = moment(task.taskDetailId.startTime, "D/M/YYYY");
+              if (arrFinishByDate[startDate]) {
+                arrFinishByDate[startDate]++;
               } else {
-                arrFinishByDate[formattedDate] = 1;
+                arrFinishByDate[startDate] = 1;
               }
             }
           });
