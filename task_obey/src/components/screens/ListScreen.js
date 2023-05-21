@@ -75,16 +75,16 @@ export default function ListScreen() {
 
   const [userId, setUserId] = useState();
   useEffect(() => {
-    if (currentRegisterUser && !currentLoginUser) {
-      setUserId(registerUserId);
-      loadListNotFinishTasks(registerUserId);
-    }
-    if (!currentRegisterUser && currentLoginUser) {
-      setUserId(loginUserId);
-      loadListNotFinishTasks(loginUserId);
-    }
-
-    // loadListNotFinishTasks();
+    const interval = setInterval(() => {
+      if (currentRegisterUser && !currentLoginUser) {
+        setUserId(registerUserId);
+        loadListNotFinishTasks(registerUserId);
+      }
+      if (!currentRegisterUser && currentLoginUser) {
+        setUserId(loginUserId);
+        loadListNotFinishTasks(loginUserId);
+      }
+    }, 3000);
   }, [currentRegisterUser, currentLoginUser]);
 
   const navigate = useNavigate();

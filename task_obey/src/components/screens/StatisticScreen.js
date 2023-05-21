@@ -41,11 +41,13 @@ export default function StatisticScreen() {
       setUserId(registerUserId);
       loadListNotFinishTasks(registerUserId);
       loadListFinishTasks(registerUserId)
+      loadDataCountTasksByDay(registerUserId);
     }
     if (!currentRegisterUser && currentLoginUser) {
       setUserId(loginUserId);
       loadListNotFinishTasks(loginUserId);
       loadListFinishTasks(loginUserId)
+      loadDataCountTasksByDay(loginUserId);
     }  
     // console.log(showEventFinishItem)
     // setDataTask([...showEventItem, ...showEventFinishItem])
@@ -90,6 +92,25 @@ export default function StatisticScreen() {
     }
     wait(1000).then(() => setRefreshing(false))
   };
+
+  //////data count not-finish + finish tasks by the day
+  const [dataCountTasksByDay, setDataCountTasksByDay] = useState([]);
+  async function loadDataCountTasksByDay(user_id) {
+    try {
+      const res = await axios.get(`${url}/api/task/countTaskByTheDay/${user_id}`, {
+        timeout: 2000,
+      });
+      if (res.data.length === 0) console.log("empty data");
+      if (res.data.length > 0) {
+        setDataCountTasksByDay(res.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  // useEffect(() => console.log('dataCountTasksByDay', dataCountTasksByDay));
+  //////
+
   /////load all not finish tasks data
   const [eventsNotFinish, setEventsNotFinish] = useState([]);
   async function loadListNotFinishTasks(id) {
