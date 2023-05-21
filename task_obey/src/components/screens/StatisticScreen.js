@@ -315,151 +315,6 @@ export default function StatisticScreen() {
   
     return [doneCount, undoneCount];
   };
-  /////
-  const setWeekRenderOrders = (tasks) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-  
-    const result = [];
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
-      const dateTasks = tasks.filter((task) => {
-        const taskDate = new Date(task.start);
-        taskDate.setHours(0, 0, 0, 0);
-        return taskDate.getTime() === date.getTime();
-      });
-      result.push(dateTasks.length);
-    }
-    return result
-  };
-  const data = useMemo(() => ({
-    labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'],
-    datasets: [{
-      data: [20, 45, 28, 80, 99, 43, 22, 55, 67, 77, 35, 65, 88, 45, 22, 90, 33, 27, 52, 67, 38, 55, 77, 29, 12, 53, 67, 88, 99, 25, 48]
-    }]
-    // datasets: [
-    //   {
-    //     data: dataTask,
-    //   },
-    // ],
-  }), []);  
-  function BarChartScreen() {
-    // const moment = require('moment')
-    // console.log(showEventItem)
-    // console.log("ngang chan")
-    // console.log(showEventFinishItem)
-    // const months = showEventItem.map((item) => moment(item.initialDate).format('MMMM'))
-
-    // const uniqueMonths = months.filter((month, index, self) => {
-    //   const currentMonth = moment().month(month);
-    //   const previousMonth = currentMonth.clone().subtract(2, 'months');
-    //   const nextMonth = currentMonth.clone().add(2, 'months');
-    
-    //   return (
-    //     index === self.indexOf(month) &&
-    //     !self.some((m, i) => {
-    //       if (i !== index) {
-    //         const otherMonth = moment().month(m);
-    //         return (
-    //           otherMonth.isBetween(previousMonth, nextMonth, 'month', '[]') ||
-    //           otherMonth.isSame(currentMonth, 'month')
-    //         );
-    //       }
-    //       return false;
-    //     })
-    //   );
-    // });
-  
-    // uniqueMonths.sort((a, b) => moment().month(a) - moment().month(b));
-    // console.log(uniqueMonths);
-
-    // useEffect(() => {
-    //   if (uniqueMonths.length === 1) {
-    //     setShowLabels(false);
-    //   } else if (prevNumLabels === 1 && uniqueMonths.length > 1) {
-    //     setShowLabels(true);
-    //   }
-    //   setPrevNumLabels(uniqueMonths.length);
-    // }, [uniqueMonths]);
-  
-    return(
-    <View style ={{width: '95%', flexDirection:'column' }}>
-      <View style={[styles.infoRow, {width: widthScreen * 0.85}]}>
-        <View style={{flex:0.5, justifyContent: 'center'}}>
-          <Text style={styles.titleLabel}>Tháng:</Text>
-        </View>
-        <Picker
-          style={{
-            width: "30%",
-            backgroundColor: "#BCF4F5",
-            // marginLeft: "3%",
-          }}
-          selectedValue={selectedMonth}
-          onValueChange={handleMonthChange}>
-          {months.map((month) => (
-            <Picker.Item key={month} label={month} value={month} />
-          ))}
-        </Picker>
-        <View style={{flex:0.5, justifyContent: 'center'}}>
-          <Text style={styles.titleLabel}>Năm:</Text>
-        </View>
-        <Picker
-          style={{
-            width: "35%",
-            backgroundColor: "#BCF4F5",
-            // marginLeft: "3%",
-          }}
-          selectedValue={selectedYear}
-          onValueChange={handleYearChange}>
-          {years.map((year) => (
-            <Picker.Item key={year} label={year} value={year} />
-          ))}
-        </Picker>
-      </View>
-      <ScrollView horizontal={true}>
-      <BarChart
-      data={data}
-      width={800}
-      height={heightScreen * 0.5}
-      chartConfig={{
-        backgroundColor: '#8009CBD0',
-        backgroundGradientFrom: '#8009CBD0',
-        backgroundGradientTo: '#09CBD0',
-        decimalPlaces: 0,
-        color: (opacity = 0.5) => `rgba(255, 255, 255, ${opacity})`,
-        labelColor: (opacity = 0.5) => `rgba(255, 255, 255, ${opacity})`,
-        style: {
-          borderRadius: 50,
-        }
-      }} 
-      verticalLabelRotation={0}
-      showValues={true}
-      showBarTops={true}
-      fromZero={true}
-      // axis={{
-      //   fromZero: true,
-      //   inverted: true,
-      //   showAxis: false,
-      //   showGrid: false,
-      //   showLabels: false,
-      //   paddingRight: 0
-      // }}
-      // axisRight={{
-      //   showAxis: true,
-      //   showGrid: false,
-      //   showLabels: true,
-      //   renderTicks: () => <View />,
-      //   // label: uniqueMonths,
-      //   labelStyle: {
-      //     color: 'black',
-      //     fontWeight: 'bold'
-      //   }
-      // }}
-      // withVerticalLabels={showLabels} 
-      >
-      </BarChart></ScrollView></View>
-    )
-  }
   const dataPie = [
     {
     name: "Hoàn thành", 
@@ -489,35 +344,112 @@ export default function StatisticScreen() {
     barPercentage: 0.5,
     useShadowColorFromDataset: false // optional
   };
-  const dataPiePriority1 = [
+  const dataPieMonth = [
     {
     name: "Hoàn thành", 
-    population: taskPriority1[0],
+    population: dataCountTasksByDay[1],
     color: "#09CBD0",
     legendFontColor: "#7F7F7F",
     legendFontSize: 15
   }, 
   {
     name: "Chưa hoàn thành",
-    population: taskPriority1[1], 
+    population: dataCountTasksByDay[0], 
     color: "#FF4040",
     legendFontColor: "#7F7F7F",
     legendFontSize: 15
   }]
-
+  const days = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"]
   const months = ["1","2","3","4","5", "6", "7","8","9","10","11","12", ]
-  const years = ["2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030", ]
+  const years = ["2020", "2021", "2022", "2023"]
   
-  const [selectedMonth, setSelectedMonth] = useState('');
-  const [selectedYear, setSelectedYear] = useState('2023');
+  const [numberOfDay, setNumberOfDay] = useState('1');
+  const [numberOfMonth, setNumberOfMonth] = useState('1');
+  const [numberOfYear, setNumberOfYear] = useState('2023');
 
+  const handleDayChange = (day) => {
+    setNumberOfDay(day);
+  };
   const handleMonthChange = (month) => {
-    setSelectedMonth(month);
+    setNumberOfMonth(month);
   };
   const handleYearChange = (year) => {
-    setSelectedYear(year);
+    setNumberOfYear(year);
   };
-  function PieChartScreen() {
+  function PieChartScreenDay() {
+    return(  
+    <View style ={{width: '100%', height: '50%', flexDirection:'column' }}>
+      <View style={[styles.infoRow, { alignSelf: 'center'}]}>
+      <View style={{flex:0.3, justifyContent: 'center', flexDirection: 'column'}}>
+        <Text style={styles.titleLabel}>Ngày:</Text>
+        <Picker
+          style={{
+            width: "85%",
+            backgroundColor: "#BCF4F5",
+            // marginLeft: "3%",
+          }}
+          selectedValue={numberOfDay}
+          onValueChange={handleDayChange}>
+          {days.map((day) => (
+            <Picker.Item key={day} label={day} value={day} />
+          ))}
+        </Picker>
+        </View>
+        
+        <View style={{flex:0.3, justifyContent: 'center'}}>
+          <Text style={styles.titleLabel}>Tháng:</Text>
+          <Picker
+            style={{
+              width: "85%",
+              backgroundColor: "#BCF4F5",
+              // marginLeft: "3%",
+            }}
+            selectedValue={numberOfMonth}
+            onValueChange={handleMonthChange}>
+            {months.map((month) => (
+              <Picker.Item key={month} label={month} value={month} />
+            ))}
+          </Picker>
+        </View>
+        
+        <View style={{flex:0.3, justifyContent: 'center'}}>
+          <Text style={styles.titleLabel}>Năm:</Text>
+          <Picker
+            style={{
+              width: "100%",
+              backgroundColor: "#BCF4F5",
+              // marginLeft: "3%",
+            }}
+            selectedValue={numberOfYear}
+            onValueChange={handleYearChange}>
+            {years.map((year) => (
+              <Picker.Item key={year} label={year} value={year} />
+            ))}
+          </Picker>
+        </View>
+      </View>
+      <View style={[styles.infoRow, {alignSelf: 'center'}]}>
+        <TouchableOpacity style={[styles.btn,]} onPress={() => {loadDataCountTasksByDay(loginUserId)}}>
+          <Text style={{ fontSize: 20, color: "#fff" }}>Thống kê</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={{flex: 0.5}}>
+        <PieChart 
+            data={dataPie}
+            width={480}
+            height={300}
+            chartConfig={chartConfig}
+            accessor={"population"}
+            backgroundColor={"transparent"}
+            paddingLeft={"15"}
+            center={[25, 0]}
+            absolute
+            >
+          </PieChart></View>
+      </View>
+    )
+  }
+  function PieChartScreenMonth() {
     return(  
     <View style ={{width: '100%', height: '50%', flexDirection:'column' }}>
       <View style={[styles.infoRow, {width: widthScreen * 0.85, alignSelf: 'center'}]}>
@@ -530,7 +462,7 @@ export default function StatisticScreen() {
             backgroundColor: "#BCF4F5",
             // marginLeft: "3%",
           }}
-          selectedValue={selectedMonth}
+          selectedValue={numberOfMonth}
           onValueChange={handleMonthChange}>
           {months.map((month) => (
             <Picker.Item key={month} label={month} value={month} />
@@ -541,36 +473,27 @@ export default function StatisticScreen() {
         </View>
         <Picker
           style={{
-            width: "30%",
+            width: "35%",
             backgroundColor: "#BCF4F5",
             // marginLeft: "3%",
           }}
-          selectedValue={selectedYear}
+          selectedValue={numberOfYear}
           onValueChange={handleYearChange}>
           {years.map((year) => (
             <Picker.Item key={year} label={year} value={year} />
           ))}
         </Picker>
       </View>
-      {/* <View
-        style={{
-          flex: 0.1,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-          marginTop: "10%"
-        }}
-      >
-        <View style={{flex: 0.2}}>
-              <Text style={{ color: "#09CBD0" }}>Chọn loại thống kê:</Text>
-        </View>
-        
-      </View> */}
+      <View style={[styles.infoRow, {alignSelf: 'center'}]}>
+        <TouchableOpacity style={[styles.btn,]} onPress={() => {loadDataCountTasksByMonth(loginUserId)}}>
+          <Text style={{ fontSize: 20, color: "#fff" }}>Thống kê</Text>
+        </TouchableOpacity>
+      </View>
       <View style={{flex: 0.5}}>
         <PieChart 
             data={dataPie}
             width={480}
-            height={180}
+            height={300}
             chartConfig={chartConfig}
             accessor={"population"}
             backgroundColor={"transparent"}
@@ -579,21 +502,6 @@ export default function StatisticScreen() {
             absolute
             >
           </PieChart></View>
-      {/* <Text style={{ marginLeft: '10%',color: "#09CBD0" }}>Theo mức độ ưu tiên 1:</Text>
-      <View> 
-        <PieChart 
-            data={dataPiePriority1}
-            width={480}
-            height={180}
-            chartConfig={chartConfig}
-            accessor={"population"}
-            backgroundColor={"transparent"}
-            paddingLeft={"15"}
-            center={[0, 5]}
-            absolute
-            >
-  
-          </PieChart></View>     */}
       </View>
     )
   }
@@ -630,18 +538,18 @@ export default function StatisticScreen() {
                   }>
                     <Picker.Item label="Chọn loại biểu đồ" value=""/>
                     <Picker.Item style={{fontSize: 18}}
-                      label="Tổng số công việc theo tháng"
-                      value={"Pie"}/>
+                      label="Tổng số công việc theo ngày"
+                      value={"PieDay"}/>
                     <Picker.Item style={{fontSize: 18}} 
-                      label="Số ngày trong tháng"
-                      value={"Chart"}/>  
+                      label="Tổng số công việc theo tháng"
+                      value={"PieMonth"}/>  
               </Picker>
             </View>
-            <View style={styles.form}>
+            <View style={{alignSelf: 'center'}}>
               {showCharts && (
               <>
-                {viewModelStatic === "Pie" && <PieChartScreen />}
-                {viewModelStatic === "Chart" && <BarChartScreen />}
+                {viewModelStatic === "PieDay" && <PieChartScreenDay />}
+                {viewModelStatic === "PieMonth" && <PieChartScreenMonth />}
               </>
             )}
             </View>
@@ -682,6 +590,15 @@ const styles = StyleSheet.create({
   form: {
     flex: 0.99,
     alignSelf: "center",
+    marginTop: '5%'
+  },
+  btn: {
+    alignSelf: "center",
+    alignItems: "center",
+    padding: 15,
+    backgroundColor: "#09CBD0",
+    borderRadius: 100,
+    width: "100%",
   },
   infoRow: {
     // flex: 0.1099,
