@@ -71,24 +71,13 @@ export default function StatisticScreen() {
     setRefreshing(true);
 
     try {
-      const res = await axios.get(`${url}/api/task/notFinishTasks/${userId}`, {
-        timeout: 1000,
+      const res = await axios.get(`${url}/api/task/countTaskByTheDay/${loginUserId}/${numberOfDay}/${numberOfMonth}/${numberOfYear}`, {
+        timeout: 2000,
       });
-      if (res.data.length === 0) console.log("no data task in list");
+      if (res.data.length === 0) console.log("empty data");
       if (res.data.length > 0) {
-        // console.log(res.data);
-        setEventsNotFinish(res.data);
-        // console.log(eventsNotFinish)
+        setDataCountTasksByDay(res.data);
       }
-      await axios
-      .get(`${url}/api/task/finishTasks/${userId}`, { timeout: 1000 })
-      .then((res) => {
-        if (res.data.length > 0) {
-          // console.log(res.data)
-          setEventsFinish(res.data);
-          setRefreshing(false);
-        }
-      });
     } catch (error) {
       console.log(error);
     }
@@ -96,7 +85,7 @@ export default function StatisticScreen() {
   };
 
   //////data count not-finish + finish tasks by the day
-  const [dataCountTasksByDay, setDataCountTasksByDay] = useState([]);
+  const [dataCountTasksByDay, setDataCountTasksByDay] = useState([0,0]);
   async function loadDataCountTasksByDay(user_id) {
     try {
       const res = await axios.get(`${url}/api/task/countTaskByTheDay/${user_id}/${numberOfDay}/${numberOfMonth}/${numberOfYear}`, {
@@ -114,7 +103,7 @@ export default function StatisticScreen() {
   //////
 
   //////data count not-finish + finish tasks by the month
-  const [dataCountTasksByMonth, setDataCountTasksByMonth] = useState([]);
+  const [dataCountTasksByMonth, setDataCountTasksByMonth] = useState([0,0]);
   async function loadDataCountTasksByMonth(user_id) {
     try {
       const res = await axios.get(`${url}/api/task/countTaskByTheMonth/${user_id}/${numberOfMonth}/${numberOfYear}`, {
@@ -318,9 +307,7 @@ export default function StatisticScreen() {
   const dataPie = [
     {
     name: "Hoàn thành", 
-    population: 
-    // 10,
-    countTask[0],
+    population: dataCountTasksByDay[1],
     color: "#09CBD0",
     legendFontColor: "#7F7F7F",
     legendFontSize: 15
@@ -329,7 +316,7 @@ export default function StatisticScreen() {
     name: "Chưa hoàn thành",
     population: 
     // 11,
-    countTask[1], 
+    dataCountTasksByDay[0], 
     color: "#FF4040",
     legendFontColor: "#7F7F7F",
     legendFontSize: 15
@@ -347,14 +334,14 @@ export default function StatisticScreen() {
   const dataPieMonth = [
     {
     name: "Hoàn thành", 
-    population: dataCountTasksByDay[1],
+    population: dataCountTasksByMonth[1],
     color: "#09CBD0",
     legendFontColor: "#7F7F7F",
     legendFontSize: 15
   }, 
   {
     name: "Chưa hoàn thành",
-    population: dataCountTasksByDay[0], 
+    population: dataCountTasksByMonth[0], 
     color: "#FF4040",
     legendFontColor: "#7F7F7F",
     legendFontSize: 15
@@ -412,7 +399,7 @@ export default function StatisticScreen() {
           </Picker>
         </View>
         
-        <View style={{flex:0.3, justifyContent: 'center'}}>
+        <View style={{flex:0.45, justifyContent: 'center'}}>
           <Text style={styles.titleLabel}>Năm:</Text>
           <Picker
             style={{
@@ -437,12 +424,12 @@ export default function StatisticScreen() {
         <PieChart 
             data={dataPie}
             width={480}
-            height={300}
+            height={250}
             chartConfig={chartConfig}
             accessor={"population"}
             backgroundColor={"transparent"}
-            paddingLeft={"15"}
-            center={[25, 0]}
+            paddingLeft={"-15"}
+            center={[50, 0]}
             absolute
             >
           </PieChart></View>
@@ -491,14 +478,14 @@ export default function StatisticScreen() {
       </View>
       <View style={{flex: 0.5}}>
         <PieChart 
-            data={dataPie}
+            data={dataPieMonth}
             width={480}
-            height={300}
+            height={250}
             chartConfig={chartConfig}
             accessor={"population"}
             backgroundColor={"transparent"}
-            paddingLeft={"15"}
-            center={[25, 0]}
+            paddingLeft={"-15"}
+            center={[50, 0]}
             absolute
             >
           </PieChart></View>
