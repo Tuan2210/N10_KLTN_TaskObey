@@ -42,9 +42,22 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 //yt: https://www.youtube.com/watch?v=Imkw-xFFLeE
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-import PushNotification from "react-native-push-notification";
+//doc: https://docs.expo.dev/versions/latest/sdk/notifications/
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+
+import moment from "moment";
+
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function CreateTaskScreen() {
   const currentLoginUser = useSelector(
@@ -578,7 +591,7 @@ export default function CreateTaskScreen() {
     await axios
       .post(`${url}/api/task/addTask`, newTask, { timeout: 5000 })
       .then((task) => {
-        window.setTimeout(function () {
+        window.setTimeout(async function () {
           console.log(task.data);
           setIsLoading(false);
           setTxtInputTask("");
@@ -590,6 +603,119 @@ export default function CreateTaskScreen() {
           Alert.alert("Thông báo", "Thêm công việc thành công!");
         }, 2000);
       });
+  }
+  /////
+
+  /////expo-notifications
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+  useEffect(() => {
+    let isMounted = false;
+
+    registerForPushNotificationsAsync().then((token) => {
+      if (!isMounted) return;
+      setExpoPushToken(token);
+    });
+
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        if (!isMounted) return;
+        setNotification(notification);
+      });
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
+
+    return () => {
+      isMounted = true;
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+  // useEffect(() => console.log("expoPushToken", expoPushToken));
+
+  async function schedulePushNotification() {
+    const startDateTimeTask = moment(
+      displayStartDate + ", " + displayStartTime,
+      "D/M/YYYY, HH [giờ] mm [phút]"
+    ).toDate();
+    switch (reminderTime) {
+      case "Không":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body: "Bạn có công việc '" + txtInputTask + "' cần làm!",
+          },
+          trigger: null,
+        });
+        break;
+      case "Đúng giờ":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body: "Bạn có công việc '" + txtInputTask + "' cần làm!",
+          },
+          trigger: { date: startDateTimeTask },
+        });
+        break;
+      case "Trước 5 phút":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body: "Bạn có công việc '" + txtInputTask + "' cần làm sau 5 phút!",
+          },
+          trigger: {
+            date: startDateTimeTask.setMinutes(
+              startDateTimeTask.getMinutes() - 5
+            ),
+          },
+        });
+        break;
+      case "Trước 30 phút":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body: "Bạn có công việc '" + txtInputTask + "' cần làm sau 30 phút!",
+          },
+          trigger: {
+            date: startDateTimeTask.setMinutes(
+              startDateTimeTask.getMinutes() - 30
+            ),
+          },
+        });
+        break;
+      case "Trước 1 tiếng":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body: "Bạn có công việc '" + txtInputTask + "' cần làm sau 1 tiếng!",
+          },
+          trigger: {
+            date: startDateTimeTask.setMinutes(startDateTimeTask.getMinutes() - 60),
+          },
+        });
+        break;
+      case "Trước 1 ngày":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body: "Bạn có công việc '" + txtInputTask + "' cần làm ngày mai!",
+          },
+          trigger: {
+            date: startDateTimeTask.setDate(startDateTimeTask.getDate() - 1),
+          },
+        });
+        break;
+      default:
+        break;
+    }
   }
   /////
 
@@ -769,7 +895,9 @@ export default function CreateTaskScreen() {
           <Picker
             style={{ width: "75.5%", backgroundColor: "#BCF4F5" }}
             selectedValue={reminderTime}
-            onValueChange={(itemValue, itemIndex) => setReminderTime(itemValue)}
+            onValueChange={(itemValue, itemIndex) => {
+              setReminderTime(itemValue);
+            }}
           >
             <Picker.Item style={{ fontSize: 18 }} label="Không" value="Không" />
             <Picker.Item
@@ -1157,7 +1285,13 @@ export default function CreateTaskScreen() {
               marginTop: "-5%",
             }}
           >
-            <TouchableOpacity style={styles.btn} onPress={handleCreateTask}>
+            <TouchableOpacity
+              style={styles.btn}
+              onPress={async () => {
+                handleCreateTask();
+                await schedulePushNotification();
+              }}
+            >
               <Text style={{ fontSize: 20, color: "#fff" }}>Tạo</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -1237,3 +1371,36 @@ const styles = StyleSheet.create({
     width: "40%",
   },
 });
+
+async function registerForPushNotificationsAsync() {
+  let token;
+
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+    });
+  }
+
+  if (Device.isDevice) {
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== "granted") {
+      alert("Failed to get push token for push notification!");
+      return;
+    }
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log(token);
+  } else {
+    alert("Must use physical device for Push Notifications");
+  }
+
+  return token;
+}

@@ -85,6 +85,7 @@ export default function ListScreen() {
         loadListNotFinishTasks(loginUserId);
       }
     }, 3000);
+    return () => clearInterval(interval);
   }, [currentRegisterUser, currentLoginUser]);
 
   const navigate = useNavigate();
