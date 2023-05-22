@@ -303,21 +303,21 @@ export default function UpdateTaskScreen(props) {
   //////
 
   //////handle delete item task-type
-  const [itemToDelete, setItemToDelete] = useState();
-  const [modalVisibleDelTaskType, setModalVisibleDelTaskType] = useState(false);
-  function handleDeleteTaskType() {
-    const newData = taskTypeData.filter((item) => item !== itemToDelete); //lọc bỏ item cần xóa khỏi newData
-    setTaskTypeData(newData);
-    AsyncStorage.setItem("taskTypeData", JSON.stringify(newData))
-      .then(() => {
-        setItemToDelete([0]);
-        setModalVisibleDelTaskType(false);
-        Alert.alert("Thông báo", "Đã xóa loại công việc!");
-      })
-      .catch((err) => {
-        console.log("lỗi xóa:", err);
-      });
-  }
+  // const [itemToDelete, setItemToDelete] = useState();
+  // const [modalVisibleDelTaskType, setModalVisibleDelTaskType] = useState(false);
+  // function handleDeleteTaskType() {
+  //   const newData = taskTypeData.filter((item) => item !== itemToDelete); //lọc bỏ item cần xóa khỏi newData
+  //   setTaskTypeData(newData);
+  //   AsyncStorage.setItem("taskTypeData", JSON.stringify(newData))
+  //     .then(() => {
+  //       setItemToDelete([0]);
+  //       setModalVisibleDelTaskType(false);
+  //       Alert.alert("Thông báo", "Đã xóa loại công việc!");
+  //     })
+  //     .catch((err) => {
+  //       console.log("lỗi xóa:", err);
+  //     });
+  // }
   //////
 
   //load data task-type
@@ -606,33 +606,47 @@ export default function UpdateTaskScreen(props) {
       // style={{ width: "100%", padding: "3%" }}
       > */}
       {/* tên cv */}
-      <TextInput
-        style={[styles.styleInput, { borderRadius: 10, borderColor: "gray" }]}
-        placeholder="Nhập tên công việc"
-        numberOfLines={1}
-        // autoFocus
-        onChangeText={(txt) => setTxtInputTask(txt)}
-        value={txtInputTask}
-      />
+      <View style={{flexDirection: "row", width: '100%', alignItems: "center"}}>
+        <TextInput
+          style={[styles.styleInput, { borderRadius: 10, borderColor: "gray" }]}
+          placeholder="Nhập tên công việc"
+          numberOfLines={1}
+          // autoFocus
+          onChangeText={(txt) => setTxtInputTask(txt)}
+          value={txtInputTask}
+        />
+        <View style={{marginLeft: '-11%', padding: '2%'}}>
+          <TouchableOpacity onPress={() => setTxtInputTask('')}>
+            <Feathericons name="delete" size={30} color="#09CBD0" />
+          </TouchableOpacity>
+        </View>
+      </View>
 
       {/* mô tả */}
-      <TextInput
-        style={[
-          styles.styleInput,
-          {
-            textAlignVertical: "top",
-            height: "15%",
-            marginTop: "3%",
-            borderRadius: 10,
-            borderColor: "gray",
-          },
-        ]}
-        placeholder="Nhập mô tả"
-        numberOfLines={4}
-        multiline
-        onChangeText={(txt) => setTxtInputDesc(txt)}
-        value={txtInputDesc}
-      />
+      <View style={{flexDirection: "row", width: '100%', height: '15%'}}>
+        <TextInput
+          style={[
+            styles.styleInput,
+            {
+              textAlignVertical: "top",
+              height: "80%",
+              marginTop: "3%",
+              borderRadius: 10,
+              borderColor: "gray",
+            },
+          ]}
+          placeholder="Nhập mô tả"
+          numberOfLines={4}
+          multiline
+          onChangeText={(txt) => setTxtInputDesc(txt)}
+          value={txtInputDesc}
+        />
+        <View style={{marginLeft: '-11%', padding: '2%', marginTop: '3%'}}>
+          <TouchableOpacity onPress={() => setTxtInputDesc('')}>
+            <Feathericons name="delete" size={30} color="#09CBD0" />
+          </TouchableOpacity>
+        </View>
+      </View>
 
       {/* loại cv */}
       <View
@@ -646,7 +660,7 @@ export default function UpdateTaskScreen(props) {
         <View
           style={{
             flexDirection: "row",
-            width: "70%",
+            width: "82%",
             justifyContent: "space-between",
             alignItems: "center",
           }}
@@ -654,7 +668,7 @@ export default function UpdateTaskScreen(props) {
           <Text style={{ color: "#09CBD0" }}>Loại công việc:</Text>
           <Picker
             style={{
-              width: "65%",
+              width: "70%",
               backgroundColor: "#BCF4F5",
             }}
             selectedValue={taskType}
@@ -677,17 +691,17 @@ export default function UpdateTaskScreen(props) {
           style={{
             justifyContent: "center",
             alignItems: "center",
-            width: "25%",
+            // width: "25%",
             flexDirection: "row",
-            justifyContent: "space-around",
+            justifyContent: "flex-end",
           }}
         >
           <TouchableOpacity onPress={() => setModalVisible(true)}>
             <FontAwesomeicons name="plus-square" size={45} color="#09CBD0" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setModalVisibleDelTaskType(true)}>
+          {/* <TouchableOpacity onPress={() => setModalVisibleDelTaskType(true)}>
             <Feathericons name="delete" size={45} color="#09CBD0" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
 
@@ -855,7 +869,7 @@ export default function UpdateTaskScreen(props) {
       </Modal>
 
       {/* modal xóa loại cv */}
-      <Modal
+      {/* <Modal
         visible={modalVisibleDelTaskType}
         animationType="slide"
         transparent
@@ -906,7 +920,7 @@ export default function UpdateTaskScreen(props) {
             </TouchableOpacity>
           </View>
         </View>
-      </Modal>
+      </Modal> */}
 
       {showStartDateTime && (
         <DateTimePicker
@@ -964,7 +978,7 @@ export default function UpdateTaskScreen(props) {
           <TouchableOpacity style={styles.btn} onPress={handleUpdateTask}>
             <Text style={{ fontSize: 20, color: "#fff" }}>Cập nhật</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.btn}
             onPress={() => {
               setTxtInputTask("");
@@ -980,7 +994,7 @@ export default function UpdateTaskScreen(props) {
             }}
           >
             <Text style={{ fontSize: 20, color: "#fff" }}>Đặt mặc định</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       )}
       {/* </View> */}

@@ -301,21 +301,21 @@ export default function CreateTaskScreen() {
   //////
 
   //////handle delete item task-type
-  const [itemToDelete, setItemToDelete] = useState();
-  const [modalVisibleDelTaskType, setModalVisibleDelTaskType] = useState(false);
-  function handleDeleteTaskType() {
-    const newData = taskTypeData.filter((item) => item !== itemToDelete); //lọc bỏ item cần xóa khỏi newData
-    setTaskTypeData(newData);
-    AsyncStorage.setItem("taskTypeData", JSON.stringify(newData))
-      .then(() => {
-        setItemToDelete([0]);
-        setModalVisibleDelTaskType(false);
-        Alert.alert("Thông báo", "Đã xóa loại công việc!");
-      })
-      .catch((err) => {
-        console.log("lỗi xóa:", err);
-      });
-  }
+  // const [itemToDelete, setItemToDelete] = useState();
+  // const [modalVisibleDelTaskType, setModalVisibleDelTaskType] = useState(false);
+  // function handleDeleteTaskType() {
+  //   const newData = taskTypeData.filter((item) => item !== itemToDelete); //lọc bỏ item cần xóa khỏi newData
+  //   setTaskTypeData(newData);
+  //   AsyncStorage.setItem("taskTypeData", JSON.stringify(newData))
+  //     .then(() => {
+  //       setItemToDelete([0]);
+  //       setModalVisibleDelTaskType(false);
+  //       Alert.alert("Thông báo", "Đã xóa loại công việc!");
+  //     })
+  //     .catch((err) => {
+  //       console.log("lỗi xóa:", err);
+  //     });
+  // }
   //////
 
   //load data task-type
@@ -682,7 +682,8 @@ export default function CreateTaskScreen() {
         await Notifications.scheduleNotificationAsync({
           content: {
             title: "TaskObey thông báo 📅",
-            body: "Bạn có công việc '" + txtInputTask + "' cần làm sau 30 phút!",
+            body:
+              "Bạn có công việc '" + txtInputTask + "' cần làm sau 30 phút!",
           },
           trigger: {
             date: startDateTimeTask.setMinutes(
@@ -695,10 +696,13 @@ export default function CreateTaskScreen() {
         await Notifications.scheduleNotificationAsync({
           content: {
             title: "TaskObey thông báo 📅",
-            body: "Bạn có công việc '" + txtInputTask + "' cần làm sau 1 tiếng!",
+            body:
+              "Bạn có công việc '" + txtInputTask + "' cần làm sau 1 tiếng!",
           },
           trigger: {
-            date: startDateTimeTask.setMinutes(startDateTimeTask.getMinutes() - 60),
+            date: startDateTimeTask.setMinutes(
+              startDateTimeTask.getMinutes() - 60
+            ),
           },
         });
         break;
@@ -722,7 +726,7 @@ export default function CreateTaskScreen() {
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={{ height: flag ? "155%" : "125%" }}
+      contentContainerStyle={{ height: flag ? 1010 : 880 }}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
@@ -731,33 +735,47 @@ export default function CreateTaskScreen() {
         style={{ width: "100%", height: flag ? "95%" : "90%", padding: "3%" }}
       >
         {/* tên cv */}
-        <TextInput
-          style={[styles.styleInput, { borderRadius: 10, borderColor: "gray" }]}
-          placeholder="Nhập tên công việc"
-          numberOfLines={1}
-          // autoFocus
-          onChangeText={(txt) => setTxtInputTask(txt)}
-          value={txtInputTask}
-        />
+        <View style={{flexDirection: "row", width: '100%', alignItems: "center"}}>
+          <TextInput
+            style={[styles.styleInput, { borderRadius: 10, borderColor: "gray" }]}
+            placeholder="Nhập tên công việc"
+            numberOfLines={1}
+            // autoFocus
+            onChangeText={(txt) => setTxtInputTask(txt)}
+            value={txtInputTask}
+          />
+          <View style={{marginLeft: '-11%', padding: '2%'}}>
+            <TouchableOpacity onPress={() => setTxtInputTask('')}>
+              <Feathericons name="delete" size={30} color="#09CBD0" />
+            </TouchableOpacity>
+          </View>
+        </View>
 
         {/* mô tả */}
-        <TextInput
-          style={[
-            styles.styleInput,
-            {
-              textAlignVertical: "top",
-              height: "15%",
-              marginTop: "3%",
-              borderRadius: 10,
-              borderColor: "gray",
-            },
-          ]}
-          placeholder="Nhập mô tả"
-          numberOfLines={4}
-          multiline
-          onChangeText={(txt) => setTxtInputDesc(txt)}
-          value={txtInputDesc}
-        />
+        <View style={{flexDirection: "row", width: '100%', height: '15%'}}>
+          <TextInput
+            style={[
+              styles.styleInput,
+              {
+                textAlignVertical: "top",
+                height: "80%",
+                marginTop: "3%",
+                borderRadius: 10,
+                borderColor: "gray",
+              },
+            ]}
+            placeholder="Nhập mô tả"
+            numberOfLines={4}
+            multiline
+            onChangeText={(txt) => setTxtInputDesc(txt)}
+            value={txtInputDesc}
+          />
+          <View style={{marginLeft: '-11%', padding: '2%', marginTop: '3%'}}>
+            <TouchableOpacity onPress={() => setTxtInputDesc('')}>
+              <Feathericons name="delete" size={30} color="#09CBD0" />
+            </TouchableOpacity>
+          </View>
+        </View>
 
         {/* loại cv */}
         <View
@@ -771,7 +789,7 @@ export default function CreateTaskScreen() {
           <View
             style={{
               flexDirection: "row",
-              width: "70%",
+              width: "82%",
               justifyContent: "space-between",
               alignItems: "center",
             }}
@@ -779,12 +797,12 @@ export default function CreateTaskScreen() {
             <Text style={{ color: "#09CBD0" }}>Loại công việc:</Text>
             <Picker
               style={{
-                width: "65%",
+                width: "70%",
                 backgroundColor: "#BCF4F5",
               }}
               selectedValue={taskType}
               onValueChange={(itemValue, itemIndex) => {
-                setItemToDelete(itemValue);
+                // setItemToDelete(itemValue);
                 setTaskType(itemValue);
               }}
             >
@@ -802,17 +820,18 @@ export default function CreateTaskScreen() {
             style={{
               justifyContent: "center",
               alignItems: "center",
-              width: "25%",
+              // width: "20%",
               flexDirection: "row",
-              justifyContent: "space-around",
+              justifyContent: "flex-end",
+              // backgroundColor: "red",
             }}
           >
             <TouchableOpacity onPress={() => setModalVisible(true)}>
               <FontAwesomeicons name="plus-square" size={45} color="#09CBD0" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setModalVisibleDelTaskType(true)}>
+            {/* <TouchableOpacity onPress={() => setModalVisibleDelTaskType(true)}>
               <Feathericons name="delete" size={45} color="#09CBD0" />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
 
@@ -941,7 +960,6 @@ export default function CreateTaskScreen() {
           <Text
             style={{
               alignSelf: "flex-start",
-              marginBottom: "-3%",
               color: "#09CBD0",
             }}
           >
@@ -1172,7 +1190,7 @@ export default function CreateTaskScreen() {
         </Modal>
 
         {/* modal xóa loại cv */}
-        <Modal
+        {/* <Modal
           visible={modalVisibleDelTaskType}
           animationType="slide"
           transparent
@@ -1230,7 +1248,7 @@ export default function CreateTaskScreen() {
               </TouchableOpacity>
             </View>
           </View>
-        </Modal>
+        </Modal> */}
 
         {showStartDateTime && (
           <DateTimePicker
