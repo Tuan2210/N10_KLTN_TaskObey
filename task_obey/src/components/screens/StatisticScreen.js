@@ -74,13 +74,34 @@ export default function StatisticScreen() {
       const res = await axios.get(`${url}/api/task/countTaskByTheDay/${loginUserId}/${numberOfDay}/${numberOfMonth}/${numberOfYear}`, {
         timeout: 2000,
       });
-      if (res.data.length === 0) console.log("empty data");
+      if (res.data.length === 0) 
+        {
+          console.log("empty data");
+          setDataCountTasksByDay([0,0]);
+        }
       if (res.data.length > 0) {
         setDataCountTasksByDay(res.data);
       }
     } catch (error) {
       console.log(error);
     }
+
+    try {
+      const res = await axios.get(`${url}/api/task/countTaskByTheMonth/${loginUserId}/${numberOfMonth}/${numberOfYear}`, {
+        timeout: 2000,
+      });
+      if (res.data.length === 0) 
+        {
+          console.log("empty data");
+          setDataCountTasksByMonth([0,0]);
+        }
+      if (res.data.length > 0) {
+        setDataCountTasksByMonth(res.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+     
     wait(1000).then(() => setRefreshing(false))
   };
 
@@ -91,7 +112,11 @@ export default function StatisticScreen() {
       const res = await axios.get(`${url}/api/task/countTaskByTheDay/${user_id}/${numberOfDay}/${numberOfMonth}/${numberOfYear}`, {
         timeout: 2000,
       });
-      if (res.data.length === 0) console.log("empty data");
+      if (res.data.length === 0) 
+        {
+          console.log("empty data");
+          setDataCountTasksByDay([0,0]);
+        }
       if (res.data.length > 0) {
         setDataCountTasksByDay(res.data);
       }
@@ -109,7 +134,11 @@ export default function StatisticScreen() {
       const res = await axios.get(`${url}/api/task/countTaskByTheMonth/${user_id}/${numberOfMonth}/${numberOfYear}`, {
         timeout: 2000,
       });
-      if (res.data.length === 0) console.log("empty data");
+      if (res.data.length === 0) 
+        {
+          console.log("empty data");
+          setDataCountTasksByMonth([0,0]);
+        }
       if (res.data.length > 0) {
         setDataCountTasksByMonth(res.data);
       }
