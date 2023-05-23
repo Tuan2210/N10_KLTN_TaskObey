@@ -26,10 +26,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as Animatable from "react-native-animatable";
 
 //link all icons react-native: https://oblador.github.io/react-native-vector-icons/
-import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesomeicons from "react-native-vector-icons/FontAwesome";
-import FontAwesome5icons from "react-native-vector-icons/FontAwesome5";
-import AntDesignicons from "react-native-vector-icons/AntDesign";
 import Feathericons from "react-native-vector-icons/Feather";
 
 //doc: https://github.com/react-native-picker/picker
@@ -45,10 +42,22 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import moment from "moment";
 
 //doc: https://github.com/APSL/react-native-keyboard-aware-scroll-view
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+// import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
+//doc: https://docs.expo.dev/versions/latest/sdk/notifications/
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
 
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function UpdateTaskScreen(props) {
   const infoTaskBeforeUpdate = props;
@@ -110,20 +119,22 @@ export default function UpdateTaskScreen(props) {
     currentYearVN = currentDateVN.slice(0, 4),
     formatCurrentDateVN =
       currentDayVN + "/" + currentMonthVN + "/" + currentYearVN;
-  const [startDate, setStartDate] = useState(infoTaskBeforeUpdate.props.start);
+  const [startDate, setStartDate] = useState(new Date());
   const [startTime, setStartTime] = useState(new Date());
   const [inputStartTime, setInputStartTime] = useState("");
   const [modeStartDateTime, setModeStartDateTime] = useState("");
   const [showStartDateTime, setShowStartDateTime] = useState(false);
   const [displayStartDate, setDisplayStartDate] = useState(
-    moment(infoTaskBeforeUpdate.props.start)
-      .utcOffset("+0700")
-      .format("D/M/YYYY")
+    // moment(infoTaskBeforeUpdate.props.start)
+    //   .utcOffset("+0700")
+    //   .format("D/M/YYYY")
+    formatCurrentDateVN
   );
   const [displayStartTime, setDisplayStartTime] = useState(
-    moment(infoTaskBeforeUpdate.props.start)
-      .utcOffset("+0700")
-      .format("HH [giờ] mm [phút]")
+    // moment(infoTaskBeforeUpdate.props.start)
+    // .utcOffset("+0700")
+    // .format("HH [giờ] mm [phút]")
+    "... giờ ... phút"
   );
 
   const onChangeStartDateTime = (event, selectedDate) => {
@@ -162,19 +173,19 @@ export default function UpdateTaskScreen(props) {
       const displayStartDateTime = fDate1 + ", " + fTime1;
       if (displayStartDateTime === evtStart) {
         //compare startDateTime of all tasks
-        if (
-          displayStartDateTime !==
-          moment(infoTaskBeforeUpdate.props.start)
-            .utcOffset("+0700")
-            .format("D/M/YYYY, HH [giờ] mm [phút]")
-        ) {
-          //compare !=== startDateTime of task is chosen
-          setShowStartDateTime(false);
-          Alert.alert(
-            "Thông báo",
-            "Thời gian này đã được đặt, vui lòng đặt thời gian bắt đầu khác!"
-          );
-        }
+        // if (
+        //   displayStartDateTime !==
+        //   moment(infoTaskBeforeUpdate.props.start)
+        //     .utcOffset("+0700")
+        //     .format("D/M/YYYY, HH [giờ] mm [phút]")
+        // ) {
+        //compare !=== startDateTime of task is chosen
+        setShowStartDateTime(false);
+        Alert.alert(
+          "Thông báo",
+          "Thời gian này đã được đặt, vui lòng đặt thời gian bắt đầu khác!"
+        );
+        // }
       } else {
         setDisplayStartDate(fDate1);
         setDisplayStartTime(fTime1);
@@ -191,28 +202,30 @@ export default function UpdateTaskScreen(props) {
   // const [flag, setFlag] = useState(false); //default Không
 
   //////handle end-date-time picker
-  const [endDate, setEndDate] = useState(infoTaskBeforeUpdate.props.end);
+  const [endDate, setEndDate] = useState(new Date());
   const [endTime, setEndTime] = useState();
   const [endDateTime, setEndDateTime] = useState("");
   const [modeEndDateTime, setModeEndDateTime] = useState("");
   const [showEndDateTime, setShowEndDateTime] = useState(false);
   const [displayEndDate, setDisplayEndDate] = useState(
-    moment(infoTaskBeforeUpdate.props.end)
-      .utcOffset("+0700")
-      .format("D/M/YYYY") === "Invalid date"
-      ? "... / ... / ...."
-      : moment(infoTaskBeforeUpdate.props.end)
-          .utcOffset("+0700")
-          .format("D/M/YYYY")
+    // moment(infoTaskBeforeUpdate.props.end)
+    //   .utcOffset("+0700")
+    //   .format("D/M/YYYY") === "Invalid date"
+    //   ? "... / ... / ...."
+    //   : moment(infoTaskBeforeUpdate.props.end)
+    //       .utcOffset("+0700")
+    //       .format("D/M/YYYY")
+    "... / ... / ...."
   );
   const [displayEndTime, setDisplayEndTime] = useState(
-    moment(infoTaskBeforeUpdate.props.end)
-      .utcOffset("+0700")
-      .format("HH [giờ] mm [phút]") === "Invalid date"
-      ? "... giờ ... phút"
-      : moment(infoTaskBeforeUpdate.props.end)
-          .utcOffset("+0700")
-          .format("HH [giờ] mm [phút]")
+    // moment(infoTaskBeforeUpdate.props.end)
+    //   .utcOffset("+0700")
+    //   .format("HH [giờ] mm [phút]") === "Invalid date"
+    //   ? "... giờ ... phút"
+    //   : moment(infoTaskBeforeUpdate.props.end)
+    //       .utcOffset("+0700")
+    //       .format("HH [giờ] mm [phút]")
+    "... giờ ... phút"
   );
 
   const onChangeEndDateTime = (event, selectedDate) => {
@@ -265,12 +278,8 @@ export default function UpdateTaskScreen(props) {
   };
   //////
 
-  const [txtInputTask, setTxtInputTask] = useState(
-    infoTaskBeforeUpdate.props.title
-  );
-  const [txtInputDesc, setTxtInputDesc] = useState(
-    infoTaskBeforeUpdate.props.description
-  );
+  const [txtInputTask, setTxtInputTask] = useState("");
+  const [txtInputDesc, setTxtInputDesc] = useState("");
 
   //////handle add task-type
   const [selectedValue, setSelectedValue] = useState("");
@@ -338,12 +347,10 @@ export default function UpdateTaskScreen(props) {
   //
 
   //////handle combobox picker & value mongodb
-  const [taskType, setTaskType] = useState(infoTaskBeforeUpdate.props.taskType);
-  const [priority, setPriority] = useState(infoTaskBeforeUpdate.props.priority);
-  const [reminderTime, setReminderTime] = useState(
-    infoTaskBeforeUpdate.props.reminderTime
-  );
-  const [repeat, setRepeat] = useState(infoTaskBeforeUpdate.props.repeat);
+  const [taskType, setTaskType] = useState("Cá nhân");
+  const [priority, setPriority] = useState("1");
+  const [reminderTime, setReminderTime] = useState("Không");
+  const [repeat, setRepeat] = useState("Không");
   // const [duration, setDuration] = useState('');
   const [deadline, setDeadline] = useState("");
   //////
@@ -366,8 +373,29 @@ export default function UpdateTaskScreen(props) {
     }
     window.setTimeout(async function () {
       setIsLoading(false);
-      apiUpdateTask("");
-      Alert.alert("Thông báo", "Cập nhật công việc thành công!");
+      // apiUpdateTask("");
+      const updateTask = {
+        taskName: txtInputTask,
+        description: txtInputDesc,
+        taskType: taskType,
+        priority: priority,
+        reminderTime: reminderTime,
+        repeat: repeat,
+      };
+      try {
+        const res = await axios.put(
+          `${url}/api/task/updateNotFinishTask/${infoTaskBeforeUpdate.props.id}/${infoTaskBeforeUpdate.props.taskDetail_id}/${infoTaskBeforeUpdate.props.schedule_id}`,
+          updateTask,
+          { timeout: 2000 }
+        );
+        if (res.status === 200 || res.status === 204) {
+          setTxtInputDesc("");
+          setTxtInputTask("");
+          Alert.alert("Thông báo", "Cập nhật công việc thành công!");
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }, 3000);
     // else if (displayStartTime === "... giờ ... phút") {
     //   window.setTimeout(async function () {
@@ -551,42 +579,159 @@ export default function UpdateTaskScreen(props) {
   }
 
   //handle update-task
-  async function apiUpdateTask(duration) {
-    const updateTask = {
-      taskName: txtInputTask,
-      description: txtInputDesc,
-      taskType:
-        taskType === infoTaskBeforeUpdate.props.taskType
-          ? infoTaskBeforeUpdate.props.taskType
-          : taskType,
-      priority:
-        priority === infoTaskBeforeUpdate.props.priority
-          ? infoTaskBeforeUpdate.props.priority
-          : priority,
-      reminderTime:
-        reminderTime === infoTaskBeforeUpdate.props.reminderTime
-          ? infoTaskBeforeUpdate.props.reminderTime
-          : reminderTime,
-      repeat:
-        repeat === infoTaskBeforeUpdate.props.repeat
-          ? infoTaskBeforeUpdate.props.repeat
-          : repeat,
-      startTime: displayStartDate + ", " + displayStartTime,
-      endTime: displayEndDate + ", " + displayEndTime,
-      // duration: duration,
-      // deadline: deadline,
-    };
-    await axios.put(
-      `${url}/api/task/updateNotFinishTask/${infoTaskBeforeUpdate.props.id}/${infoTaskBeforeUpdate.props.taskDetail_id}/${infoTaskBeforeUpdate.props.schedule_id}`,
-      updateTask,
-      { timeout: 4000 }
-    );
-    // .then((task) => {
-    // window.setTimeout(function () {
-    // console.log(task.data);
+  // async function apiUpdateTask(duration) {
+  //   const updateTask = {
+  //     taskName: txtInputTask,
+  //     description: txtInputDesc,
+  //     // taskType:
+  //     //   taskType === infoTaskBeforeUpdate.props.taskType
+  //     //     ? infoTaskBeforeUpdate.props.taskType
+  //     //     : taskType,
+  //     // priority:
+  //     //   priority === infoTaskBeforeUpdate.props.priority
+  //     //     ? infoTaskBeforeUpdate.props.priority
+  //     //     : priority,
+  //     // reminderTime:
+  //     //   reminderTime === infoTaskBeforeUpdate.props.reminderTime
+  //     //     ? infoTaskBeforeUpdate.props.reminderTime
+  //     //     : reminderTime,
+  //     // repeat:
+  //     //   repeat === infoTaskBeforeUpdate.props.repeat
+  //     //     ? infoTaskBeforeUpdate.props.repeat
+  //     //     : repeat,
+  //     taskType: taskType,
+  //     priority: priority,
+  //     reminderTime: reminderTime,
+  //     repeat: repeat,
+  //     // startTime: displayStartDate + ", " + displayStartTime,
+  //     // endTime: displayEndDate + ", " + displayEndTime,
+  //     // duration: duration,
+  //     // deadline: deadline,
+  //   };
+  //   await axios.put(
+  //     `${url}/api/task/updateNotFinishTask/${infoTaskBeforeUpdate.props.id}/${infoTaskBeforeUpdate.props.taskDetail_id}/${infoTaskBeforeUpdate.props.schedule_id}`,
+  //     updateTask,
+  //     { timeout: 2000 }
+  //   );
+  //   setTxtInputTask('');
+  //   setTxtInputDesc('');
+  // }
+  /////
 
-    // }, 2000);
-    // });
+  /////expo-notifications
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+  useEffect(() => {
+    let isMounted = false;
+
+    registerForPushNotificationsAsync().then((token) => {
+      if (!isMounted) return;
+      setExpoPushToken(token);
+    });
+
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        if (!isMounted) return;
+        setNotification(notification);
+      });
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
+
+    return () => {
+      isMounted = true;
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+  // useEffect(() => console.log("expoPushToken", expoPushToken));
+
+  async function schedulePushNotification() {
+    const startDateTimeTask = moment(
+      displayStartDate + ", " + displayStartTime,
+      "D/M/YYYY, HH [giờ] mm [phút]"
+    ).toDate();
+    switch (reminderTime) {
+      case "Không":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body: "Bạn có công việc '" + txtInputTask + "' cần làm!",
+          },
+          trigger: null,
+        });
+        break;
+      case "Đúng giờ":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body: "Bạn có công việc '" + txtInputTask + "' cần làm!",
+          },
+          trigger: { date: startDateTimeTask },
+        });
+        break;
+      case "Trước 5 phút":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body: "Bạn có công việc '" + txtInputTask + "' cần làm sau 5 phút!",
+          },
+          trigger: {
+            date: startDateTimeTask.setMinutes(
+              startDateTimeTask.getMinutes() - 5
+            ),
+          },
+        });
+        break;
+      case "Trước 30 phút":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body:
+              "Bạn có công việc '" + txtInputTask + "' cần làm sau 30 phút!",
+          },
+          trigger: {
+            date: startDateTimeTask.setMinutes(
+              startDateTimeTask.getMinutes() - 30
+            ),
+          },
+        });
+        break;
+      case "Trước 1 tiếng":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body:
+              "Bạn có công việc '" + txtInputTask + "' cần làm sau 1 tiếng!",
+          },
+          trigger: {
+            date: startDateTimeTask.setMinutes(
+              startDateTimeTask.getMinutes() - 60
+            ),
+          },
+        });
+        break;
+      case "Trước 1 ngày":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body: "Bạn có công việc '" + txtInputTask + "' cần làm ngày mai!",
+          },
+          trigger: {
+            date: startDateTimeTask.setDate(startDateTimeTask.getDate() - 1),
+          },
+        });
+        break;
+      default:
+        break;
+    }
   }
   /////
 
@@ -595,7 +740,8 @@ export default function UpdateTaskScreen(props) {
       style={styles.container}
       // contentContainerStyle={{ height: flag ? "140%" : "125%" }}
       contentContainerStyle={{
-        height: "100%",
+        // height: "100%",
+        height: 600,
         width: "100%",
         padding: "3%",
         justifyContent: "space-around",
@@ -606,7 +752,9 @@ export default function UpdateTaskScreen(props) {
       // style={{ width: "100%", padding: "3%" }}
       > */}
       {/* tên cv */}
-      <View style={{flexDirection: "row", width: '100%', alignItems: "center"}}>
+      <View
+        style={{ flexDirection: "row", width: "100%", alignItems: "center" }}
+      >
         <TextInput
           style={[styles.styleInput, { borderRadius: 10, borderColor: "gray" }]}
           placeholder="Nhập tên công việc"
@@ -615,15 +763,15 @@ export default function UpdateTaskScreen(props) {
           onChangeText={(txt) => setTxtInputTask(txt)}
           value={txtInputTask}
         />
-        <View style={{marginLeft: '-11%', padding: '2%'}}>
-          <TouchableOpacity onPress={() => setTxtInputTask('')}>
+        <View style={{ marginLeft: "-11%", padding: "2%" }}>
+          <TouchableOpacity onPress={() => setTxtInputTask("")}>
             <Feathericons name="delete" size={30} color="#09CBD0" />
           </TouchableOpacity>
         </View>
       </View>
 
       {/* mô tả */}
-      <View style={{flexDirection: "row", width: '100%', height: '15%'}}>
+      <View style={{ flexDirection: "row", width: "100%", height: "15%" }}>
         <TextInput
           style={[
             styles.styleInput,
@@ -641,8 +789,8 @@ export default function UpdateTaskScreen(props) {
           onChangeText={(txt) => setTxtInputDesc(txt)}
           value={txtInputDesc}
         />
-        <View style={{marginLeft: '-11%', padding: '2%', marginTop: '3%'}}>
-          <TouchableOpacity onPress={() => setTxtInputDesc('')}>
+        <View style={{ marginLeft: "-11%", padding: "2%", marginTop: "3%" }}>
+          <TouchableOpacity onPress={() => setTxtInputDesc("")}>
             <Feathericons name="delete" size={30} color="#09CBD0" />
           </TouchableOpacity>
         </View>
@@ -673,7 +821,7 @@ export default function UpdateTaskScreen(props) {
             }}
             selectedValue={taskType}
             onValueChange={(itemValue, itemIndex) => {
-              setItemToDelete(itemValue);
+              // setItemToDelete(itemValue);
               setTaskType(itemValue);
             }}
           >
@@ -1056,3 +1204,36 @@ const styles = StyleSheet.create({
     width: "40%",
   },
 });
+
+async function registerForPushNotificationsAsync() {
+  let token;
+
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+    });
+  }
+
+  if (Device.isDevice) {
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== "granted") {
+      alert("Failed to get push token for push notification!");
+      return;
+    }
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log(token);
+  } else {
+    alert("Must use physical device for Push Notifications");
+  }
+
+  return token;
+}

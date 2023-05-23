@@ -324,7 +324,8 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: 650,
+    // flex: 1,
     backgroundColor: "#fff",
     justifyContent: "space-evenly",
   },

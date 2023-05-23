@@ -1,20 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Animated,
   Dimensions,
-  FlatList,
-  Image,
-  Platform,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
   Modal,
   RefreshControl,
-  ScrollView,
   LogBox,
   Alert,
+  ScrollView,
+  TextInput,
+  Image,
 } from "react-native";
 import { Link, useNavigate } from "react-router-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,6 +32,7 @@ import FontAwesome5icons from "react-native-vector-icons/FontAwesome5";
 import Feather from "react-native-vector-icons/Feather";
 import Materialicons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityicons from "react-native-vector-icons/MaterialCommunityIcons";
+import Feathericons from "react-native-vector-icons/Feather";
 
 //link doc react-native-big-calendar: https://github.com/acro5piano/react-native-big-calendar
 import { Calendar } from "react-native-big-calendar";
@@ -56,11 +54,23 @@ import { RadioGroup, RadioButton } from "react-native-flexi-radio-button";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+// //doc: https://docs.expo.dev/versions/latest/sdk/notifications/
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+
 const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
 
 LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function ListScreen() {
   const currentLoginUser = useSelector(
@@ -107,7 +117,8 @@ export default function ListScreen() {
     });
   };
   const onRefresh = async () => {
-    setRefreshing(true);
+    if (flagModalUpdate === false) setRefreshing(true);
+    else setRefreshing(false);
 
     loadTaskTypeData();
 
@@ -130,75 +141,6 @@ export default function ListScreen() {
   // const [dataTasksList, setDataTasksList] = useState([]);
   let dataTasksList = [];
   const [events, setEvents] = useState([]);
-  const [obj, setObj] = useState({});
-  const [taskId, setTaskId] = useState();
-  const [taskName, setTaskName] = useState();
-  // const [dataDayTime, setDataDayTime] = useState();
-  const [initialDate, setInitialDate] = useState();
-  const [description, setDescription] = useState();
-  const [status, setStatus] = useState();
-  const [startTime, setStartTime] = useState();
-  const [endTime, setEndTime] = useState();
-  const [taskType, setTaskType] = useState();
-  const [priority, setPriority] = useState();
-  const [reminderTime, setReminderTime] = useState();
-
-  // console.log('registeruserid',registerUserId);
-  // console.log('loginuserid',loginUserId)
-
-  // useEffect(() => {
-  //   if(registerUserId!==undefined && loginUserId===undefined)
-  //     loadListNotFinishTasks(registerUserId, currentDate);
-  // }, [registerUserId, currentDate]);
-
-  // useEffect(() => {
-  //   if(registerUserId===undefined && loginUserId!==undefined)
-  //     loadListNotFinishTasks(loginUserId, currentDate);
-  //   if(registerUserId!==undefined && loginUserId===undefined)
-  //     loadListNotFinishTasks(registerUserId, currentDate);
-
-  //   loadListNotFinishTasks();
-  // }, []);
-
-  // useEffect(() => {
-  //   loadListNotFinishTasks();
-  // }, [])
-  // const loadListNotFinishTasks = async () => {
-  //   if (registerUserId === undefined && loginUserId !== undefined) {
-  //     // console.log(registerUserId);
-  //     // console.log(loginUserId);
-  //     // try {
-  //     const res = await axios.get(`${url}/api/task/notFinishTasks/${loginUserId}/${currentDate}`);
-  //     // setEvents(res.data)
-  //     // console.log(events);
-  //     const newEvent: EventItem[] = res.data.map((item, index) => ({
-  //       id: item._id,
-  //       title: item.taskId.taskName,
-  //       start: item.dayTime,
-  //       end: "2023-03-26T14:00:05.313Z",
-  //       color: "#A3C7D6",
-  //       description: item.description,
-  //       imageUrl: '',
-  //       dayTime: item.dayTime,
-  //       status: item.status,
-  //       taskType: item.taskType,
-  //       priority: item.priority,
-  //       reminderTime: item.reminderTime
-  //     }));
-  //     setEvents(newEvent)
-  //     console.log(events);
-
-  //     // {res.data.map((item, index) => {
-  //     //     setTaskId(item._id);
-  //     //     setTaskName(item.taskName);
-  //     // })};
-  //     // console.log(taskId);
-  //     // console.log(taskName);
-  //     // } catch (error) {
-  //     //   console.log(error);
-  //     // }
-  //   }
-  // };
 
   async function loadListNotFinishTasks(id) {
     try {
@@ -532,7 +474,7 @@ export default function ListScreen() {
   /////
 
   /////handle update task
-  const [modalUpdateTask, setModalUpdateTask] = useState(false);
+  // const [modalUpdateTask, setModalUpdateTask] = useState(false);
 
   /////handle update status task
   async function handleUpdateStatusTask(task_id) {
@@ -561,12 +503,211 @@ export default function ListScreen() {
   }
   /////
 
+  /////==handle updateTaskScreen
+  const [isLoading, setIsLoading] = useState(false);
+  const [evtStart, setEvtStart] = useState("");
+  useEffect(() =>
+    events.forEach((e) => {
+      setEvtStart(e.taskDetailId.startTime);
+    })
+  ),
+    [events];
+  const [txtInputTask, setTxtInputTask] = useState("");
+  const [txtInputDesc, setTxtInputDesc] = useState("");
+
+  //////handle add task-type
+  const [selectedValue, setSelectedValue] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [newItemValue, setNewItemValue] = useState("");
+  useEffect(() => {
+    //update giá trị ban đầu của Picker từ mảng data
+    setSelectedValue(taskTypeData[0]);
+  }, [taskTypeData]);
+  function handleAddNewTaskType() {
+    setTaskTypeData([...taskTypeData, newItemValue]);
+    setSelectedValue(newItemValue);
+    setModalVisible(false);
+
+    AsyncStorage.setItem(
+      "taskTypeData",
+      JSON.stringify([...taskTypeData, newItemValue])
+    )
+      .then(() => {
+        setModalVisible(false);
+        Alert.alert("Thông báo", "Thêm loại công việc thành công!");
+      })
+      .catch((err) => {
+        console.log("lỗi :", err);
+      });
+  }
+  //////
+  //////handle combobox picker & value mongodb
+  const [taskType, setTaskType] = useState("Cá nhân");
+  const [priority, setPriority] = useState("1");
+  const [reminderTime, setReminderTime] = useState("Không");
+  const [repeat, setRepeat] = useState("Không");
+  // const [duration, setDuration] = useState('');
+  const [deadline, setDeadline] = useState("");
+  //////
+  async function handleUpdateTask() {
+    // setFlagModalUpdate(false);
+    setIsLoading(true);
+    if (txtInputTask === "") {
+      window.setTimeout(function () {
+        setIsLoading(false);
+        Alert.alert("Thông báo", "Vui lòng nhập công việc!");
+      }, 3000);
+    }
+    // apiUpdateTask("");
+    const updateTask = {
+      taskName: txtInputTask,
+      description: txtInputDesc,
+      taskType: taskType,
+      priority: priority,
+      reminderTime: reminderTime,
+      repeat: repeat,
+    };
+    try {
+      const res = await axios.put(
+        `${url}/api/task/updateNotFinishTask/${selectedEvent.id}/${selectedEvent.taskDetail_id}/${selectedEvent.schedule_id}`,
+        updateTask,
+        { timeout: 2000 }
+      );
+      if (res.status === 200) {
+        window.setTimeout(function () {
+          setIsLoading(false);
+          setFlagModalUpdate(false);
+          Alert.alert("Thông báo", "Cập nhật công việc thành công!");
+        }, 3000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  /////expo-notifications
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+  useEffect(() => {
+    let isMounted = false;
+
+    registerForPushNotificationsAsync().then((token) => {
+      if (!isMounted) return;
+      setExpoPushToken(token);
+    });
+
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        if (!isMounted) return;
+        setNotification(notification);
+      });
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
+
+    return () => {
+      isMounted = true;
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+  // useEffect(() => console.log("expoPushToken", expoPushToken));
+
+  async function schedulePushNotification() {
+    const startDateTimeTask = moment(
+      displayStartDate + ", " + displayStartTime,
+      "D/M/YYYY, HH [giờ] mm [phút]"
+    ).toDate();
+    switch (reminderTime) {
+      case "Không":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body: "Bạn có công việc '" + txtInputTask + "' cần làm!",
+          },
+          trigger: null,
+        });
+        break;
+      case "Đúng giờ":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body: "Bạn có công việc '" + txtInputTask + "' cần làm!",
+          },
+          trigger: { date: startDateTimeTask },
+        });
+        break;
+      case "Trước 5 phút":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body: "Bạn có công việc '" + txtInputTask + "' cần làm sau 5 phút!",
+          },
+          trigger: {
+            date: startDateTimeTask.setMinutes(
+              startDateTimeTask.getMinutes() - 5
+            ),
+          },
+        });
+        break;
+      case "Trước 30 phút":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body:
+              "Bạn có công việc '" + txtInputTask + "' cần làm sau 30 phút!",
+          },
+          trigger: {
+            date: startDateTimeTask.setMinutes(
+              startDateTimeTask.getMinutes() - 30
+            ),
+          },
+        });
+        break;
+      case "Trước 1 tiếng":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body:
+              "Bạn có công việc '" + txtInputTask + "' cần làm sau 1 tiếng!",
+          },
+          trigger: {
+            date: startDateTimeTask.setMinutes(
+              startDateTimeTask.getMinutes() - 60
+            ),
+          },
+        });
+        break;
+      case "Trước 1 ngày":
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "TaskObey thông báo 📅",
+            body: "Bạn có công việc '" + txtInputTask + "' cần làm ngày mai!",
+          },
+          trigger: {
+            date: startDateTimeTask.setDate(startDateTimeTask.getDate() - 1),
+          },
+        });
+        break;
+      default:
+        break;
+    }
+  }
+  const [flagModalUpdate, setFlagModalUpdate] = useState(false);
+  /////==
+
   return (
     <SafeAreaView style={styles.container}>
       <RefreshControl
         style={{ width: widthScreen, height: "80%" }}
-        refreshing={refreshing}
-        onRefresh={onRefresh}
+        refreshing={flagModalUpdate === false ? refreshing : null}
+        onRefresh={flagModalUpdate === false ? onRefresh : null}
       >
         <Calendar
           // style={{height: '70%'}}
@@ -849,8 +990,8 @@ export default function ListScreen() {
                   <TouchableOpacity
                     style={[styles.btnHandle, { width: "30%" }]}
                     onPress={() => {
-                      setModalUpdateTask(true);
                       setIsModalVisible(false);
+                      setFlagModalUpdate(true);
                     }}
                   >
                     <Ionicons name="md-create-outline" size={25} color="#fff" />
@@ -881,36 +1022,446 @@ export default function ListScreen() {
           </Modal>
         )}
         {/* modal update info task */}
-        {selectedEvent && (
+        {/* {modalUpdateTask && (
           <Modal
             visible={modalUpdateTask}
             animationType="slide"
-            onRequestClose={() => setModalUpdateTask(false)}
+            onRequestClose={closeModalUpdate}
             transparent
+          > */}
+        <SafeAreaView
+          style={{
+            display: flagModalUpdate ? "flex" : "none",
+            // flex: 1,
+            height: 380,
+            width: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            // padding: "3%",
+            alignItems: "center",
+          }}
+        >
+          <ScrollView
+            style={{
+              width: "95%",
+              height: "90%",
+              backgroundColor: "#fff",
+            }}
+            contentContainerStyle={{
+              // height: "100%",
+              height: 600,
+              width: "100%",
+              padding: "3%",
+              justifyContent: "space-around",
+            }}
           >
-            <SafeAreaView
-              style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+            {/* tên cv */}
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                alignItems: "center",
+              }}
+            >
+              <TextInput
+                style={[
+                  styles.styleInput,
+                  { borderRadius: 10, borderColor: "gray" },
+                ]}
+                placeholder="Nhập tên công việc"
+                numberOfLines={1}
+                // autoFocus
+                onChangeText={(txt) => setTxtInputTask(txt)}
+                // value={txtInputTask}
+                keyboardShouldPersistTaps="handled"
+              />
+              <View style={{ marginLeft: "-11%", padding: "2%" }}>
+                <TouchableOpacity onPress={() => setTxtInputTask("")}>
+                  <Feathericons name="delete" size={30} color="#09CBD0" />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* mô tả */}
+            <View
+              style={{ flexDirection: "row", width: "100%", height: "15%" }}
+            >
+              <TextInput
+                style={[
+                  styles.styleInput,
+                  {
+                    textAlignVertical: "top",
+                    height: "80%",
+                    marginTop: "3%",
+                    borderRadius: 10,
+                    borderColor: "gray",
+                  },
+                ]}
+                placeholder="Nhập mô tả"
+                numberOfLines={4}
+                multiline
+                onChangeText={(txt) => setTxtInputDesc(txt)}
+                // value={txtInputDesc}
+                keyboardShouldPersistTaps="handled"
+              />
+              <View
+                style={{
+                  marginLeft: "-11%",
+                  padding: "2%",
+                  marginTop: "3%",
+                }}
+              >
+                <TouchableOpacity onPress={() => setTxtInputDesc("")}>
+                  <Feathericons name="delete" size={30} color="#09CBD0" />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* loại cv */}
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                height: "8.5%",
+                justifyContent: "space-between",
+              }}
             >
               <View
                 style={{
-                  width: "100%",
-                  height: "10%",
+                  flexDirection: "row",
+                  width: "82%",
+                  justifyContent: "space-between",
                   alignItems: "center",
-                  justifyContent: "center",
                 }}
               >
-                <TouchableOpacity onPress={() => setModalUpdateTask(false)}>
-                  <MaterialCommunityicons
-                    name="close-octagon-outline"
-                    size={60}
-                    color="#FF4500"
+                <Text style={{ color: "#09CBD0" }}>Loại công việc:</Text>
+                <Picker
+                  style={{
+                    width: "70%",
+                    backgroundColor: "#BCF4F5",
+                  }}
+                  selectedValue={taskType}
+                  onValueChange={(itemValue, itemIndex) => {
+                    // setItemToDelete(itemValue);
+                    setTaskType(itemValue);
+                  }}
+                >
+                  {taskTypeData.map((item, index) => (
+                    <Picker.Item
+                      style={{ fontWeight: "bold", fontSize: 14 }}
+                      key={index}
+                      label={item}
+                      value={item}
+                    />
+                  ))}
+                </Picker>
+              </View>
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  // width: "25%",
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                  <FontAwesomeicons
+                    name="plus-square"
+                    size={45}
+                    color="#09CBD0"
                   />
                 </TouchableOpacity>
               </View>
-              <UpdateTaskScreen props={selectedEvent} />
-            </SafeAreaView>
-          </Modal>
-        )}
+            </View>
+
+            {/* ưu tiên */}
+            <View
+              style={[
+                styles.viewTwoColumns,
+                { height: "8.5%", alignItems: "center" },
+              ]}
+            >
+              <Text style={{ color: "#09CBD0" }}>Ưu tiên:</Text>
+              <Picker
+                style={{ width: "75.5%", backgroundColor: "#BCF4F5" }}
+                selectedValue={priority}
+                onValueChange={(itemValue, itemIndex) => setPriority(itemValue)}
+              >
+                <Picker.Item
+                  style={{ fontWeight: "bold", color: "red" }}
+                  label="1"
+                  value="1"
+                />
+                <Picker.Item
+                  style={{ fontWeight: "bold", color: "orange" }}
+                  label="2"
+                  value="2"
+                />
+                <Picker.Item
+                  style={{ fontWeight: "bold", color: "#09CBD0" }}
+                  label="3"
+                  value="3"
+                />
+              </Picker>
+            </View>
+
+            {/* lặp lại */}
+            <View
+              style={[
+                styles.viewTwoColumns,
+                { height: "8.5%", alignItems: "center" },
+              ]}
+            >
+              <Text style={{ color: "#09CBD0" }}>Đặt lặp lại:</Text>
+              <Picker
+                style={{ width: "75.5%", backgroundColor: "#BCF4F5" }}
+                selectedValue={repeat}
+                onValueChange={(itemValue, itemIndex) => setRepeat(itemValue)}
+              >
+                <Picker.Item
+                  style={{ fontSize: 18 }}
+                  label="Không"
+                  value="Không"
+                />
+                <Picker.Item
+                  style={{ fontSize: 18 }}
+                  label="Mỗi ngày"
+                  value="Mỗi ngày"
+                />
+                <Picker.Item
+                  style={{ fontSize: 18 }}
+                  label="Mỗi tuần"
+                  value="Mỗi tuần"
+                />
+                <Picker.Item
+                  style={{ fontSize: 18 }}
+                  label="Mỗi tháng"
+                  value="Mỗi tháng"
+                />
+                <Picker.Item
+                  style={{ fontSize: 18 }}
+                  label="Mỗi năm"
+                  value="Mỗi năm"
+                />
+              </Picker>
+            </View>
+
+            {/* lời nhắc */}
+            <View
+              style={[
+                styles.viewTwoColumns,
+                { height: "8.5%", alignItems: "center" },
+              ]}
+            >
+              <Text style={{ color: "#09CBD0" }}>Đặt lời nhắc:</Text>
+              <Picker
+                style={{ width: "75.5%", backgroundColor: "#BCF4F5" }}
+                selectedValue={reminderTime}
+                onValueChange={(itemValue, itemIndex) =>
+                  setReminderTime(itemValue)
+                }
+              >
+                <Picker.Item
+                  style={{ fontSize: 18 }}
+                  label="Không"
+                  value="Không"
+                />
+                <Picker.Item
+                  style={{ fontSize: 18 }}
+                  label="Đúng giờ"
+                  value="Đúng giờ"
+                />
+                <Picker.Item
+                  style={{ fontSize: 18 }}
+                  label="Trước 5 phút"
+                  value="Trước 5 phút"
+                />
+                <Picker.Item
+                  style={{ fontSize: 18 }}
+                  label="Trước 30 phút"
+                  value="Trước 30 phút"
+                />
+                <Picker.Item
+                  style={{ fontSize: 18 }}
+                  label="Trước 1 tiếng"
+                  value="Trước 1 tiếng"
+                />
+                <Picker.Item
+                  style={{ fontSize: 18 }}
+                  label="Trước 1 ngày"
+                  value="Trước 1 ngày"
+                />
+              </Picker>
+            </View>
+
+            {/* modal thêm loại cv */}
+            <Modal visible={modalVisible} animationType="slide" transparent>
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: "rgba(0, 0, 0, 0.6)", // Màu đen bóng mờ
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <View
+                  style={{
+                    backgroundColor: "white",
+                    borderColor: "#09CBD0",
+                    borderStyle: "solid",
+                    borderWidth: 3,
+                    width: "50%",
+                    padding: 20,
+                    borderRadius: 5,
+                  }}
+                >
+                  <TextInput
+                    placeholder="Nhập loại công việc mới"
+                    style={{ fontSize: 15 }}
+                    value={newItemValue}
+                    onChangeText={(text) => setNewItemValue(text)}
+                  />
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    marginTop: "5%",
+                    width: "40%",
+                    justifyContent: "space-around",
+                  }}
+                >
+                  <TouchableOpacity
+                    style={styles.btn}
+                    onPress={handleAddNewTaskType}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 17,
+                        color: "#fff",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Thêm
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.btn}
+                    onPress={() => setModalVisible(false)}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 17,
+                        color: "#fff",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Hủy
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+
+            {/* modal xóa loại cv */}
+            {/* <Modal
+                  visible={modalVisibleDelTaskType}
+                  animationType="slide"
+                  transparent
+                >
+                  <View
+                    style={{
+                      flex: 1,
+                      backgroundColor: "rgba(0, 0, 0, 0.6)",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <View
+                      style={{
+                        backgroundColor: "white",
+                        borderColor: "#09CBD0",
+                        borderStyle: "solid",
+                        borderWidth: 3,
+                        width: "50%",
+                        padding: 20,
+                        borderRadius: 5,
+                      }}
+                    >
+                      <Text style={{ fontSize: 15 }}>
+                        Bạn có muốn xóa loại công việc này?
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        marginTop: "5%",
+                        width: "40%",
+                        justifyContent: "space-around",
+                      }}
+                    >
+                      <TouchableOpacity style={styles.btn} onPress={handleDeleteTaskType}>
+                        <Text style={{ fontSize: 17, color: "#fff", fontWeight: "bold" }}>
+                          Xóa
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.btn}
+                        onPress={() => setModalVisibleDelTaskType(false)}
+                      >
+                        <Text style={{ fontSize: 17, color: "#fff", fontWeight: "bold" }}>
+                          Hủy
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </Modal> */}
+
+            {isLoading ? (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignSelf: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ alignSelf: "center" }}>
+                  Hệ thống đang cập nhật
+                </Text>
+                <Image
+                  source={require("../../../assets/loading-dots.gif")}
+                  style={{
+                    resizeMode: "contain",
+                    width: 50,
+                    height: 50,
+                    marginLeft: "3%",
+                  }}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  flexDirection: "row",
+                  width: "100%",
+                  justifyContent: "space-around",
+                  marginTop: "2%",
+                }}
+              >
+                <TouchableOpacity style={styles.btn} onPress={handleUpdateTask}>
+                  <Text style={{ fontSize: 20, color: "#fff" }}>Cập nhật</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.btn}
+                  onPress={() => setFlagModalUpdate(false)}
+                >
+                  <Text style={{ fontSize: 20, color: "#fff" }}>Hủy</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            {/* </View> */}
+          </ScrollView>
+        </SafeAreaView>
+        {/* </Modal>
+        )} */}
       </RefreshControl>
       {/* mode view, refresh, filter, prev-next */}
       <View
@@ -1290,7 +1841,9 @@ export default function ListScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
+    width: "100%",
+    height: 537,
     backgroundColor: "#fff",
     justifyContent: "space-between",
   },
@@ -1333,4 +1886,66 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "space-between",
   },
+  styleInput: {
+    alignSelf: "center",
+    width: "100%",
+    height: 40,
+    fontSize: 17,
+    marginTop: 5,
+    marginRight: 0,
+    marginBottom: 5,
+    marginLeft: 0,
+    paddingLeft: 10,
+    borderRadius: 20,
+    borderColor: "black",
+    borderWidth: 1,
+  },
+  viewTwoColumns: {
+    width: "100%",
+    height: "50%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  btn: {
+    alignSelf: "center",
+    alignItems: "center",
+    padding: 15,
+    backgroundColor: "#09CBD0",
+    borderRadius: 100,
+    width: "40%",
+  },
 });
+
+async function registerForPushNotificationsAsync() {
+  let token;
+
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+    });
+  }
+
+  if (Device.isDevice) {
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== "granted") {
+      alert("Failed to get push token for push notification!");
+      return;
+    }
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log(token);
+  }
+  // else {
+  //   alert("Must use physical device for Push Notifications");
+  // }
+
+  return token;
+}
