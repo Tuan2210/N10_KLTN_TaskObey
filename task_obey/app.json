@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "task_obey",
+    "name": "Task Obey",
     "slug": "task_obey",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/TaskObey_logo_240.png",
+    "icon": "./assets/TaskObey_logo_120.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -22,12 +22,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/TaskObey_logo_240.png",
+        "foregroundImage": "./assets/TaskObey_logo_120.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.tuan2210.task_obey"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2dbd8fe9-e429-44c1-9fbb-d809d46983ff"
+      }
     }
   }
 }
