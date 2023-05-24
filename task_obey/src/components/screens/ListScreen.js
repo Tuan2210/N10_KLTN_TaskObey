@@ -1033,7 +1033,9 @@ export default function ListScreen() {
           style={{
             display: flagModalUpdate ? "flex" : "none",
             // flex: 1,
-            height: 380,
+            // height: 380,
+            height: "90%",
+            marginTop: "-10%",
             width: "100%",
             backgroundColor: "rgba(0, 0, 0, 0.6)",
             // padding: "3%",
@@ -1071,7 +1073,7 @@ export default function ListScreen() {
                 numberOfLines={1}
                 // autoFocus
                 onChangeText={(txt) => setTxtInputTask(txt)}
-                // value={txtInputTask}
+                value={txtInputTask}
                 keyboardShouldPersistTaps="handled"
               />
               <View style={{ marginLeft: "-11%", padding: "2%" }}>
@@ -1100,7 +1102,7 @@ export default function ListScreen() {
                 numberOfLines={4}
                 multiline
                 onChangeText={(txt) => setTxtInputDesc(txt)}
-                // value={txtInputDesc}
+                value={txtInputDesc}
                 keyboardShouldPersistTaps="handled"
               />
               <View
@@ -1841,9 +1843,9 @@ export default function ListScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    width: "100%",
-    height: 537,
+    flex: 1,
+    // width: "100%",
+    // height: 537,
     backgroundColor: "#fff",
     justifyContent: "space-between",
   },
