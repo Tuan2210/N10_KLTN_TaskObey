@@ -85,17 +85,17 @@ export default function ListScreen() {
 
   const [userId, setUserId] = useState();
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (currentRegisterUser && !currentLoginUser) {
-        setUserId(registerUserId);
-        loadListNotFinishTasks(registerUserId);
-      }
-      if (!currentRegisterUser && currentLoginUser) {
-        setUserId(loginUserId);
-        loadListNotFinishTasks(loginUserId);
-      }
-    }, 3000);
-    return () => clearInterval(interval);
+    // const interval = setInterval(() => {
+    if (currentRegisterUser && !currentLoginUser) {
+      setUserId(registerUserId);
+      loadListNotFinishTasks(registerUserId);
+    }
+    if (!currentRegisterUser && currentLoginUser) {
+      setUserId(loginUserId);
+      loadListNotFinishTasks(loginUserId);
+    }
+    // }, 3000);
+    // return () => clearInterval(interval);
   }, [currentRegisterUser, currentLoginUser]);
 
   const navigate = useNavigate();
@@ -126,7 +126,10 @@ export default function ListScreen() {
       const res = await axios.get(`${url}/api/task/notFinishTasks/${userId}`, {
         timeout: 2500,
       });
-      if (res.data.length === 0) console.log("no data task in list");
+      if (res.data.length === 0) {
+        console.log("no data task in list");
+        setEvents([]);
+      }
       if (res.data.length > 0) {
         setEvents(res.data);
         setRefreshing(false);
@@ -147,7 +150,10 @@ export default function ListScreen() {
       const res = await axios.get(`${url}/api/task/notFinishTasks/${id}`, {
         timeout: 2000,
       });
-      if (res.data.length === 0) console.log("no data task in list");
+      if (res.data.length === 0) {
+        console.log("no data task in list");
+        setEvents([]);
+      }
       if (res.data.length > 0) {
         // console.log(res.data);
         setEvents(res.data);
@@ -490,7 +496,6 @@ export default function ListScreen() {
       if (res.data.length === 0) console.log("no data finish task");
       if (res.data.length > 0) {
         console.log(res.data);
-        onRefresh();
         setIsModalVisible(false);
         Alert.alert(
           "Thông báo 🎉",
@@ -928,12 +933,12 @@ export default function ListScreen() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <Text style={styles.txtModal}>
+                    {/* <Text style={styles.txtModal}>
                       Ngày tạo:{"\u00A0"}
                       <Text style={{ fontSize: 15, color: "black" }}>
                         {selectedEvent.initialDate}
                       </Text>
-                    </Text>
+                    </Text> */}
                     <Text style={styles.txtModal}>
                       Trạng thái:{"\u00A0"}
                       <Text style={{ fontSize: 15, color: "black" }}>
@@ -1001,7 +1006,10 @@ export default function ListScreen() {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.btnHandle, { width: "30%" }]}
-                    onPress={() => handleUpdateStatusTask(selectedEvent.id)}
+                    onPress={() => {
+                      handleUpdateStatusTask(selectedEvent.id);
+                      onRefresh();
+                    }}
                   >
                     <Materialicons name="done" size={25} color="#fff" />
                     <Text style={{ color: "#fff", fontSize: 15 }}>

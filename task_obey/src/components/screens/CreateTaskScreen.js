@@ -647,15 +647,15 @@ export default function CreateTaskScreen() {
       "D/M/YYYY, HH [giờ] mm [phút]"
     ).toDate();
     switch (reminderTime) {
-      case "Không":
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: "TaskObey thông báo 📅",
-            body: "Bạn có công việc '" + txtInputTask + "' cần làm!",
-          },
-          trigger: null,
-        });
-        break;
+      // case "Không":
+      //   await Notifications.scheduleNotificationAsync({
+      //     content: {
+      //       title: "TaskObey thông báo 📅",
+      //       body: "Bạn có công việc '" + txtInputTask + "' cần làm!",
+      //     },
+      //     trigger: null,
+      //   });
+      //   break;
       case "Đúng giờ":
         await Notifications.scheduleNotificationAsync({
           content: {
@@ -735,24 +735,29 @@ export default function CreateTaskScreen() {
         style={{ width: "100%", height: flag ? "95%" : "90%", padding: "3%" }}
       >
         {/* tên cv */}
-        <View style={{flexDirection: "row", width: '100%', alignItems: "center"}}>
+        <View
+          style={{ flexDirection: "row", width: "100%", alignItems: "center" }}
+        >
           <TextInput
-            style={[styles.styleInput, { borderRadius: 10, borderColor: "gray" }]}
+            style={[
+              styles.styleInput,
+              { borderRadius: 10, borderColor: "gray" },
+            ]}
             placeholder="Nhập tên công việc"
             numberOfLines={1}
             // autoFocus
             onChangeText={(txt) => setTxtInputTask(txt)}
             value={txtInputTask}
           />
-          <View style={{marginLeft: '-11%', padding: '2%'}}>
-            <TouchableOpacity onPress={() => setTxtInputTask('')}>
+          <View style={{ marginLeft: "-11%", padding: "2%" }}>
+            <TouchableOpacity onPress={() => setTxtInputTask("")}>
               <Feathericons name="delete" size={30} color="#09CBD0" />
             </TouchableOpacity>
           </View>
         </View>
 
         {/* mô tả */}
-        <View style={{flexDirection: "row", width: '100%', height: '15%'}}>
+        <View style={{ flexDirection: "row", width: "100%", height: "15%" }}>
           <TextInput
             style={[
               styles.styleInput,
@@ -770,8 +775,8 @@ export default function CreateTaskScreen() {
             onChangeText={(txt) => setTxtInputDesc(txt)}
             value={txtInputDesc}
           />
-          <View style={{marginLeft: '-11%', padding: '2%', marginTop: '3%'}}>
-            <TouchableOpacity onPress={() => setTxtInputDesc('')}>
+          <View style={{ marginLeft: "-11%", padding: "2%", marginTop: "3%" }}>
+            <TouchableOpacity onPress={() => setTxtInputDesc("")}>
               <Feathericons name="delete" size={30} color="#09CBD0" />
             </TouchableOpacity>
           </View>
