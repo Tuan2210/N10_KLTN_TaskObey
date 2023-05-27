@@ -855,17 +855,17 @@ export default function CreateTaskScreen() {
           >
             <Picker.Item
               style={{ fontWeight: "bold", color: "red" }}
-              label="1"
+              label="1 - Quan trọng"
               value="1"
             />
             <Picker.Item
               style={{ fontWeight: "bold", color: "orange" }}
-              label="2"
+              label="2 - Trung bình"
               value="2"
             />
             <Picker.Item
               style={{ fontWeight: "bold", color: "#09CBD0" }}
-              label="3"
+              label="3 - Bình thường"
               value="3"
             />
           </Picker>

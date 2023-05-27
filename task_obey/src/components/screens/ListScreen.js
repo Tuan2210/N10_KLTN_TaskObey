@@ -579,9 +579,10 @@ export default function ListScreen() {
         { timeout: 2000 }
       );
       if (res.status === 200) {
-        window.setTimeout(function () {
+        window.setTimeout(async function () {
           setIsLoading(false);
           setFlagModalUpdate(false);
+          await schedulePushNotification();
           Alert.alert("Thông báo", "Cập nhật công việc thành công!");
         }, 3000);
       }
@@ -630,15 +631,6 @@ export default function ListScreen() {
       "D/M/YYYY, HH [giờ] mm [phút]"
     ).toDate();
     switch (reminderTime) {
-      case "Không":
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: "TaskObey thông báo 📅",
-            body: "Bạn có công việc '" + txtInputTask + "' cần làm!",
-          },
-          trigger: null,
-        });
-        break;
       case "Đúng giờ":
         await Notifications.scheduleNotificationAsync({
           content: {
@@ -1199,17 +1191,17 @@ export default function ListScreen() {
               >
                 <Picker.Item
                   style={{ fontWeight: "bold", color: "red" }}
-                  label="1"
+                  label="1 - Quan trọng"
                   value="1"
                 />
                 <Picker.Item
                   style={{ fontWeight: "bold", color: "orange" }}
-                  label="2"
+                  label="2 - Trung bình"
                   value="2"
                 />
                 <Picker.Item
                   style={{ fontWeight: "bold", color: "#09CBD0" }}
-                  label="3"
+                  label="3 - Bình thường"
                   value="3"
                 />
               </Picker>
