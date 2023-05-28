@@ -1191,17 +1191,17 @@ export default function ListScreen() {
               >
                 <Picker.Item
                   style={{ fontWeight: "bold", color: "red" }}
-                  label="Quan trọng"
+                  label="1 - Quan trọng"
                   value="1"
                 />
                 <Picker.Item
                   style={{ fontWeight: "bold", color: "orange" }}
-                  label="Trung bình"
+                  label="2 - Trung bình"
                   value="2"
                 />
                 <Picker.Item
                   style={{ fontWeight: "bold", color: "#09CBD0" }}
-                  label="Bình thường"
+                  label="3 - Bình thường"
                   value="3"
                 />
               </Picker>
