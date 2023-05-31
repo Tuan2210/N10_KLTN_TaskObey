@@ -314,12 +314,12 @@ export default function FinishTaskScreen() {
                   justifyContent: "space-between",
                 }}
               >
-                <Text style={styles.txtModal}>
+                {/* <Text style={styles.txtModal}>
                   Ngày tạo:{"\t"}
                   <Text style={{ fontSize: 15, color: "black" }}>
                     {selectedItemData.initialDate}
                   </Text>
-                </Text>
+                </Text> */}
                 <Text style={styles.txtModal}>
                   Trạng thái:{"\t"}
                   <Text style={{ fontSize: 15, color: "black" }}>
