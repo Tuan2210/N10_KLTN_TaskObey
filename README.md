@@ -11,9 +11,9 @@
   ✔ CRUD tasks need to be completed within predefined time frames. <br>
   ✔ View, generalize the schedule for a specific period time and a reminder to remind user of task to do for day. <br>
   ✔ Statistics on which tasks have been completed and not completed within a specific period time. <br>
-  ✔ Review specifically completed works, from which to evaluating performance and planning for the future. <br>
+  ✔ List specific completed tasks by oldest or most recent time . <br>
   ✔ User can view and update username, password. <br>
-  ✔ Verify the user's phone number before registering an account and changing password. <br>
+  ✔ Verify the user's phone number with OTP code before registering an account and changing password. <br>
 ## Technologies
   __Server-side (BE):__ <br>
   ⭐ Database is used _MongoDB_, user data will be stored in [Cloud MongoDB](https://cloud.mongodb.com) for analysis and evaluation, visualize specifically how to manage time and work on app. <br>
