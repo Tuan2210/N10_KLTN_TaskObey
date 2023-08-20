@@ -9,7 +9,7 @@
   👉 App was tested for some SE students at the IT department and received positive feedback about the __Task Obey__ application.
 ## Functions
   ✔ CRUD tasks need to be completed within predefined time frames. <br>
-  ✔ View, generalize the schedule for a specific period time and app has a reminder to remind user of task to do for day. <br>
+  ✔ View, generalize the schedule for a specific period time and a reminder to remind user of task to do for day. <br>
   ✔ Statistics on which tasks have been completed and not completed within a specific period time. <br>
   ✔ Review specifically completed works, from which to evaluating performance and planning for the future. <br>
   ✔ User can view and update username, password. <br>
