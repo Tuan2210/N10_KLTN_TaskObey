@@ -34,4 +34,4 @@ cd task_obey
 npm start
 ```
 # Relations
-More details in _report doc (CuonBaoCao)_ and _poster_ with PDF format.
+More details in [report doc](https://docs.google.com/document/d/1FqH27W7Zhne9J0hjRXz99-RFv__XE8JW/edit?usp=sharing&ouid=103328601520413907785&rtpof=true&sd=true) and [poster](https://docs.google.com/presentation/d/1RBCEvu2MLTKRxUrbWAJekNfOsUmk2gUi/edit?usp=sharing&ouid=103328601520413907785&rtpof=true&sd=true) (zoom in: Ctrl Alt + | zoom out: Ctrl Alt -).
