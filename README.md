@@ -1,6 +1,6 @@
 # Demo
 ![Screenshot_20230820-112245](https://github.com/Tuan2210/N10_KLTN_TaskObey/assets/84191285/71f3174e-533f-4dc6-95f5-9b7002c43a0e)
-## [Link demo](https://www.youtube.com/watch?v=PopSXY28F-o)
+## [Demo link](https://www.youtube.com/watch?v=PopSXY28F-o)
 
 # Overview
 ## Introduction
@@ -33,6 +33,10 @@ cd task_obey
 ```
 npm start
 ```
+## Workflow
+![Gitdiagram-preview](https://github.com/user-attachments/assets/bf2ff95c-aa3d-44e5-bf88-c5e47186a4ce) <br>
+[Gitdiagram link](https://gitdiagram.com/tuan2210/n10_kltn_taskobey)
+
 # Relations
 __Task Obey__ is under complete improvement in future 🎇 <br>
 More details in [report doc](https://docs.google.com/document/d/1FqH27W7Zhne9J0hjRXz99-RFv__XE8JW/edit?usp=sharing&ouid=103328601520413907785&rtpof=true&sd=true) and [poster](https://docs.google.com/presentation/d/1RBCEvu2MLTKRxUrbWAJekNfOsUmk2gUi/edit?usp=sharing&ouid=103328601520413907785&rtpof=true&sd=true) (zoom in: Ctrl Alt + | zoom out: Ctrl Alt -)
